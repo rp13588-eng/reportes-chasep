@@ -245,11 +245,11 @@ footer {
         <thead>
           <tr>
             <th data-key="id">ID</th>
-            <th data-key="nombre">Distribuidor</th>
-            <th data-key="subterritorio">Subterritorio</th>
-            <th data-key="compania">Compañía</th>
-            <th data-key="act" class="num">Actual</th>
-            <th data-key="ant" class="num">Año ant.</th>
+            <th data-key="nm">Distribuidor</th>
+            <th data-key="st">Subterritorio</th>
+            <th data-key="co">Compañía</th>
+            <th data-key="a" class="num">Actual</th>
+            <th data-key="b" class="num">Año ant.</th>
             <th data-key="var_pct" class="num">Var %</th>
           </tr>
         </thead>
@@ -265,7 +265,7 @@ footer {
 const REPO_BASE = '.';
 let DATA = null;
 let manifest = null;
-let sortState = { key: 'act', dir: 'desc' };
+let sortState = { key: 'a', dir: 'desc' };
 
 const fmtUSD = n => '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
 const fmtPct = n => (n > 0 ? '+' : '') + Number(n).toFixed(1) + '%';
@@ -303,7 +303,7 @@ async function loadPeriodData(path) {
 }
 
 function populateFilterOptions() {
-  const subs = [...new Set(DATA.distribuidores.map(d => d.subterritorio))].sort();
+  const subs = [...new Set(DATA.dist.map(d => d.st))].sort();
   const selSub = document.getElementById('fSub');
   selSub.innerHTML = '<option value="">Todos</option>' + subs.map(s => `<option value="${s}">${s}</option>`).join('');
   updateCompaniaOptions();
@@ -311,9 +311,9 @@ function populateFilterOptions() {
 
 function updateCompaniaOptions() {
   const subFilter = document.getElementById('fSub').value;
-  let pool = DATA.distribuidores;
-  if (subFilter) pool = pool.filter(d => d.subterritorio === subFilter);
-  const companias = [...new Set(pool.map(d => d.compania))].sort();
+  let pool = DATA.dist;
+  if (subFilter) pool = pool.filter(d => d.st === subFilter);
+  const companias = [...new Set(pool.map(d => d.co))].sort();
   const selComp = document.getElementById('fCompania');
   const prev = selComp.value;
   selComp.innerHTML = '<option value="">Todas</option>' + companias.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -327,27 +327,27 @@ function getFiltered() {
   const estado = document.getElementById('fEstado').value;
   const buscar = document.getElementById('fBuscar').value.trim().toLowerCase();
 
-  return DATA.distribuidores.filter(d => {
-    if (premier && d.premier !== premier) return false;
-    if (sub && d.subterritorio !== sub) return false;
-    if (comp && d.compania !== comp) return false;
-    if (buscar && !(d.nombre.toLowerCase().includes(buscar) || d.id.includes(buscar))) return false;
+  return DATA.dist.filter(d => {
+    if (premier && d.pr !== premier) return false;
+    if (sub && d.st !== sub) return false;
+    if (comp && d.co !== comp) return false;
+    if (buscar && !(d.nm.toLowerCase().includes(buscar) || d.id.includes(buscar))) return false;
 
-    if (estado === 'baja') return d.baja;
-    if (d.baja) return false;
-    if (estado === 'con_actividad') return d.act > 0;
-    if (estado === 'sin_actividad') return d.act === 0;
-    if (estado === 'nuevo') return d.nuevo;
+    if (estado === 'baja') return d.bj;
+    if (d.bj) return false;
+    if (estado === 'con_actividad') return d.a > 0;
+    if (estado === 'sin_actividad') return d.a === 0;
+    if (estado === 'nuevo') return d.nv;
     return true;
   });
 }
 
 function renderKPIs(filtered) {
-  const totalAct = filtered.reduce((a, d) => a + (d.baja ? 0 : d.act), 0);
-  const totalAnt = filtered.reduce((a, d) => a + d.ant, 0);
+  const totalAct = filtered.reduce((a, d) => a + (d.bj ? 0 : d.a), 0);
+  const totalAnt = filtered.reduce((a, d) => a + d.b, 0);
   const varPct = totalAnt !== 0 ? ((totalAct - totalAnt) / totalAnt * 100) : 0;
-  const vigentes = filtered.filter(d => !d.baja).length;
-  const conActividad = filtered.filter(d => !d.baja && d.act > 0).length;
+  const vigentes = filtered.filter(d => !d.bj).length;
+  const conActividad = filtered.filter(d => !d.bj && d.a > 0).length;
 
   const cards = [
     {label: 'Compras periodo actual', value: fmtUSD(totalAct), sub: DATA.periodo},
@@ -369,10 +369,10 @@ let chartPremierInstance = null;
 function renderCharts(filtered) {
   const bySub = {};
   filtered.forEach(d => {
-    if (d.baja) return;
-    if (!bySub[d.subterritorio]) bySub[d.subterritorio] = {act: 0, ant: 0};
-    bySub[d.subterritorio].act += d.act;
-    bySub[d.subterritorio].ant += d.ant;
+    if (d.bj) return;
+    if (!bySub[d.st]) bySub[d.st] = {act: 0, ant: 0};
+    bySub[d.st].act += d.a;
+    bySub[d.st].ant += d.b;
   });
   const subEntries = Object.entries(bySub).sort((a, b) => b[1].act - a[1].act);
 
@@ -398,7 +398,7 @@ function renderCharts(filtered) {
   });
 
   const premierAgg = {CHASEP: 0, MEJAB: 0};
-  filtered.forEach(d => { if (!d.baja) premierAgg[d.premier] = (premierAgg[d.premier] || 0) + d.act; });
+  filtered.forEach(d => { if (!d.bj) premierAgg[d.pr] = (premierAgg[d.pr] || 0) + d.a; });
 
   const ctx2 = document.getElementById('chartPremier').getContext('2d');
   if (chartPremierInstance) chartPremierInstance.destroy();
@@ -418,7 +418,7 @@ function renderCharts(filtered) {
 function renderTable(filtered) {
   const key = sortState.key;
   const dir = sortState.dir === 'asc' ? 1 : -1;
-  const withVar = filtered.map(d => ({...d, var_pct: d.ant !== 0 ? (d.act - d.ant) / d.ant * 100 : (d.act > 0 ? 999 : 0)}));
+  const withVar = filtered.map(d => ({...d, var_pct: d.b !== 0 ? (d.a - d.b) / d.b * 100 : (d.a > 0 ? 999 : 0)}));
   withVar.sort((a, b) => {
     let va = a[key], vb = b[key];
     if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
@@ -432,20 +432,20 @@ function renderTable(filtered) {
   document.getElementById('tblBody').innerHTML = withVar.map(d => {
     let pctClass = 'pct-pos';
     let pctLabel = fmtPct(d.var_pct);
-    if (d.nuevo) { pctClass = 'pct-new'; pctLabel = 'NUEVO'; }
+    if (d.nv) { pctClass = 'pct-new'; pctLabel = 'NUEVO'; }
     else if (d.var_pct < 0) pctClass = 'pct-neg';
     const tags = [
-      d.lider ? '<span class="tag lider">LÍDER</span>' : '',
-      d.nuevo ? '<span class="tag nuevo">NUEVO</span>' : '',
-      d.baja ? '<span class="tag baja">BAJA</span>' : '',
+      d.ld ? '<span class="tag lider">LÍDER</span>' : '',
+      d.nv ? '<span class="tag nuevo">NUEVO</span>' : '',
+      d.bj ? '<span class="tag baja">BAJA</span>' : '',
     ].join('');
     return `<tr>
       <td>${d.id}</td>
-      <td>${d.nombre}${tags}</td>
-      <td>${d.subterritorio}</td>
-      <td>${d.compania}</td>
-      <td class="num">${fmtUSD(d.act)}</td>
-      <td class="num">${fmtUSD(d.ant)}</td>
+      <td>${d.nm}${tags}</td>
+      <td>${d.st}</td>
+      <td>${d.co}</td>
+      <td class="num">${fmtUSD(d.a)}</td>
+      <td class="num">${fmtUSD(d.b)}</td>
       <td class="num ${pctClass}">${pctLabel}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="7" class="empty">Sin resultados para estos filtros.</td></tr>';
@@ -465,7 +465,7 @@ document.querySelectorAll('#tblDist thead th').forEach(th => {
     if (sortState.key === key) {
       sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
     } else {
-      sortState = { key, dir: key === 'nombre' || key === 'subterritorio' || key === 'compania' ? 'asc' : 'desc' };
+      sortState = { key, dir: key === 'nm' || key === 'st' || key === 'co' ? 'asc' : 'desc' };
     }
     document.querySelectorAll('#tblDist thead th').forEach(t => t.classList.remove('sorted-asc', 'sorted-desc'));
     th.classList.add(sortState.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
