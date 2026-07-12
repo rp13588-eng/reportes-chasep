@@ -1,0 +1,11 @@
+{
+  "periodos": [
+    {
+      "id": "2026-S1",
+      "label": "Ene - Jun 2026 (vs Ene-Jun 2025)",
+      "archivo": "data/compras/2026-S1.json",
+      "generado": "2026-07-12",
+      "tipo": "compras"
+    }
+  ]
+}
