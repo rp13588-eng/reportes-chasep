@@ -70,6 +70,8 @@ textarea.inp{min-height:96px;resize:vertical;line-height:1.45}
 .chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:14px;background:rgba(2,12,21,.6);user-select:none}
 .chip img{width:20px;height:14px;border-radius:2px;object-fit:cover}
 .chip.on{border-color:var(--gold);background:rgba(224,172,112,.14);color:var(--champ)}
+.chips.err{outline:1px solid var(--bad);outline-offset:6px;border-radius:12px}
+.chip.dis{opacity:.35;pointer-events:none}
 .btn{display:block;width:100%;border:none;border-radius:999px;padding:16px;font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-top:18px;background:var(--goldgrad);color:#1b1206;box-shadow:0 8px 24px rgba(224,172,112,.18)}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--silver);box-shadow:none;margin-top:10px}
@@ -140,13 +142,15 @@ footer img{width:150px;border-radius:12px}
       <p class="h">Con esto te presentaremos en tu conexión y haremos tu invitación.</p>
       <label class="f"><span>Nombre completo <em>(como quieres que aparezca)</em></span><input class="inp req" id="nombre"></label>
       <label class="f"><span>¿Cómo te gusta que te llamen?</span><input class="inp" id="apodo"></label>
-      <label class="f"><span>Puesto actual</span><input class="inp req" id="puesto" placeholder="Ej. Élite, Premier, Distribuidor"></label>
+      <label class="f"><span>Puesto actual</span><select class="inp req" id="puesto"><option value="">Selecciona…</option><option>Blue Royal</option><option>Premier</option><option>Élite</option><option>Master</option><option>Spin Out</option></select></label>
       <div class="row2">
         <label class="f"><span>Años en el negocio</span><input class="inp req" id="anios" inputmode="numeric" maxlength="2"></label>
         <label class="f"><span>Año de inicio</span><input class="inp" id="inicio" inputmode="numeric" maxlength="4"></label>
       </div>
-      <label class="f"><span>País de residencia</span><select class="inp req" id="pais"></select></label>
-      <label class="f"><span>Países donde tienes participación <em>(toca todos los que apliquen)</em></span></label>
+      <label class="f"><span>País de residencia <em>(toca tu bandera)</em></span></label>
+      <input type="hidden" class="req" id="pais" data-target="paisChips">
+      <div class="chips" id="paisChips"></div>
+      <label class="f"><span>¿Tienes participación en otros países? <em>(opcional)</em></span></label>
       <div class="chips" id="paises"></div>
       <label class="f"><span>Tus 3 logros o reconocimientos más importantes</span>
         <input class="inp req" id="logro1" placeholder="1." style="margin-bottom:8px">
@@ -285,23 +289,32 @@ $('b1').onclick=async()=>{
 };
 
 /* ---------- Paso 2 ---------- */
-$('pais').innerHTML='<option value="">Selecciona…</option>'+COUNTRIES.map(([k,n])=>`<option value="${k}">${n}</option>`).join('')+'<option value="otro">Otro</option>';
-$('paises').innerHTML=COUNTRIES.slice(0,6).map(([k,n])=>`<span class="chip" data-k="${k}" data-n="${n}"><img alt="" src="https://flagcdn.com/w40/${k}.png">${n}</span>`).join('');
+const chipHtml=([k,n])=>`<span class="chip" data-k="${k}" data-n="${n}">${k==='otro'?'🌎':`<img alt="" src="https://flagcdn.com/w40/${k}.png">`}${n}</span>`;
+$('paisChips').innerHTML=COUNTRIES.concat([['otro','Otro']]).map(chipHtml).join('');
+$('paises').innerHTML=COUNTRIES.map(chipHtml).join('');
+function syncChips(){
+  const r=$('pais').value;
+  document.querySelectorAll('#paisChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.k===r));
+  document.querySelectorAll('#paises .chip').forEach(c=>{const same=c.dataset.k===r;c.classList.toggle('dis',same);if(same)c.classList.remove('on')});
+}
+$('paisChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;$('pais').value=c.dataset.k;$('paisChips').classList.remove('err');syncChips();saveDraft()});
 $('paises').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;c.classList.toggle('on');saveDraft()});
 const FIELDS=['nombre','apodo','puesto','anios','inicio','pais','logro1','logro2','logro3','tema','herramienta','antes','casi','yo','habito','cambio'];
 function fill(){
   const d=st.draft||{};FIELDS.forEach(k=>{if(d[k]!=null)$(k).value=d[k]});
   document.querySelectorAll('#paises .chip').forEach(c=>c.classList.toggle('on',(d.paises||[]).includes(c.dataset.n)));
+  syncChips();
 }
 function saveDraft(){
   const d={};FIELDS.forEach(k=>d[k]=$(k).value);d.paises=[...document.querySelectorAll('#paises .chip.on')].map(c=>c.dataset.n);
   st.draft=d;keep();
 }
 document.querySelector('#s2').addEventListener('input',e=>{e.target.classList.remove('err');saveDraft()});
+document.querySelector('#s2').addEventListener('change',e=>{e.target.classList.remove('err');saveDraft()});
 $('b2').onclick=()=>{
   saveDraft();const bad=[...document.querySelectorAll('#s2 .req')].filter(el=>!el.value.trim());
-  bad.forEach(el=>el.classList.add('err'));
-  if(bad.length){msg('m2',`Faltan ${bad.length} ${bad.length===1?'respuesta':'respuestas'} marcadas en rojo.`);bad[0].scrollIntoView({behavior:'smooth',block:'center'});return}
+  const vis=bad.map(el=>el.dataset.target?$(el.dataset.target):el);vis.forEach(el=>el.classList.add('err'));
+  if(bad.length){msg('m2',`Faltan ${bad.length} ${bad.length===1?'respuesta':'respuestas'} marcadas en rojo.`);vis[0].scrollIntoView({behavior:'smooth',block:'center'});return}
   msg('m2','');step(3);
 };
 
@@ -325,8 +338,9 @@ $('photo').onchange=e=>{
 $('back3').onclick=()=>step(2);
 $('b3').onclick=async()=>{
   const d=st.draft||{};
-  const profile=Object.assign({},d,{whatsapp:st.whatsapp||'',paisCode:/^[a-z]{2}$/.test(d.pais)?d.pais:'',
-    pais:(COUNTRIES.find(c=>c[0]===d.pais)||[0,d.pais==='otro'?'Otro':''])[1]});
+  const resName=(COUNTRIES.find(c=>c[0]===d.pais)||[0,d.pais==='otro'?'Otro':''])[1];
+  const profile=Object.assign({},d,{whatsapp:st.whatsapp||'',paisCode:/^[a-z]{2}$/.test(d.pais)?d.pais:'',pais:resName,
+    paises:[...new Set([resName].concat(d.paises||[]).filter(Boolean))]});
   busy(true,'Enviando tu perfil y tu foto…');msg('m3','');
   try{
     const r=await post({action:'submit',speakerId:st.speakerId,date:st.date,profile,photo});
