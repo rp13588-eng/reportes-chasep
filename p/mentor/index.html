@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>The Mentor's Room · Portal del Mentor</title>
+<meta property="og:title" content="The Mentor's Room · Portal del Mentor">
+<meta property="og:description" content="Elige tu fecha y comparte tu historia con nuestro equipo.">
+<meta property="og:image" content="https://rp13588-eng.github.io/reportes-chasep/p/mentors-room/img/hero-logo.jpg">
+<meta name="theme-color" content="#020C15">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#020C15;--navy:#05233C;--navy-2:#0A2A47;--panel:#071a2c;--line:#1d3a55;
+  --champ:#F4D5AD;--gold:#E0AC70;--bronze:#A7764A;--text:#F5F1EA;--silver:#C9CDD2;--muted:#8fa0b1;
+  --ok:#7fd3a6;--bad:#f0907f;
+  --goldgrad:linear-gradient(135deg,#F4D5AD 0%,#E0AC70 45%,#A7764A 100%);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--night);color:var(--text);font:16px/1.5 Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+.hero{position:relative;background:#000 url(../mentors-room/img/hero-logo.jpg) center top/cover no-repeat;aspect-ratio:1024/600;max-height:62vh;width:100%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,12,21,0) 78%,var(--night) 100%)}
+.wrap{max-width:560px;margin:0 auto;padding:6px 16px 60px;position:relative;z-index:1}
+.tag{text-align:center;letter-spacing:.28em;text-transform:uppercase;font-size:11px;color:var(--silver);font-weight:300;margin:0 0 6px}
+.rule{height:1px;width:120px;margin:14px auto;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+h1.t{font-family:"Playfair Display",serif;text-align:center;font-size:26px;margin:4px 0 0;letter-spacing:.04em;text-transform:uppercase;
+  background:var(--goldgrad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{text-align:center;color:var(--silver);font-weight:300;font-size:14px;margin:6px 0 0}
+.steps{display:flex;justify-content:center;gap:6px;margin:22px 0 18px}
+.step{display:flex;align-items:center;gap:6px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.step i{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:700;font-size:11px;letter-spacing:0}
+.step.on{color:var(--champ)}.step.on i{background:var(--goldgrad);color:#1b1206;border:none}
+.step.done i{border-color:var(--gold);color:var(--gold)}
+.step + .step::before{content:"";width:16px;height:1px;background:var(--line);margin-right:2px}
+.card{background:linear-gradient(180deg,rgba(10,42,71,.55),rgba(5,35,60,.35));border:1px solid var(--line);border-radius:18px;padding:20px 18px;margin-bottom:14px;backdrop-filter:blur(6px)}
+.card h2{font-family:"Playfair Display",serif;font-size:20px;margin:0 0 4px;color:var(--champ);font-weight:600}
+.card p.h{margin:0 0 14px;color:var(--silver);font-size:13.5px;font-weight:300}
+.fmt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.fmt div{border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
+.fmt b{display:block;font-family:"Playfair Display",serif;font-size:22px;color:var(--gold)}
+.fmt span{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--silver)}
+.info{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;color:var(--silver);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:400;margin-top:12px}
+.info b{color:var(--text);font-weight:700}
+label.f{display:block;margin:14px 0 0}
+label.f > span{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--silver);font-weight:500;margin-bottom:6px}
+label.f > span em{font-style:normal;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:300}
+.inp{width:100%;background:rgba(2,12,21,.75);border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;font-weight:400;transition:border-color .15s}
+.inp:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,172,112,.15)}
+textarea.inp{min-height:96px;resize:vertical;line-height:1.45}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inp.err{border-color:var(--bad)}
+.q{font-family:"Playfair Display",serif;font-size:17px;color:var(--text);margin:18px 0 8px;line-height:1.3}
+.month{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:16px 0 8px;font-weight:600}
+.dates{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.date{border:1px solid var(--line);background:rgba(2,12,21,.6);border-radius:14px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .15s}
+.date b{display:block;font-family:"Playfair Display",serif;font-size:26px;line-height:1.05}
+.date span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver)}
+.date:hover{border-color:var(--bronze)}
+.date.sel{background:var(--goldgrad);border-color:transparent;color:#1b1206}
+.date.sel span{color:#3a2a14}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:14px;background:rgba(2,12,21,.6);user-select:none}
+.chip img{width:20px;height:14px;border-radius:2px;object-fit:cover}
+.chip.on{border-color:var(--gold);background:rgba(224,172,112,.14);color:var(--champ)}
+.btn{display:block;width:100%;border:none;border-radius:999px;padding:16px;font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-top:18px;background:var(--goldgrad);color:#1b1206;box-shadow:0 8px 24px rgba(224,172,112,.18)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--silver);box-shadow:none;margin-top:10px}
+.note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px;font-weight:300}
+.msg{border-radius:12px;padding:12px 14px;font-size:14px;margin-top:12px}
+.msg.bad{background:rgba(240,144,127,.12);border:1px solid rgba(240,144,127,.4);color:#ffd5cc}
+.msg.ok{background:rgba(127,211,166,.1);border:1px solid rgba(127,211,166,.35);color:#d3f5e2}
+.photo{border:1.5px dashed var(--bronze);border-radius:16px;padding:18px;text-align:center;cursor:pointer;position:relative}
+.photo img{max-width:220px;width:60%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;display:block;margin:0 auto 10px;box-shadow:0 0 0 1px var(--gold)}
+.photo strong{display:block;color:var(--champ);font-weight:600}
+.tips{list-style:none;padding:0;margin:12px 0 0;font-size:13px;color:var(--silver);font-weight:300}
+.tips li{padding-left:18px;position:relative;margin:4px 0}
+.tips li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.sum{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;background:rgba(2,12,21,.5)}
+.sum .d{font-family:"Playfair Display",serif;font-size:30px;line-height:1;color:var(--gold);min-width:52px;text-align:center}
+.sum .d small{display:block;font-family:Montserrat;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--silver)}
+.sum div{font-size:14px}
+.done{text-align:center}
+.done .big{font-family:"Playfair Display",serif;font-size:52px;line-height:1;background:var(--goldgrad);-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0}
+.zoom{display:inline-block;margin-top:14px;padding:12px 22px;border-radius:999px;border:1px solid var(--gold);color:var(--champ);text-decoration:none;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.hide{display:none!important}
+.overlay{position:fixed;inset:0;background:rgba(2,12,21,.82);display:grid;place-items:center;z-index:9;text-align:center;padding:24px}
+.spin{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--gold);animation:s 1s linear infinite;margin:0 auto 14px}
+@keyframes s{to{transform:rotate(360deg)}}
+footer{text-align:center;margin-top:30px}
+footer small{display:block;letter-spacing:.3em;font-size:10px;color:var(--silver);font-weight:300;margin-bottom:10px}
+footer img{width:110px;mix-blend-mode:lighten}
+</style>
+</head>
+<body>
+<div class="hero" role="img" aria-label="The Mentor's Room"></div>
+<main class="wrap">
+  <p class="tag">Portal del Mentor</p>
+  <div class="rule"></div>
+  <p class="sub">Gracias por compartir tu experiencia con nuestro equipo.<br>Te tomará unos 5 minutos.</p>
+
+  <div class="steps">
+    <div class="step on" data-s="1"><i>1</i>Fecha</div>
+    <div class="step" data-s="2"><i>2</i>Perfil</div>
+    <div class="step" data-s="3"><i>3</i>Foto</div>
+  </div>
+
+  <!-- PASO 1 -->
+  <section id="s1">
+    <div class="card">
+      <h2>Así es tu conexión</h2>
+      <p class="h">Martes a las 10:00 am (hora CDMX) por Zoom. Sesión de 60 minutos que se graba y se comparte con el equipo.</p>
+      <div class="fmt"><div><b>20</b><span>Tu tema</span></div><div><b>20</b><span>Herramienta práctica</span></div><div><b>20</b><span>Preguntas</span></div></div>
+      <p class="note" id="tzNote"></p>
+    </div>
+    <div class="card">
+      <h2>Elige tu fecha</h2>
+      <p class="h">Solo ves los martes disponibles. La fecha queda apartada para ti en cuanto la confirmas.</p>
+      <label class="f"><span>Tu nombre</span><input class="inp" id="name" autocomplete="name" placeholder="Nombre y apellido"></label>
+      <label class="f"><span>Tu WhatsApp <em>(con lada de país)</em></span><input class="inp" id="whatsapp" type="tel" autocomplete="tel" placeholder="+52 55 1234 5678"></label>
+      <div id="dates"><div class="note">Cargando fechas disponibles…</div></div>
+      <div id="m1"></div>
+      <button class="btn" id="b1" disabled>Apartar mi fecha</button>
+    </div>
+  </section>
+
+  <!-- PASO 2 -->
+  <section id="s2" class="hide">
+    <div class="sum" id="sum2"></div>
+    <div class="card">
+      <h2>Para presentarte</h2>
+      <p class="h">Con esto te presentaremos en tu conexión y haremos tu invitación.</p>
+      <label class="f"><span>Nombre completo <em>(como quieres que aparezca)</em></span><input class="inp req" id="nombre"></label>
+      <label class="f"><span>¿Cómo te gusta que te llamen?</span><input class="inp" id="apodo"></label>
+      <label class="f"><span>Puesto actual</span><input class="inp req" id="puesto" placeholder="Ej. Élite, Premier, Distribuidor"></label>
+      <div class="row2">
+        <label class="f"><span>Años en el negocio</span><input class="inp req" id="anios" inputmode="numeric" maxlength="2"></label>
+        <label class="f"><span>Año de inicio</span><input class="inp" id="inicio" inputmode="numeric" maxlength="4"></label>
+      </div>
+      <label class="f"><span>País de residencia</span><select class="inp req" id="pais"></select></label>
+      <label class="f"><span>Países donde tienes participación <em>(toca todos los que apliquen)</em></span></label>
+      <div class="chips" id="paises"></div>
+      <label class="f"><span>Tus 3 logros o reconocimientos más importantes</span>
+        <input class="inp req" id="logro1" placeholder="1." style="margin-bottom:8px">
+        <input class="inp" id="logro2" placeholder="2." style="margin-bottom:8px">
+        <input class="inp" id="logro3" placeholder="3.">
+      </label>
+    </div>
+    <div class="card">
+      <h2>Tu sesión</h2>
+      <p class="h">El tema lo eliges tú. La herramienta es algo que el equipo pueda aplicar esa misma semana.</p>
+      <label class="f"><span>Tema que vas a compartir</span><input class="inp req" id="tema"></label>
+      <label class="f"><span>Herramienta práctica <em>(formato, guion, método)</em></span><textarea class="inp req" id="herramienta"></textarea></label>
+    </div>
+    <div class="card">
+      <h2>Tu historia</h2>
+      <p class="h">Para inspirar al equipo. Breve y con tus palabras.</p>
+      <div class="q">¿Qué hacías antes de este negocio y qué te hizo decir “sí”?</div><textarea class="inp req" id="antes"></textarea>
+      <div class="q">¿Cuál fue el momento en que casi lo dejas, y qué te hizo quedarte?</div><textarea class="inp req" id="casi"></textarea>
+      <div class="q">¿Qué le dirías a tu “yo” del primer año?</div><textarea class="inp req" id="yo"></textarea>
+      <div class="q">¿Qué hábito no negocias hasta el día de hoy?</div><textarea class="inp req" id="habito"></textarea>
+      <div class="q">¿Cómo cambió este negocio tu vida y la de tu familia?</div><textarea class="inp req" id="cambio"></textarea>
+      <div id="m2"></div>
+      <button class="btn" id="b2">Continuar a mi foto</button>
+      <p class="note">Tus respuestas se guardan en este teléfono mientras llenas.</p>
+    </div>
+  </section>
+
+  <!-- PASO 3 -->
+  <section id="s3" class="hide">
+    <div class="sum" id="sum3"></div>
+    <div class="card">
+      <h2>Tu foto</h2>
+      <p class="h">Será la protagonista de tu invitación.</p>
+      <div class="photo" id="photoBox">
+        <img id="photoPrev" class="hide" alt="Vista previa">
+        <strong id="photoTxt">Toca para elegir tu foto</strong>
+        <span class="note" id="photoSub">Desde tu galería o tómala en este momento</span>
+        <input type="file" id="photo" accept="image/*" class="hide">
+      </div>
+      <ul class="tips">
+        <li>Vertical, de frente y de la cintura hacia arriba</li>
+        <li>Buena luz y fondo liso</li>
+        <li>Sin filtros y en buena resolución</li>
+      </ul>
+      <div id="m3"></div>
+      <button class="btn" id="b3" disabled>Enviar mi perfil</button>
+      <button class="btn ghost" id="back3">Regresar a mi perfil</button>
+    </div>
+  </section>
+
+  <!-- LISTO -->
+  <section id="s4" class="hide">
+    <div class="card done">
+      <p class="tag">Tu conexión</p>
+      <div class="big" id="doneDate"></div>
+      <p class="sub" id="doneSub"></p>
+      <div class="rule"></div>
+      <p style="margin:0;font-weight:300;color:var(--silver)">¡Gracias! Recibimos tu perfil y tu foto.<br>En los próximos días te compartiremos tu invitación.</p>
+      <div class="info"><span>ID <b>780 780 2020</b></span><span>Código <b>0000</b></span></div>
+      <a class="zoom" target="_blank" rel="noopener" href="https://us06web.zoom.us/my/chasepenterprise?pwd=WFVQUEI3NVBJemRGZWJVYlg4MmUzZz09">Sala de Zoom</a>
+      <a class="zoom" id="gcal" target="_blank" rel="noopener" href="#">Agregar a mi calendario</a>
+    </div>
+  </section>
+
+  <footer><small>PRESENTADO POR</small><img src="../mentors-room/img/chasep.jpg" alt="CHASEP"></footer>
+</main>
+<div class="overlay hide" id="ov"><div><div class="spin"></div><div id="ovTxt">Enviando…</div></div></div>
+
+<script>
+(function(){
+const API='__API_URL__';
+const KEY='tmr-portal-v1';
+const COUNTRIES=[['mx','México'],['us','Estados Unidos'],['do','Rep. Dominicana'],['ar','Argentina'],['co','Colombia'],['ec','Ecuador'],['pe','Perú'],['gt','Guatemala'],['cr','Costa Rica'],['pa','Panamá'],['ve','Venezuela'],['cl','Chile'],['pr','Puerto Rico'],['es','España']];
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const $=id=>document.getElementById(id);
+const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const nice=s=>{const d=pd(s);return `martes ${d.getDate()} de ${MESES[d.getMonth()]}`};
+let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const keep=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+let selDate=null,photo=null;
+
+/* hora local */
+try{
+  const utc=new Date(Date.UTC(2026,10,3,16,0));
+  const local=utc.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';
+  if(!/Mexico_City|Monterrey|Merida|Bahia_Banderas/.test(tz)) $('tzNote').textContent=`En tu hora local: ${local} (${tz.replace(/_/g,' ')})`;
+}catch(e){}
+
+function step(n){
+  ['s1','s2','s3','s4'].forEach((s,i)=>$(s).classList.toggle('hide',i!==n-1));
+  document.querySelectorAll('.step').forEach(el=>{const k=+el.dataset.s;el.classList.toggle('on',k===n);el.classList.toggle('done',k<n)});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function msg(id,t,cls){$(id).innerHTML=t?`<div class="msg ${cls||'bad'}">${t}</div>`:''}
+function busy(on,t){$('ov').classList.toggle('hide',!on);if(t)$('ovTxt').textContent=t}
+async function post(o){
+  const r=await fetch(API,{method:'POST',body:JSON.stringify(o)});
+  return r.json();
+}
+function summary(){
+  const d=pd(st.date);
+  const h=`<div class="d">${d.getDate()}<small>${MESES[d.getMonth()].slice(0,3)}</small></div><div><b>${st.name}</b><br><span style="color:var(--silver);font-size:13px">Tu conexión: ${nice(st.date)} · 10:00 am CDMX</span></div>`;
+  $('sum2').innerHTML=h;$('sum3').innerHTML=h;
+}
+
+/* ---------- Paso 1 ---------- */
+async function loadDates(){
+  if(API.indexOf('http')!==0){$('dates').innerHTML='<div class="msg bad">El portal aún no está activo.</div>';return}
+  try{
+    const r=await (await fetch(API+'?action=open')).json();
+    const ds=(r.dates||[]);
+    if(!ds.length){$('dates').innerHTML='<div class="msg bad">Por ahora no hay fechas disponibles. Escríbele a quien te invitó.</div>';return}
+    let h='',cur='';
+    ds.forEach(s=>{const d=pd(s);const m=MESES[d.getMonth()]+' '+d.getFullYear();
+      if(m!==cur){if(cur)h+='</div>';cur=m;h+=`<div class="month">${m}</div><div class="dates">`}
+      h+=`<button class="date" data-d="${s}" type="button"><b>${d.getDate()}</b><span>${MESES[d.getMonth()].slice(0,3)}</span></button>`});
+    $('dates').innerHTML=h+'</div>';
+  }catch(e){$('dates').innerHTML='<div class="msg bad">No pudimos cargar las fechas. Revisa tu conexión y recarga la página.</div>'}
+}
+function check1(){$('b1').disabled=!($('name').value.trim().length>2&&selDate)}
+$('dates').addEventListener('click',e=>{const b=e.target.closest('.date');if(!b)return;
+  document.querySelectorAll('.date').forEach(x=>x.classList.toggle('sel',x===b));selDate=b.dataset.d;check1()});
+$('name').addEventListener('input',check1);
+$('b1').onclick=async()=>{
+  const name=$('name').value.trim();
+  if(!confirm(`¿Confirmas tu conexión el ${nice(selDate)} a las 10:00 am (CDMX)?`))return;
+  busy(true,'Apartando tu fecha…');msg('m1','');
+  try{
+    const r=await post({action:'reserve',name,date:selDate});
+    busy(false);
+    if(r.ok){st={name,whatsapp:$('whatsapp').value.trim(),date:r.date,speakerId:r.speakerId,draft:{nombre:name}};keep();summary();fill();step(2);}
+    else if(r.error==='taken'){msg('m1','Esa fecha se acaba de ocupar. Elige otra, por favor.');selDate=null;check1();loadDates()}
+    else msg('m1','No pudimos apartar la fecha. Intenta de nuevo en un momento.');
+  }catch(e){busy(false);msg('m1','No pudimos conectar. Revisa tu internet e intenta de nuevo.')}
+};
+
+/* ---------- Paso 2 ---------- */
+$('pais').innerHTML='<option value="">Selecciona…</option>'+COUNTRIES.map(([k,n])=>`<option value="${k}">${n}</option>`).join('')+'<option value="otro">Otro</option>';
+$('paises').innerHTML=COUNTRIES.slice(0,6).map(([k,n])=>`<span class="chip" data-k="${k}" data-n="${n}"><img alt="" src="https://flagcdn.com/w40/${k}.png">${n}</span>`).join('');
+$('paises').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;c.classList.toggle('on');saveDraft()});
+const FIELDS=['nombre','apodo','puesto','anios','inicio','pais','logro1','logro2','logro3','tema','herramienta','antes','casi','yo','habito','cambio'];
+function fill(){
+  const d=st.draft||{};FIELDS.forEach(k=>{if(d[k]!=null)$(k).value=d[k]});
+  document.querySelectorAll('#paises .chip').forEach(c=>c.classList.toggle('on',(d.paises||[]).includes(c.dataset.n)));
+}
+function saveDraft(){
+  const d={};FIELDS.forEach(k=>d[k]=$(k).value);d.paises=[...document.querySelectorAll('#paises .chip.on')].map(c=>c.dataset.n);
+  st.draft=d;keep();
+}
+document.querySelector('#s2').addEventListener('input',e=>{e.target.classList.remove('err');saveDraft()});
+$('b2').onclick=()=>{
+  saveDraft();const bad=[...document.querySelectorAll('#s2 .req')].filter(el=>!el.value.trim());
+  bad.forEach(el=>el.classList.add('err'));
+  if(bad.length){msg('m2',`Faltan ${bad.length} ${bad.length===1?'respuesta':'respuestas'} marcadas en rojo.`);bad[0].scrollIntoView({behavior:'smooth',block:'center'});return}
+  msg('m2','');step(3);
+};
+
+/* ---------- Paso 3 ---------- */
+$('photoBox').onclick=()=>$('photo').click();
+$('photo').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=new Image();const url=URL.createObjectURL(f);
+  img.onload=()=>{
+    const max=2000,s=Math.min(1,max/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    photo={data:c.toDataURL('image/jpeg',0.9),type:'image/jpeg'};
+    $('photoPrev').src=photo.data;$('photoPrev').classList.remove('hide');
+    $('photoTxt').textContent='¡Lista! Toca para cambiarla';$('photoSub').textContent=img.width<900?'Tu foto es pequeña; si tienes una de mayor calidad, mejor.':'';
+    $('b3').disabled=false;URL.revokeObjectURL(url);
+  };
+  img.onerror=()=>msg('m3','No pudimos abrir esa imagen. Prueba con otra.');
+  img.src=url;
+};
+$('back3').onclick=()=>step(2);
+$('b3').onclick=async()=>{
+  const d=st.draft||{};
+  const profile=Object.assign({},d,{whatsapp:st.whatsapp||'',paisCode:/^[a-z]{2}$/.test(d.pais)?d.pais:'',
+    pais:(COUNTRIES.find(c=>c[0]===d.pais)||[0,d.pais==='otro'?'Otro':''])[1]});
+  busy(true,'Enviando tu perfil y tu foto…');msg('m3','');
+  try{
+    const r=await post({action:'submit',speakerId:st.speakerId,date:st.date,profile,photo});
+    busy(false);
+    if(r.ok){st.sent=true;keep();done();}
+    else msg('m3','No pudimos enviar tu perfil. Intenta de nuevo.');
+  }catch(e){busy(false);msg('m3','No pudimos conectar. Revisa tu internet e intenta de nuevo.')}
+};
+function done(){
+  const d=pd(st.date);
+  $('doneDate').textContent=`${d.getDate()} ${MESES[d.getMonth()].slice(0,3)}`;
+  $('doneSub').textContent=`Martes · 10:00 am CDMX · Zoom`;
+  const ymd=st.date.replace(/-/g,'');
+  const det=encodeURIComponent("The Mentor's Room · CHASEP\nZoom: https://us06web.zoom.us/my/chasepenterprise?pwd=WFVQUEI3NVBJemRGZWJVYlg4MmUzZz09\nID 780 780 2020 · Código 0000");
+  $('gcal').href=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("The Mentor's Room · Mi conexión")}&dates=${ymd}T160000Z/${ymd}T170000Z&details=${det}`;
+  step(4);
+}
+
+/* ---------- arranque ---------- */
+if(st.sent&&st.date){done()}
+else if(st.speakerId&&st.date){summary();fill();step(2)}
+else{loadDates()}
+})();
+</script>
+</body>
+</html>
