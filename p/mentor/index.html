@@ -22,8 +22,12 @@
 html,body{margin:0}
 body{background:var(--night);color:var(--text);font:16px/1.5 Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
 button,input,select,textarea{font:inherit;color:inherit}
-.hero{position:relative;background:#000 url(../mentors-room/img/hero-logo.jpg) center top/cover no-repeat;aspect-ratio:1024/600;max-height:62vh;width:100%}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,12,21,0) 78%,var(--night) 100%)}
+.hero{position:relative;max-width:640px;margin:0 auto;background:#000}
+.hero img.h{display:block;width:100%;height:auto}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:12%;background:linear-gradient(180deg,rgba(2,12,21,0),var(--night));pointer-events:none}
+.topbar{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 16px;background:var(--night);border-bottom:1px solid rgba(224,172,112,.25)}
+.topbar small{letter-spacing:.3em;font-size:9.5px;color:var(--silver);font-weight:300}
+.topbar img{display:block;height:44px;width:auto;border-radius:8px}
 .wrap{max-width:560px;margin:0 auto;padding:6px 16px 60px;position:relative;z-index:1}
 .tag{text-align:center;letter-spacing:.28em;text-transform:uppercase;font-size:11px;color:var(--silver);font-weight:300;margin:0 0 6px}
 .rule{height:1px;width:120px;margin:14px auto;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
@@ -42,7 +46,7 @@ h1.t{font-family:"Playfair Display",serif;text-align:center;font-size:26px;margi
 .fmt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
 .fmt div{border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
 .fmt b{display:block;font-family:"Playfair Display",serif;font-size:22px;color:var(--gold)}
-.fmt span{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--silver)}
+.fmt span{font-size:10px;letter-spacing:.06em;line-height:1.35;display:block;text-transform:uppercase;color:var(--silver)}
 .info{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;color:var(--silver);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:400;margin-top:12px}
 .info b{color:var(--text);font-weight:700}
 label.f{display:block;margin:14px 0 0}
@@ -92,11 +96,12 @@ textarea.inp{min-height:96px;resize:vertical;line-height:1.45}
 @keyframes s{to{transform:rotate(360deg)}}
 footer{text-align:center;margin-top:30px}
 footer small{display:block;letter-spacing:.3em;font-size:10px;color:var(--silver);font-weight:300;margin-bottom:10px}
-footer img{width:110px;mix-blend-mode:lighten}
+footer img{width:150px;border-radius:12px}
 </style>
 </head>
 <body>
-<div class="hero" role="img" aria-label="The Mentor's Room"></div>
+<div class="topbar"><small>PRESENTADO POR</small><img src="../mentors-room/img/chasep-2x.jpg" alt="CHASEP"></div>
+<div class="hero"><img class="h" src="../mentors-room/img/hero-portal.jpg" alt="The Mentor's Room"></div>
 <main class="wrap">
   <p class="tag">Portal del Mentor</p>
   <div class="rule"></div>
@@ -113,7 +118,7 @@ footer img{width:110px;mix-blend-mode:lighten}
     <div class="card">
       <h2>Así es tu conexión</h2>
       <p class="h">Martes a las 10:00 am (hora CDMX) por Zoom. Sesión de 60 minutos que se graba y se comparte con el equipo.</p>
-      <div class="fmt"><div><b>20</b><span>Tu tema</span></div><div><b>20</b><span>Herramienta práctica</span></div><div><b>20</b><span>Preguntas</span></div></div>
+      <div class="fmt"><div><b>20</b><span>Tu tema</span></div><div><b>20</b><span>Herramienta práctica</span></div><div><b>20</b><span>Preguntas y respuestas</span></div></div>
       <p class="note" id="tzNote"></p>
     </div>
     <div class="card">
@@ -206,7 +211,7 @@ footer img{width:110px;mix-blend-mode:lighten}
     </div>
   </section>
 
-  <footer><small>PRESENTADO POR</small><img src="../mentors-room/img/chasep.jpg" alt="CHASEP"></footer>
+  <footer><small>PRESENTADO POR</small><img src="../mentors-room/img/chasep-2x.jpg" alt="CHASEP"></footer>
 </main>
 <div class="overlay hide" id="ov"><div><div class="spin"></div><div id="ovTxt">Enviando…</div></div></div>
 
