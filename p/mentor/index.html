@@ -127,7 +127,9 @@ footer img{width:150px;border-radius:12px}
       <h2>Elige tu fecha</h2>
       <p class="h">Solo ves los martes disponibles. La fecha queda apartada para ti en cuanto la confirmas.</p>
       <label class="f"><span>Tu nombre</span><input class="inp" id="name" autocomplete="name" placeholder="Nombre y apellido"></label>
-      <label class="f"><span>Tu WhatsApp <em>(con lada de país)</em></span><input class="inp" id="whatsapp" type="tel" autocomplete="tel" placeholder="+52 55 1234 5678"></label>
+      <label class="f"><span>Tu WhatsApp <em>(con lada de país)</em></span><input class="inp" id="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="+52 55 1234 5678"></label>
+      <label class="f"><span>Tu correo electrónico</span><input class="inp" id="email" type="email" autocomplete="email" inputmode="email" placeholder="nombre@correo.com"></label>
+      <p class="note" style="text-align:left;margin-top:8px">Te mandaremos por WhatsApp la confirmación y los recordatorios de tu conexión.</p>
       <div id="dates"><div class="note">Cargando fechas disponibles…</div></div>
       <div id="m1"></div>
       <button class="btn" id="b1" disabled>Apartar mi fecha</button>
@@ -271,18 +273,22 @@ async function loadDates(){
     $('dates').innerHTML=h+'</div>';
   }catch(e){$('dates').innerHTML='<div class="msg bad">No pudimos cargar las fechas. Revisa tu conexión y recarga la página.</div>'}
 }
-function check1(){$('b1').disabled=!($('name').value.trim().length>2&&selDate)}
+const waOk=v=>{const d=String(v).replace(/\D/g,'');return d.length>=10&&d.length<=15};
+const emOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v).trim());
+function check1(){$('b1').disabled=!($('name').value.trim().length>2&&selDate&&waOk($('whatsapp').value)&&emOk($('email').value))}
 $('dates').addEventListener('click',e=>{const b=e.target.closest('.date');if(!b)return;
   document.querySelectorAll('.date').forEach(x=>x.classList.toggle('sel',x===b));selDate=b.dataset.d;check1()});
-$('name').addEventListener('input',check1);
+$('name').addEventListener('input',check1);$('whatsapp').addEventListener('input',check1);$('email').addEventListener('input',check1);
+['whatsapp','email'].forEach(id=>$(id).addEventListener('blur',()=>{const v=$(id).value;if(v&&!(id==='email'?emOk(v):waOk(v)))$(id).classList.add('err');else $(id).classList.remove('err')}));
 $('b1').onclick=async()=>{
   const name=$('name').value.trim();
   if(!confirm(`¿Confirmas tu conexión el ${nice(selDate)} a las 10:00 am (CDMX)?`))return;
   busy(true,'Apartando tu fecha…');msg('m1','');
   try{
-    const r=await post({action:'reserve',name,date:selDate});
+    let tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+    const r=await post({action:'reserve',name,date:selDate,whatsapp:$('whatsapp').value.trim(),email:$('email').value.trim(),tz});
     busy(false);
-    if(r.ok){st={name,whatsapp:$('whatsapp').value.trim(),date:r.date,speakerId:r.speakerId,draft:{nombre:name}};keep();summary();fill();step(2);}
+    if(r.ok){st={name,whatsapp:$('whatsapp').value.trim(),email:$('email').value.trim(),date:r.date,speakerId:r.speakerId,draft:{nombre:name}};keep();summary();fill();step(2);}
     else if(r.error==='taken'){msg('m1','Esa fecha se acaba de ocupar. Elige otra, por favor.');selDate=null;check1();loadDates()}
     else msg('m1','No pudimos apartar la fecha. Intenta de nuevo en un momento.');
   }catch(e){busy(false);msg('m1','No pudimos conectar. Revisa tu internet e intenta de nuevo.')}

@@ -220,7 +220,8 @@ footer{margin-top:40px;color:var(--muted);font-size:12px;border-top:1px solid va
     <label class="f">País<select class="inp" id="dCountry"></select></label>
     <label class="f">Años en el negocio<input class="inp" id="dYears" inputmode="numeric"></label>
     <label class="f" style="grid-column:1/-1">Puesto<input class="inp" id="dRole"></label>
-    <label class="f" style="grid-column:1/-1">WhatsApp<input class="inp" id="dWa" type="tel"></label>
+    <label class="f">WhatsApp<input class="inp" id="dWa" type="tel" placeholder="+52 55 1234 5678"></label>
+    <label class="f">Correo<input class="inp" id="dEm" type="email"></label>
   </div>
   <div class="tools" style="justify-content:space-between;margin-top:16px">
     <button class="btn danger" id="dDel">Eliminar</button>
@@ -351,6 +352,9 @@ function kpis(){
 }
 
 /* ---------- CALENDARIO ---------- */
+const NOTIF=[['confirm','Confirmación'],['jueves','Jueves'],['lunes','Lunes'],['zoom','Zoom 9:40']];
+function notifBadges(s){if(!s.speaker||s.type!=='conexion')return '';const n=s.notif||{};
+  return NOTIF.map(([k,t])=>n[k]?`<span class="badge" title="${esc(n[k].at||'')} ${esc(n[k].detail||'')}" style="${n[k].ok===false?'color:var(--bad);border-color:var(--bad)':'color:var(--ok);border-color:rgba(127,211,166,.5)'}">${n[k].ok===false?'✕':'✓'} ${t}</span>`:'').join('');}
 function alerts(){
   const out=[];const con=sorted().filter(s=>s.type==='conexion');
   const by={};con.forEach(s=>{if(s.speaker)(by[s.speaker]=by[s.speaker]||[]).push(s)});
@@ -359,6 +363,8 @@ function alerts(){
   Object.values(bt).forEach(l=>{if(l.length>1)out.push(['bad',`Tema repetido: <b>“${esc(l[0].topic)}”</b> el ${l.map(s=>dm(s.date)).join(' y ')}.`])});
   con.forEach(s=>{const d=days(s.date);if(d>=0&&d<=10){const m=[];if(!s.speaker)m.push('ponente');if(!s.topic)m.push('tema');if(!s.presenter)m.push('presentador');
     if(m.length)out.push(['bad',`En ${d} días (${dm(s.date)}) falta: <b>${m.join(', ')}</b>.`])}});
+  con.forEach(s=>{const p=spk(s.speaker);if(p&&days(s.date)>=0){const m=[];if(!p.whatsapp)m.push('WhatsApp');if(!p.email)m.push('correo');
+    if(m.length)out.push(['warn',`<b>${esc(p.name)}</b> (${dm(s.date)}) no tiene ${m.join(' ni ')}: sin eso no le llegan los recordatorios. Captúralo en <b>Seguimiento → Editar</b>.`])}});
   $('alerts').innerHTML=out.length?out.map(([c,t])=>`<div class="alert ${c}">${t}</div>`).join(''):`<div class="alert ok">Sin empalmes ni faltantes en los próximos 10 días.</div>`;
 }
 function chips(){
@@ -384,7 +390,7 @@ function renderCal(){
       <div class="date"><div class="m">${MESES[d.getMonth()]}</div><div class="d">${d.getDate()}</div><div class="w">${DIAS[d.getDay()]}</div><div class="n">${dd<0?'Pasó':dd===0?'Hoy':'En '+dd+' días'}</div></div>
       <div>
         <div class="row1"><span class="badge ${s.type==='lanz'?'lanz':''}">${s.type==='lanz'?'Lanzamiento':s.type==='pausa'?'Sin conexión':'Conexión'}</span>
-          ${sp?stageChip(sp):''}${s.reservedAt?'<span class="badge">Elegida en el portal</span>':''}
+          ${sp?stageChip(sp):''}${s.reservedAt?'<span class="badge">Elegida en el portal</span>':''}${notifBadges(s)}
           ${sp?`<span class="spk-line">${flag(sp.country)}${esc(sp.name)}${sp.role?` <small>· ${esc(sp.role)}</small>`:''}</span>`:''}</div>
         ${s.type==='pausa'?'':`<div class="grid">
           ${s.type==='conexion'?`<label class="f">Ponente<select class="inp" data-k="speaker">${spkOptions(s.speaker)}</select></label>`:''}
@@ -437,7 +443,7 @@ function renderTrk(){
   $('trkList').innerHTML=list.map(s=>{const sg=s.stage||0,pct=Math.round(sg/8*100),ds=asg[s.id]||[];const last=(s.log||[]).slice(-1)[0];
     return `<div class="trk ${s.declined?'dec':''}" data-sid="${s.id}">
       <div><h4>${flag(s.country)}${esc(s.name)} <span class="pct">${s.declined?'':pct+'%'}</span></h4>
-        <div class="meta">${esc(s.role||'Puesto por confirmar')}${s.years?` · ${esc(s.years)} años`:''}${s.whatsapp?` · ${esc(s.whatsapp)}`:''}</div>
+        <div class="meta">${esc(s.role||'Puesto por confirmar')}${s.years?` · ${esc(s.years)} años`:''}${s.whatsapp?` · 📱 ${esc(s.whatsapp)}`:''}${s.email?` · ✉️ ${esc(s.email)}`:''}</div>
         <div class="meta">${ds.length?'📅 <b>'+ds.map(dm).join(', ')+'</b>':'Sin fecha'}${s.declined?' · <b style="color:var(--bad)">Declinó</b>':''}${last?' · '+esc(last.t):''}</div></div>
       <div class="stepper">${STAGES.map((t,i)=>`<button class="dot ${i<=sg&&!s.declined?'on':''} ${i===sg&&!s.declined?'cur':''}" data-stage="${i}" title="${t}"><i></i>${SHORT[i]}</button>`).join('')}</div>
       <div class="trk-foot">
@@ -486,11 +492,11 @@ $('pfClose').onclick=()=>$('pfDlg').close();
 const dlg=$('spkDlg');let editing=null;
 $('dCountry').innerHTML='<option value="">—</option>'+Object.entries(COUNTRIES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
 function openDlg(s){editing=s||null;$('spkDlgT').textContent=s?'Editar ponente':'Nuevo ponente';
-  $('dName').value=s?s.name:'';$('dCountry').value=s?(s.country||''):'mx';$('dYears').value=s?(s.years||''):'';$('dRole').value=s?(s.role||''):'';$('dWa').value=s?(s.whatsapp||''):'';
+  $('dName').value=s?s.name:'';$('dCountry').value=s?(s.country||''):'mx';$('dYears').value=s?(s.years||''):'';$('dRole').value=s?(s.role||''):'';$('dWa').value=s?(s.whatsapp||''):'';$('dEm').value=s?(s.email||''):'';
   $('dDel').classList.toggle('hide',!s);dlg.showModal()}
 $('addSpk').onclick=()=>openDlg();$('dCancel').onclick=()=>dlg.close();
 $('dSave').onclick=()=>{const name=$('dName').value.trim();if(!name)return $('dName').focus();
-  const o={name,country:$('dCountry').value,years:$('dYears').value.trim(),role:$('dRole').value.trim(),whatsapp:$('dWa').value.trim()};const id=editing&&editing.id;
+  const o={name,country:$('dCountry').value,years:$('dYears').value.trim(),role:$('dRole').value.trim(),whatsapp:$('dWa').value.trim(),email:$('dEm').value.trim()};const id=editing&&editing.id;
   mutate(S=>{if(id)Object.assign(S.speakers.find(x=>x.id===id),o);else S.speakers.push({id:uid('s'),...o,stage:0,declined:false,lastContact:'',notes:'',log:[]})});dlg.close()};
 $('dDel').onclick=()=>{if(!editing||!confirm(`¿Eliminar a ${editing.name}?`))return;const id=editing.id;
   mutate(S=>{S.sessions.forEach(x=>{if(x.speaker===id)x.speaker=''});S.speakers=S.speakers.filter(x=>x.id!==id)});dlg.close()};
