@@ -99,5 +99,58 @@ def check():
     bad = [(t['id'], round(t['y'][1] - sum(t['b'][:cur + 1]))) for t in lst if abs(t['y'][1] - sum(t['b'][:cur + 1])) > 2]
     print('YTD 2026 oficial vs suma mensual (dif > $2):', bad or 'ninguna')
 
+MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+PAGE_URL = 'https://rp13588-eng.github.io/reportes-chasep/p/crecimiento-hycite/'
+
+def pages():
+    """Escribe la versión GitHub Pages en ../../p/crecimiento-hycite/index.html"""
+    render()
+    h = open(P('crecimiento-hycite.html')).read()
+    doc = ('<!doctype html>\n<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">\n'
+           '<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head><body>\n' + h + '\n</body></html>\n')
+    out = os.path.join(HERE, '..', '..', 'p', 'crecimiento-hycite', 'index.html'); os.makedirs(os.path.dirname(out), exist_ok=True)
+    open(out, 'w').write(doc); print('pages OK', os.path.normpath(out))
+
+def _calc(d, L, s, e):
+    cur = d['cur']; opn = d['cutDay'] != 1; dk = 'd10' if d['cutDay'] <= 10 else 'd20'
+    sm = lambda k, a, b: sum(t[k][i] for t in L for i in range(a, b + 1))
+    a, b = sm('a', s, e), sm('b', s, e); res = dict(a=a, b=b, open=opn and e >= cur, proj=None)
+    if res['open']:
+        ks = [k for k in range(cur - 1, -1, -1) if d['nat'][dk][k] is not None][:3]
+        dd = sum((t[dk][k] or 0) for t in L for k in ks); ff = sum(t['b'][k] for t in L for k in ks)
+        c26, c25 = sm('b', cur, cur), sm('a', cur, cur); res.update(cur26=c26, cur25=c25, ca=a - c25, cb=b - c26)
+        if dd > 0 and ff > 0:
+            res['proj'] = c26 / (dd / ff); res['g'] = ((b - c26 + res['proj']) / a - 1) * 100 if a else None
+        else:
+            res['g'] = ((b - c26) / (a - c25) - 1) * 100 if a - c25 else None
+    else:
+        res['g'] = (b / a - 1) * 100 if a else None
+    return res
+
+def summary():
+    """Imprime el mensaje de WhatsApp para el grupo."""
+    d = load(); cur = d['cur']; opn = d['cutDay'] != 1; Y = d['year']
+    fp = lambda v: '—' if v is None else ('+' if v > 0 else '−' if v < 0 else '') + f"{abs(v):.1f}%"
+    def fm(v):
+        a = abs(v); return ('−' if v < 0 else '') + (f"${a/1e6:.2f} M" if a >= 1e6 else f"${a/1e3:.1f} K")
+    by = {t['id']: t for t in d['T']}
+    groups = [('CHASEP 13588', ['13588']), ('MEJAB 29365', ['29365']), ('CHASEP + MEJAB', ['13588', '29365']), ('México', [t['id'] for t in d['T']])]
+    dd, mm, yy = d['cutDate'][8:10].lstrip('0'), MESES[int(d['cutDate'][5:7]) - 1], d['cutDate'][:4]
+    lines = [f"📊 *Crecimiento HyCite México* · corte {dd} {mm[:3]} {yy}", '']
+    last = cur - 1 if opn else cur
+    lines.append(f"*Año a la fecha (ene–{MESES[cur][:3]}{', con ' + MESES[cur] + ' proyectado' if opn else ''})*")
+    for name, ids in groups:
+        L = [by[i] for i in ids if i in by]
+        if L: lines.append(f"• {name}: {fp(_calc(d, L, 0, cur)['g'])}")
+    if opn and last >= 0:
+        lines += ['', f"*Meses cerrados (ene–{MESES[last][:3]})*",
+                  ' · '.join(f"{n.split(' ')[0] if n!='CHASEP + MEJAB' else 'Juntos'} {fp(_calc(d, [by[i] for i in ids if i in by], 0, last)['g'])}" for n, ids in groups)]
+        r = _calc(d, [by[i] for i in ('13588', '29365') if i in by], cur, cur)
+        if r.get('proj'):
+            lines += ['', f"*{MESES[cur].capitalize()} al día {d['cutDay']} (CHASEP + MEJAB)*",
+                      f"{fm(r['cur26'])}, {round(r['cur26']/r['cur25']*100) if r['cur25'] else 0}% de {MESES[cur]} {Y-1} → cierre proyectado {fm(r['proj'])} ({fp((r['proj']/r['cur25']-1)*100 if r['cur25'] else None)})"]
+    lines += ['', 'Dashboard con filtros por año, mes y territorio:', PAGE_URL]
+    print('\n'.join(lines))
+
 if __name__ == '__main__':
-    {'apply': lambda: apply(sys.argv[2]), 'render': render, 'check': check}[sys.argv[1]]()
+    {'apply': lambda: apply(sys.argv[2]), 'render': render, 'check': check, 'pages': pages, 'summary': summary}[sys.argv[1]]()
