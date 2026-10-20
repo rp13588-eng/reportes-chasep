@@ -1,0 +1,407 @@
+<title>Crecimiento HyCite México</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: navy cockpit band (marca, año, KPIs) → filtros → desglose → gráficas → historia anual → tabla-selector */
+:root{
+  --bg:#EEF1F7; --surface:#FFFFFF; --ink:#131235; --ink2:#454B67; --muted:#5F6480; --line:#DDE2EE;
+  --brand:#1D5FD0; --brand2:#0B3F99; --y25:#B07A2A; --y26:#1D5FD0; --band:#121033; --band2:#1A2A6C; --bandInk:#F2F4FA;
+  --good:#0F7B4F; --goodBg:#E1F3EA; --bad:#B42318; --badBg:#FCEAE8; --warn:#8F5D00; --warnBg:#FFF2D6;
+  --sel:#E7EFFD; --chip:#F4F6FB;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C0F1D; --surface:#151A2C; --ink:#EEF0F8; --ink2:#B4BAD2; --muted:#8C92AD; --line:#283049;
+  --brand:#5B95F2; --brand2:#3B6FD0; --y25:#C28A38; --y26:#4A8BEF; --band:#080A16; --band2:#15224F; --bandInk:#EEF0F8;
+  --good:#4CC38A; --goodBg:#11301F; --bad:#FF7B6E; --badBg:#3A1714; --warn:#E8B24C; --warnBg:#33270C;
+  --sel:#1B2949; --chip:#1B2136; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C0F1D; --surface:#151A2C; --ink:#EEF0F8; --ink2:#B4BAD2; --muted:#8C92AD; --line:#283049;
+  --brand:#5B95F2; --brand2:#3B6FD0; --y25:#C28A38; --y26:#4A8BEF; --band:#080A16; --band2:#15224F; --bandInk:#EEF0F8;
+  --good:#4CC38A; --goodBg:#11301F; --bad:#FF7B6E; --badBg:#3A1714; --warn:#E8B24C; --warnBg:#33270C;
+  --sel:#1B2949; --chip:#1B2136; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--display);font-stretch:112%;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:700;color:var(--muted)}
+.band{background:linear-gradient(160deg,var(--band) 0%,var(--band) 55%,var(--band2) 100%);color:var(--bandInk)}
+.band .wrap{padding-block:20px 22px;display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;gap:14px;align-items:center}
+.brand img{width:52px;height:auto;flex:none;background:#fff;border-radius:12px;padding:5px}
+.brand h1{font-family:var(--display);font-stretch:82%;font-weight:800;font-size:clamp(24px,5vw,36px);line-height:1;margin:0;letter-spacing:-.015em;text-wrap:balance}
+.brand p{margin:5px 0 0;font-size:13px;color:color-mix(in srgb,var(--bandInk) 72%,transparent)}
+.years{display:flex;gap:6px;flex-wrap:wrap}
+.years button{font:700 14px var(--display);font-stretch:95%;letter-spacing:.02em;color:var(--bandInk);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:8px 14px;cursor:pointer;font-variant-numeric:tabular-nums}
+.years button:hover{background:rgba(255,255,255,.14)}
+.years button.on{background:#fff;color:#121033;border-color:#fff}
+.years button small{display:block;font:600 10px var(--body);letter-spacing:.04em;opacity:.7;margin-top:1px}
+.kpis{display:grid;grid-template-columns:1.25fr repeat(3,minmax(0,1fr));gap:10px}
+.kpi{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .eyebrow{color:color-mix(in srgb,var(--bandInk) 66%,transparent)}
+.kpi .v{font-family:var(--display);font-stretch:88%;font-weight:800;font-size:clamp(24px,4.2vw,34px);line-height:1.04}
+.kpi .s{font-size:13px;color:color-mix(in srgb,var(--bandInk) 78%,transparent)}
+.kpi.hero{background:linear-gradient(135deg,#1D5FD0,#0B3F99);border-color:transparent;box-shadow:0 10px 30px rgba(11,63,153,.35)}
+.kpi.hero .v{font-size:clamp(34px,6vw,48px)}
+.pill{display:inline-flex;align-items:center;gap:4px;font:700 12.5px var(--body);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.up{color:var(--good);background:var(--goodBg)}.pill.dn{color:var(--bad);background:var(--badBg)}.pill.fl{color:var(--warn);background:var(--warnBg)}
+.band .pill,.mini .pill{background:rgba(255,255,255,.14)}
+.band .pill.up,.mini .pill.up{color:#86EBB6}.band .pill.dn,.mini .pill.dn{color:#FFB0A8}.band .pill.fl,.mini .pill.fl{color:#FFD889}
+.mini{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--band) 94%,transparent);color:var(--bandInk);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.08)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--band)}
+.mini .wrap{display:flex;gap:10px;align-items:center;padding-block:8px;font-size:13px;flex-wrap:wrap}
+.mini b{font-family:var(--display);font-size:15px}
+.mini .sep{opacity:.35}
+main{display:flex;flex-direction:column;gap:16px;padding-block:16px 40px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.panel h2{font-family:var(--display);font-stretch:92%;font-size:18px;font-weight:750;margin:2px 0 2px;letter-spacing:-.005em}
+.panel .sub{font-size:13px;color:var(--ink2);margin:0 0 12px}
+.filters{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px}
+.selbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:32px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:4px 6px 4px 8px;font-size:13px;font-weight:600;max-width:100%}
+.chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.chip button{border:0;background:transparent;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;padding:2px 5px;border-radius:999px}
+.chip button:hover{color:var(--ink);background:var(--line)}
+.badge{display:inline-block;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.03em;border-radius:6px;padding:1px 6px;color:#fff;background:var(--muted)}
+.badge.c{background:#1B3F8B}.badge.m{background:#0F7B6C}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.btn{font:600 13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:7px 11px;cursor:pointer}
+.btn:hover{border-color:var(--brand)}
+.btn.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--chip);gap:2px;flex-wrap:wrap}
+.seg button{font:600 13px var(--body);border:0;background:transparent;color:var(--ink2);border-radius:7px;padding:7px 12px;cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(19,18,53,.16)}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+select{font:600 14px var(--body);padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink)}
+label.l{font-size:13px;color:var(--ink2)}
+button:focus-visible,select:focus-visible,input:focus-visible,tr:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-bottom:6px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--body);fill:var(--muted);font-size:11px}
+.note{font-size:12.5px;color:var(--ink2)}
+.tablebox{overflow-x:auto;margin-inline:-18px;padding-inline:18px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+#mainT{min-width:680px}
+th{text-align:right;font-family:var(--display);font-stretch:108%;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th button{font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;background:none;border:0;cursor:pointer;padding:0}
+th.l,td.l{text-align:left}
+td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+td.l{white-space:normal;min-width:190px}
+#tb tr{cursor:pointer}
+.ckc{width:34px;min-width:0;text-align:left;padding-right:0}
+#tb tr:hover{background:color-mix(in srgb,var(--sel) 55%,transparent)}
+#tb tr.on{background:var(--sel)}
+.ck{width:18px;height:18px;border-radius:5px;border:2px solid var(--muted);display:inline-grid;place-items:center;vertical-align:middle}
+tr.on .ck{background:var(--brand);border-color:var(--brand)}
+tr.on .ck::after{content:"";width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.nm{font-weight:600;color:var(--ink)}.id{color:var(--muted);font-size:12px;margin-right:4px}
+.rank{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tools input{flex:1 1 220px;min-width:0;font:15px var(--body);padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--chip);color:var(--ink)}
+.bar{height:6px;border-radius:3px;background:var(--line);position:relative;min-width:60px}
+.bar b{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--brand)}
+.dv{position:relative;height:8px;width:90px;display:inline-block;vertical-align:middle;margin-left:8px}
+.dv::before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted);opacity:.5}
+.dv b{position:absolute;top:0;bottom:0;border-radius:3px}
+.split tr.tot td{font-weight:700;border-bottom:0;border-top:2px solid var(--line)}
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--surface);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.35;max-width:240px;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+#tip b{font-family:var(--display)}
+details{font-size:13.5px;color:var(--ink2)}
+details summary{cursor:pointer;font-weight:700;color:var(--ink)}
+details li{margin:4px 0}
+.ctx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ctx div{border-left:3px solid var(--brand);padding-left:10px}
+.ctx .v{font-family:var(--display);font-weight:800;font-size:22px}
+@media (max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi.hero{grid-column:1/-1}.kpis>.kpi:nth-child(4):last-child{grid-column:1/-1}.years{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}.years button{flex:none}.grid2,.filters{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:620px){#mainT{min-width:0}#mainT th:nth-child(3),#mainT td:nth-child(3),#mainT th:nth-child(5),#mainT td:nth-child(5),#mainT th:nth-child(6),#mainT td:nth-child(6),#mainT th:nth-child(7),#mainT td:nth-child(7),.split th:nth-child(5),.split td:nth-child(5){display:none}td.l{min-width:0}.tablebox{margin-inline:0;padding-inline:0}.dv{display:none}}
+@media (max-width:460px){.ctx{grid-template-columns:minmax(0,1fr)}.kpi .v{font-size:24px}.kpi.hero .v{font-size:36px}}
+@media (prefers-reduced-motion:no-preference){.bar b{transition:width .3s}}
+</style>
+
+<header class="band"><div class="wrap">
+  <div class="brand"><img src="__LOGO__" alt="CHASEP"><div><h1>Crecimiento HyCite México</h1><p id="cutline"></p></div></div>
+  <div class="years" id="years" role="group" aria-label="Año"></div>
+  <section class="kpis" id="kpis" aria-live="polite"></section>
+</div></header>
+<div class="mini"><div class="wrap" id="miniIn"></div></div>
+
+<main class="wrap">
+  <section class="panel filters" aria-label="Filtros">
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Territorios · <span id="selcount"></span></div>
+      <div class="selbar" id="chips"></div>
+      <div class="row" id="presets">
+        <button class="btn" data-p="cm">CHASEP + MEJAB</button>
+        <button class="btn" data-p="c">Solo CHASEP</button>
+        <button class="btn" data-p="m">Solo MEJAB</button>
+        <button class="btn" data-p="all">México completo</button>
+        <button class="btn" data-p="none">Limpiar</button>
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Periodo</div>
+      <div class="seg" id="seg" role="group" aria-label="Tipo de periodo">
+        <button data-mode="ytd">Año a la fecha</button><button data-mode="mes">Un mes</button><button data-mode="rango">Entre meses</button>
+      </div>
+      <div class="row" id="prow"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="splitPanel" hidden>
+    <h2>Cada territorio por separado</h2>
+    <p class="sub" id="splitSub"></p>
+    <div class="tablebox"><table class="split"><thead><tr>
+      <th class="l">Territorio</th><th id="hB"></th><th id="hA"></th><th>Crec.</th><th class="l">Peso en la selección</th>
+    </tr></thead><tbody id="splitTb"></tbody></table></div>
+  </section>
+
+  <section class="grid2">
+    <div class="panel">
+      <h2>Compras por mes</h2>
+      <p class="sub" id="msub"></p>
+      <div class="legend" id="lgM"></div>
+      <div id="chartM"></div>
+    </div>
+    <div class="panel">
+      <h2>Crecimiento acumulado</h2>
+      <p class="sub" id="csub"></p>
+      <div id="chartC"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Historia por año</h2>
+    <p class="sub">Compras de la selección por año y su crecimiento contra el año anterior. Toca un año para abrirlo.</p>
+    <div id="chartH"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Territorios de México</h2>
+    <p class="sub" id="tsub"></p>
+    <div class="tools"><input id="q" type="search" placeholder="Buscar por número o nombre" aria-label="Buscar territorio"></div>
+    <div class="tablebox"><table id="mainT">
+      <thead><tr>
+        <th class="l" style="width:1%"></th>
+        <th class="l"><button data-s="n">Director de territorio</button></th>
+        <th><button data-s="b" id="thB"></button></th>
+        <th><button data-s="g">Crecimiento</button></th>
+        <th><button data-s="a" id="thA"></button></th>
+        <th><button data-s="d">Diferencia</button></th>
+        <th class="l"><button data-s="sh">Part. nal.</button></th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Contexto nacional</h2>
+    <div class="ctx" id="ctx" style="margin-top:10px"></div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>Cómo se calcula</summary>
+      <ul id="notes"></ul>
+    </details>
+  </section>
+</main>
+<div id="tip" hidden></div>
+
+<script>
+const ALL=__DATA__;
+const YEARS=Object.keys(ALL.years).map(Number).sort((a,b)=>a-b);
+const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MES=MESES.map(m=>m.slice(0,3));
+const fm=v=>{if(v==null||isNaN(v))return '—';const a=Math.abs(v);const s=v<0?'−':'';return a>=1e6?s+'$'+(a/1e6).toFixed(2)+' M':a>=1e3?s+'$'+(a/1e3).toFixed(1)+' K':s+'$'+a.toFixed(0)};
+const ff=v=>'$'+Math.round(v).toLocaleString('es-MX');
+const pc=(a,b)=>b>0?(a/b-1)*100:null;
+const fp=v=>v==null?'—':(v>0?'+':'')+v.toFixed(1)+'%';
+const cls=v=>v==null?'fl':v>0.5?'up':v<-0.5?'dn':'fl';
+const pill=v=>`<span class="pill ${cls(v)}">${v==null?'—':(v>0.5?'▲':v<-0.5?'▼':'■')} ${fp(v)}</span>`;
+const short=n=>n.split(' & ')[0].split(' ').slice(0,3).join(' ');
+const badge=id=>id==='13588'?'<span class="badge c">13588</span>':id==='29365'?'<span class="badge m">29365</span>':'';
+const tag=t=>badge(t.id)||(t.id==='OTROS'?'':`<span class="id">${t.id}</span>`);
+const K='hycite-dash-v3';
+let st={sel:['13588','29365'],all:false,mode:'ytd',m:null,s:0,e:null,year:ALL.current};
+try{const s=JSON.parse(localStorage.getItem(K)||'null');if(s&&Array.isArray(s.sel))st={...st,...s}}catch(e){}
+if(!ALL.years[st.year])st.year=ALL.current;
+let sel=new Set(st.sel);
+const save=()=>{try{localStorage.setItem(K,JSON.stringify({...st,sel:[...sel]}))}catch(e){}};
+
+let Y,D,T,N,CUR,OPEN,LASTC,DK,PY,ANN;
+function ctx(y){const d=ALL.years[y];const open=d.cutDay!==1;return {Y:y,D:d,T:d.T,N:d.nat,CUR:d.cur,OPEN:open,LASTC:open?d.cur-1:d.cur,DK:d.cutDay<=10?'d10':'d20',PY:y-1,ANN:!!d.annualOnly}}
+function setYear(y){({Y,D,T,N,CUR,OPEN,LASTC,DK,PY,ANN}=ctx(y));st.year=y;
+  const cl=v=>Math.max(0,Math.min(CUR,v));st.m=cl(st.m??CUR);st.s=cl(st.s??0);st.e=cl(st.e??CUR);if(st.s>st.e)[st.s,st.e]=[st.e,st.s];if(ANN)st.mode='ytd'}
+const range=()=>st.mode==='ytd'?[0,CUR]:st.mode==='mes'?[st.m,st.m]:[st.s,st.e];
+const present=()=>st.all?T.slice():T.filter(t=>sel.has(t.id));
+const isSel=id=>st.all||sel.has(id);
+function paceRatio(list,C){C=C||{N,CUR,DK};if(!C.N[C.DK])return null;const ks=[];for(let k=C.CUR-1;k>=0&&ks.length<3;k--){if(C.N[C.DK][k]!=null)ks.push(k)}
+  let d=0,f=0;ks.forEach(k=>list.forEach(t=>{d+=(t[C.DK]?.[k]||0);f+=t.b[k]}));return f>0&&d>0?d/f:null}
+function calc(list,[s,e],C){C=C||{N,CUR,DK,OPEN,LASTC,ANN};
+  if(C.ANN){const a=list.reduce((x,t)=>x+t.y[0],0),b=list.reduce((x,t)=>x+t.y[1],0);return {a,b,open:false,g:pc(b,a),gClosed:pc(b,a),proj:null,cmp:b}}
+  const sum=(k,a,b)=>{let x=0;for(let i=a;i<=b;i++)list.forEach(t=>x+=t[k][i]);return x};
+  const a=sum('a',s,e),b=sum('b',s,e),open=C.OPEN&&e>=C.CUR;let proj=null,cmp=b,cur26=0,cur25=0;
+  if(open){const r=paceRatio(list,C);cur26=sum('b',C.CUR,C.CUR);cur25=sum('a',C.CUR,C.CUR);if(r){proj=cur26/r;cmp=b-cur26+proj}else cmp=null}
+  const ca=open?a-cur25:a,cb=open?b-cur26:b;
+  return {a,b,open,proj,cur26,cur25,ca,cb,cmp,g:open?(cmp==null?pc(cb,ca):pc(cmp,a)):pc(b,a),gClosed:s<=C.LASTC?pc(cb,ca):null}}
+function pname([s,e]){return ANN||(s===0&&e===11)?'Año '+Y:s===e?MESES[s]+' '+Y:MES[s]+'–'+MES[e]+' '+Y}
+
+function renderYears(){
+  document.getElementById('years').innerHTML=YEARS.map(y=>{const d=ALL.years[y];const sub=y===ALL.current?(d.cutDay===1&&d.cur===11?'cerrado':'en curso'):d.annualOnly?'solo anual':'cerrado';
+    return `<button data-y="${y}" class="${y===Y?'on':''}" aria-pressed="${y===Y}">${y}<small>${sub}</small></button>`}).join('');
+  const d=new Date(D.cutDate+'T12:00:00');
+  document.getElementById('cutline').textContent=(OPEN?'Corte '+d.toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'}):'Cierre '+Y)+' · compras merch & premium en USD · '+(T.length-1)+' directores';
+}
+function renderFilters(){
+  const list=present();const missing=st.all?[]:[...sel].filter(id=>!T.some(t=>t.id===id));
+  document.getElementById('selcount').textContent=list.length===T.length?'todo México':list.length+(list.length===1?' seleccionado':' seleccionados');
+  document.getElementById('chips').innerHTML=(!list.length?'<span class="note">Sin territorios. Elige un atajo o toca filas en la tabla.</span>':list.length>8?`<span class="note">${list.length} territorios. Ajusta en la tabla.</span>`:
+    list.map(t=>`<span class="chip">${tag(t)}<span>${short(t.n)}</span><button aria-label="Quitar ${t.n}" data-x="${t.id}">×</button></span>`).join(''))+
+    (missing.length&&list.length<=8?`<span class="note">${missing.join(', ')} no aparece en ${Y}.</span>`:'');
+  const cur=list.map(t=>t.id).sort().join();
+  document.querySelectorAll('[data-p]').forEach(b=>{const p=b.dataset.p;b.classList.toggle('on',(p==='cm'&&cur==='13588,29365')||(p==='c'&&cur==='13588')||(p==='m'&&cur==='29365')||(p==='all'&&st.all))});
+  document.querySelectorAll('[data-mode]').forEach(b=>{b.classList.toggle('on',b.dataset.mode===st.mode);b.disabled=ANN&&b.dataset.mode!=='ytd'});
+  const opts=v=>MESES.slice(0,CUR+1).map((m,i)=>`<option value="${i}"${i===v?' selected':''}>${m}${i===CUR&&OPEN?' (en curso)':''}</option>`).join('');
+  document.getElementById('prow').innerHTML=ANN?`<span class="note">${Y} solo tiene el cierre anual por territorio; no hay detalle mensual en los correos.</span>`:
+    st.mode==='ytd'?`<span class="note">${CUR===11&&!OPEN?'Enero a diciembre':'Enero a '+MESES[CUR].toLowerCase()} ${Y}${OPEN?', con '+MESES[CUR].toLowerCase()+' proyectado para comparar':''}.</span>`:
+    st.mode==='mes'?`<label class="l" for="selM">Mes</label><select id="selM">${opts(st.m)}</select>`:
+    `<label class="l" for="selS">Desde</label><select id="selS">${opts(st.s)}</select><label class="l" for="selE">Hasta</label><select id="selE">${opts(st.e)}</select>`;
+}
+function renderKpis(list,R,c){
+  const k=document.getElementById('kpis'),mi=document.getElementById('miniIn');
+  if(!list.length){k.innerHTML='<div class="kpi hero" style="grid-column:1/-1"><div class="s">Selecciona al menos un territorio para ver sus resultados.</div></div>';mi.innerHTML='<span>Sin selección</span>';return}
+  const nat=calc(T,R),share=nat.b>0?c.b/nat.b*100:0;
+  let rk='';if(list.length===1&&list[0].id!=='OTROS'){const r=T.filter(t=>t.id!=='OTROS').map(t=>({id:t.id,g:calc([t],R).g})).filter(x=>x.g!=null).sort((x,y)=>y.g-x.g);const p=r.findIndex(x=>x.id===list[0].id)+1;if(p)rk=`Lugar ${p} de ${r.length} en crecimiento`}
+  const ids=list.map(t=>t.id).sort().join();const name=list.length===1?short(list[0].n):ids==='13588,29365'?'CHASEP + MEJAB':list.length===T.length?'México':list.length+' territorios';
+  const hero=`<div class="kpi hero"><div class="eyebrow">Crecimiento · ${pname(R)}</div><div class="v num">${fp(c.g)}</div><div class="s num">${c.open&&c.proj?'con '+MESES[CUR].toLowerCase()+' proyectado · '+fm(c.cmp)+' vs '+fm(c.a):fm(c.b)+' vs '+fm(c.a)+' en '+PY}</div></div>`;
+  const comp=`<div class="kpi"><div class="eyebrow">Compras ${Y}${c.open?' al corte':''}</div><div class="v num">${fm(c.b)}</div><div class="s">${c.open&&c.gClosed!=null?'Meses cerrados '+pill(c.gClosed):'Diferencia '+fm(c.b-c.a)}</div></div>`;
+  const more=c.open?`<div class="kpi"><div class="eyebrow">${MESES[CUR]} al día ${D.cutDay}</div><div class="v num">${fm(c.cur26)}</div><div class="s">${c.cur25>0?Math.round(c.cur26/c.cur25*100):0}% de ${fm(c.cur25)} de ${MES[CUR].toLowerCase()} ${PY}</div></div>
+    <div class="kpi"><div class="eyebrow">Cierre de ${MESES[CUR].toLowerCase()} proyectado</div><div class="v num">${fm(c.proj)}</div><div class="s">${pill(c.proj?pc(c.proj,c.cur25):null)} vs ${PY}</div></div>`
+   :`<div class="kpi"><div class="eyebrow">Participación nacional</div><div class="v num">${share.toFixed(1)}%</div><div class="s">${rk||'de las compras de México'}</div></div>
+    <div class="kpi"><div class="eyebrow">Compras ${PY}</div><div class="v num">${fm(c.a)}</div><div class="s">mismo periodo, estructura ${Y}</div></div>`;
+  k.innerHTML=hero+comp+more;
+  mi.innerHTML=`<b>${name}</b><span class="sep">·</span><span>${pname(R)}</span><span class="sep">·</span>${pill(c.g)}<span class="sep">·</span><span class="num">${fm(c.b)}</span>`;
+}
+function renderSplit(list,R,c){
+  const p=document.getElementById('splitPanel');if(list.length<2||list.length>12){p.hidden=true;return}p.hidden=false;
+  document.getElementById('hB').textContent=Y;document.getElementById('hA').textContent=PY;
+  document.getElementById('splitSub').textContent=pname(R)+(c.open&&c.proj?' · crecimiento con '+MESES[CUR].toLowerCase()+' proyectado':'');
+  const rows=list.map(t=>({t,c:calc([t],R)})).sort((x,y)=>y.c.b-x.c.b);
+  document.getElementById('splitTb').innerHTML=rows.map(r=>`<tr><td class="l">${tag(r.t)} <span class="nm">${short(r.t.n)}</span></td><td class="num">${fm(r.c.b)}</td><td class="num">${fm(r.c.a)}</td><td>${pill(r.c.g)}</td>
+    <td class="l"><div style="display:flex;gap:8px;align-items:center"><div class="bar" style="flex:1"><b style="width:${(c.b>0?r.c.b/c.b*100:0).toFixed(1)}%"></b></div><span class="num" style="width:40px;text-align:right">${(c.b>0?r.c.b/c.b*100:0).toFixed(0)}%</span></div></td></tr>`).join('')+
+    `<tr class="tot"><td class="l">Juntos</td><td class="num">${fm(c.b)}</td><td class="num">${fm(c.a)}</td><td>${pill(c.g)}</td><td></td></tr>`;
+}
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p}
+const rp=(x,yy,w,h,col,op)=>{if(h<=0)return '';const rr=Math.min(4,w/2,h);return `<path d="M${x},${yy+h}V${yy+rr}Q${x},${yy} ${x+rr},${yy}H${x+w-rr}Q${x+w},${yy} ${x+w},${yy+rr}V${yy+h}Z" fill="${col}" fill-opacity="${op}"/>`};
+function hook(el,q,fn){el.querySelectorAll(q).forEach(rc=>{const show=e=>tip(e,fn(rc));['pointerenter','pointermove'].forEach(ev=>rc.addEventListener(ev,show));rc.addEventListener('pointerleave',hide)})}
+function renderMonthly(list,R){
+  const el=document.getElementById('chartM');const n=CUR+1;const a=[],b=[];
+  for(let i=0;i<n;i++){if(ANN){a.push(N.m25[i]);b.push(N.m26[i])}else{a.push(list.reduce((s,t)=>s+t.a[i],0));b.push(list.reduce((s,t)=>s+t.b[i],0))}}
+  const ratio=!ANN&&OPEN?paceRatio(list):null,proj=ratio?b[CUR]/ratio:null;
+  document.getElementById('lgM').innerHTML=`<span><i style="background:var(--y25)"></i>${PY}</span><span><i style="background:var(--y26)"></i>${Y}</span>${proj?'<span><i style="border:1.5px dashed var(--y26);background:transparent"></i>Proyección del mes en curso</span>':''}`;
+  document.getElementById('msub').textContent=ANN?`${Y} solo trae cierre anual por territorio; aquí, compras nacionales por mes.`:`El periodo elegido va resaltado${proj?'; '+MESES[CUR].toLowerCase()+' en curso con proyección punteada':''}.`;
+  const W=Math.max(300,Math.round(el.clientWidth||640)),H=250,L=46,Rr=8,TP=10,B=26,iw=W-L-Rr,ih=H-TP-B;
+  const mx=niceMax(Math.max(1,...a,...b,proj||0));const y=v=>TP+ih-(v/mx)*ih;const gw=iw/Math.max(n,6),bw=Math.min(16,(gw-8)/2);let s='';
+  for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v===0?'0':fm(v).replace('$','')}</text>`}
+  const every=gw<26?2:1;
+  for(let i=0;i<n;i++){const inR=ANN||(i>=R[0]&&i<=R[1]),op=inR?1:.25;const cx=L+gw*i+gw/2,x1=cx-bw-1,x2=cx+1;
+    if(!ANN&&inR&&(R[0]!==0||R[1]!==CUR))s+=`<rect x="${L+gw*i+1}" y="${TP}" width="${gw-2}" height="${ih}" rx="6" fill="var(--sel)"/>`;
+    s+=rp(x1,y(a[i]),bw,y(0)-y(a[i]),'var(--y25)',op);
+    if(i===CUR&&proj)s+=`<rect x="${x2+.75}" y="${y(proj)+.75}" width="${bw-1.5}" height="${Math.max(0,y(0)-y(proj)-1.5)}" rx="3" fill="none" stroke="var(--y26)" stroke-opacity="${op}" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+    s+=rp(x2,y(b[i]),bw,y(0)-y(b[i]),'var(--y26)',op);
+    if(i%every===0||inR&&!ANN&&R[0]===R[1])s+=`<text x="${cx}" y="${H-8}" text-anchor="middle"${inR&&!ANN?' style="fill:var(--ink);font-weight:700"':''}>${MES[i]}</text>`;
+    s+=`<rect x="${L+gw*i}" y="${TP}" width="${gw}" height="${ih}" fill="transparent" data-m="${i}"/>`}
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Compras mensuales">${s}</svg>`;
+  hook(el,'[data-m]',rc=>{const i=+rc.dataset.m;return `<b>${MESES[i]}</b><br>${PY}: ${ff(a[i])}<br>${Y}: ${ff(b[i])}${i===CUR&&OPEN?' (al corte)':''}<br>${i===CUR&&proj?'Proyección: '+fm(proj)+' · '+fp(pc(proj,a[i])):'Variación: '+fp(pc(b[i],a[i]))}`});
+}
+function renderCum(list,R){
+  const el=document.getElementById('chartC'),csub=document.getElementById('csub');
+  const s0=ANN?0:R[0],e0=ANN?11:Math.min(R[1],LASTC);
+  if(e0<s0){csub.textContent='El periodo solo incluye el mes en curso; el acumulado usa meses cerrados.';el.innerHTML='';return}
+  csub.textContent=ANN?`Nacional · % vs ${PY} acumulado en ${Y}.`:`% vs ${PY} acumulado desde ${MESES[s0].toLowerCase()} (meses cerrados).`;
+  const W=Math.max(280,Math.round(el.clientWidth||360)),H=230,L=40,Rr=50,TP=14,B=26,iw=W-L-Rr,ih=H-TP-B;
+  const pts=[];let sa=0,sb=0;for(let i=s0;i<=e0;i++){if(ANN){sa+=N.m25[i];sb+=N.m26[i]}else list.forEach(t=>{sa+=t.a[i];sb+=t.b[i]});pts.push(pc(sb,sa))}
+  const vals=pts.filter(v=>v!=null);if(!vals.length){el.innerHTML='<p class="note">Sin datos de comparación.</p>';return}
+  let lo=Math.min(0,...vals),hi=Math.max(0,...vals);const pad=Math.max(2,(hi-lo)*.15);lo=Math.floor((lo-pad)/5)*5;hi=Math.ceil((hi+pad)/5)*5;
+  const n=pts.length,x=i=>n===1?L+iw/2:L+iw*i/(n-1),y=v=>TP+ih-(v-lo)/(hi-lo)*ih;const span=hi-lo,step=span>160?80:span>80?40:span>40?20:span>20?10:5;let s='';
+  for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step)s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v===0?1.6:1}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v>0?'+':''}${v}%</text>`;
+  const ok=pts.map((v,i)=>v==null?null:[x(i),y(v)]).filter(Boolean),d=ok.map((p,i)=>(i?'L':'M')+p[0]+','+p[1]).join('');
+  if(ok.length>1)s+=`<path d="M${ok[0][0]},${y(0)}L${d.slice(1)}L${ok[ok.length-1][0]},${y(0)}Z" fill="var(--y26)" fill-opacity=".1"/><path d="${d}" fill="none" stroke="var(--y26)" stroke-width="2" stroke-linejoin="round"/>`;
+  const lv=pts[n-1];if(lv!=null)s+=`<circle cx="${x(n-1)}" cy="${y(lv)}" r="4.5" fill="var(--y26)" stroke="var(--surface)" stroke-width="2"/><text x="${x(n-1)+8}" y="${y(lv)+4}" style="fill:var(--ink);font-weight:700">${fp(lv)}</text>`;
+  const every=n>6?2:1;for(let i=0;i<n;i++){if(i%every===0||i===n-1)s+=`<text x="${x(i)}" y="${H-8}" text-anchor="middle">${MES[s0+i]}</text>`;s+=`<rect x="${x(i)-iw/(2*Math.max(n-1,1))}" y="${TP}" width="${iw/Math.max(n-1,1)}" height="${ih}" fill="transparent" data-c="${i}"/>`}
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Crecimiento acumulado">${s}</svg>`;
+  hook(el,'[data-c]',rc=>{const i=+rc.dataset.c;return `<b>${MES[s0]}–${MES[s0+i]}</b><br>Acumulado: ${fp(pts[i])}`});
+}
+function renderHist(){
+  const el=document.getElementById('chartH');const ids=[...sel];
+  const rows=YEARS.map(y=>{const C=ctx(y);const L=st.all?C.T.slice():C.T.filter(t=>ids.includes(t.id));if(!L.length)return {y,none:true};
+    const c=calc(L,[0,C.CUR],C);return {y,b:c.b,a:c.a,g:c.g,proj:c.open?c.cmp:null,cut:C.CUR,open:C.OPEN}});
+  const W=Math.max(300,Math.round(el.clientWidth||900)),H=236,L=46,Rr=8,TP=26,B=36,iw=W-L-Rr,ih=H-TP-B;
+  const mx=niceMax(Math.max(1,...rows.map(r=>Math.max(r.b||0,r.proj||0))));const y=v=>TP+ih-(v/mx)*ih;const gw=iw/rows.length,bw=Math.min(56,gw*.56);let s='';
+  for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v===0?'0':fm(v).replace('$','')}</text>`}
+  rows.forEach((r,i)=>{const cx=L+gw*i+gw/2,x=cx-bw/2;
+    if(!r.none){if(r.proj)s+=`<rect x="${x+.75}" y="${y(r.proj)+.75}" width="${bw-1.5}" height="${Math.max(0,y(0)-y(r.proj)-1.5)}" rx="4" fill="none" stroke="var(--y26)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+      s+=rp(x,y(r.b),bw,y(0)-y(r.b),r.y===Y?'var(--brand2)':'var(--y26)',r.y===Y?1:.7);
+      if(r.g!=null)s+=`<text x="${cx}" y="${y(Math.max(r.b,r.proj||0))-7}" text-anchor="middle" style="font-weight:700;fill:${r.g>0.5?'var(--good)':r.g<-0.5?'var(--bad)':'var(--warn)'}">${fp(r.g)}</text>`}
+    s+=`<text x="${cx}" y="${H-20}" text-anchor="middle" style="fill:var(--ink);font-weight:${r.y===Y?800:600};font-size:12px">${r.y}</text><text x="${cx}" y="${H-6}" text-anchor="middle">${r.none?'sin datos':r.cut===11&&!r.open?'anual':'ene–'+MES[r.cut].toLowerCase()}</text>`;
+    s+=`<rect x="${L+gw*i}" y="${TP}" width="${gw}" height="${ih+B}" fill="transparent" data-h="${i}" style="cursor:pointer"/>`});
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Historia anual">${s}</svg>`;
+  hook(el,'[data-h]',rc=>{const r=rows[+rc.dataset.h];return r.none?`<b>${r.y}</b><br>La selección no aparece ese año`:`<b>${r.y}</b><br>${r.y}: ${ff(r.b)}<br>${r.y-1}: ${ff(r.a)}<br>Crecimiento: ${fp(r.g)}${r.proj?'<br>Con mes en curso proyectado: '+fm(r.proj):''}`});
+  el.querySelectorAll('[data-h]').forEach(rc=>rc.addEventListener('click',()=>{const r=rows[+rc.dataset.h];if(!r.none&&r.y!==Y){setYear(r.y);render()}}));
+}
+let sortK='g',sortD=-1;
+function renderTable(R){
+  const q=document.getElementById('q').value.trim().toLowerCase();const nat=calc(T,R);
+  document.getElementById('thB').textContent=Y;document.getElementById('thA').textContent=PY;
+  const S=T.map(t=>{const c=calc([t],R);return {t,c,sh:nat.b>0?c.b/nat.b*100:0}});
+  const rk={};S.filter(s=>s.t.id!=='OTROS'&&s.c.g!=null).sort((x,y)=>y.c.g-x.c.g).forEach((s,i)=>rk[s.t.id]=i+1);
+  const val={n:s=>s.t.n,b:s=>s.c.b,a:s=>s.c.a,g:s=>s.c.g??-1e9,d:s=>s.c.b-s.c.a,sh:s=>s.sh};
+  let rows=S.filter(s=>!q||s.t.id.includes(q)||s.t.n.toLowerCase().includes(q));
+  rows.sort((x,y)=>{if(x.t.id==='OTROS')return 1;if(y.t.id==='OTROS')return -1;const A=val[sortK](x),B=val[sortK](y);return (A>B?1:A<B?-1:0)*sortD*(sortK==='n'?-1:1)});
+  const mxs=Math.max(...S.map(s=>s.sh),1),gs=S.filter(s=>s.t.id!=='OTROS'&&s.c.g!=null).map(s=>Math.abs(s.c.g)).sort((x,y)=>x-y),mg=Math.max(10,gs[Math.floor(gs.length*.9)]||10);
+  document.getElementById('tsub').textContent=`${pname(R)}${nat.open&&nat.proj?' · crecimiento con '+MESES[CUR].toLowerCase()+' proyectado':''}. Toca una fila para sumarla o quitarla.`;
+  const dv=g=>{if(g==null)return '';const w=Math.min(50,Math.abs(g)/mg*50);return `<span class="dv" aria-hidden="true"><b style="${g>=0?'left:50%':'right:50%'};width:${w}%;background:${g>=0?'var(--good)':'var(--bad)'}"></b></span>`};
+  document.getElementById('tb').innerHTML=rows.map(s=>`<tr class="${isSel(s.t.id)?'on':''}" data-id="${s.t.id}" tabindex="0" aria-pressed="${isSel(s.t.id)}">
+    <td class="ckc"><span class="ck"></span></td>
+    <td class="l"><span class="rank">${rk[s.t.id]?'#'+rk[s.t.id]+' ':''}</span>${tag(s.t)} <span class="nm">${s.t.n}</span></td>
+    <td class="num">${fm(s.c.b)}</td><td>${pill(s.c.g)}${dv(s.c.g)}</td><td class="num">${fm(s.c.a)}</td><td class="num">${fm(s.c.b-s.c.a)}</td>
+    <td class="l"><div style="display:flex;gap:8px;align-items:center"><div class="bar" style="flex:1"><b style="width:${(s.sh/mxs*100).toFixed(1)}%"></b></div><span class="num" style="width:40px;text-align:right">${s.sh.toFixed(1)}%</span></div></td></tr>`).join('');
+}
+function renderCtx(){
+  const ytd=calc(T,[0,CUR]),cl=ANN?ytd:calc(T,[0,LASTC]);let pv='';
+  if(ALL.years[Y-1]){const C=ctx(Y-1);const c=calc(C.T,[0,C.CUR],C);pv=`<div><div class="eyebrow">México ${Y-1}</div><div class="v num">${fp(c.g)}</div><div class="note num">${fm(c.b)} vs ${fm(c.a)} en ${Y-2}</div></div>`}
+  document.getElementById('ctx').innerHTML=pv+(ANN||!OPEN?'':`<div><div class="eyebrow">México ene–${MES[LASTC].toLowerCase()} ${Y}</div><div class="v num">${fp(cl.g)}</div><div class="note num">${fm(cl.b)} vs ${fm(cl.a)} · meses cerrados</div></div>`)+
+  `<div><div class="eyebrow">México ${OPEN?'año a la fecha '+Y:Y}</div><div class="v num">${fp(ytd.g)}</div><div class="note num">${ytd.open?'con '+MESES[CUR].toLowerCase()+' proyectado · HyCite publica '+fp(pc(N.y[1],N.y[0])):fm(ytd.b)+' vs '+fm(ytd.a)}</div></div>`;
+  const d=new Date(ALL.years[ALL.current].cutDate+'T12:00:00');
+  document.getElementById('notes').innerHTML=[
+    `Fuente: reportes “Mexico Purchase Growth by Territory Director” de ReportingServices@hycite.com, de diciembre 2020 al ${d.toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})}. Llegan los días 1, 10 y 20.`,
+    'Cada año se compara contra el año anterior reexpresado por HyCite a la estructura de territorios de ese año. Un mismo territorio puede valer distinto en dos años por fusiones o separaciones (por ejemplo MEJAB, separado de CHASEP en 2026).',
+    'El % año a la fecha que publica HyCite compara el mes en curso parcial contra el mismo mes completo del año anterior. Aquí el mes en curso se compara contra su cierre proyectado.',
+    'Proyección del mes en curso: compras al corte entre el % que la misma selección llevaba a ese día en los últimos tres meses cerrados.',
+    'Meses por territorio: salen del reporte de cierre de cada mes. Las diferencias contra el cierre oficial (compras posteadas tarde, cambios de estructura) se reparten en proporción a los meses, así el año cuadra con el oficial.',
+    '2020 solo tiene el cierre anual por territorio (reporte del 1 de enero de 2021); los meses nacionales sí están completos.',
+    '“Otros” es la diferencia entre el total nacional oficial y la suma de los directores listados.'
+  ].map(x=>`<li>${x}</li>`).join('');
+}
+const tipEl=document.getElementById('tip');
+function tip(e,h){tipEl.innerHTML=h;tipEl.hidden=false;const w=tipEl.offsetWidth,hh=tipEl.offsetHeight;let x=e.clientX+14,y=e.clientY-hh-10;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y<8)y=e.clientY+16;tipEl.style.left=Math.max(8,x)+'px';tipEl.style.top=y+'px'}
+function hide(){tipEl.hidden=true}
+document.addEventListener('scroll',hide,{passive:true});
+function render(){const R=range();const list=present();const c=calc(list,R);
+  renderYears();renderFilters();renderKpis(list,R,c);renderSplit(list,R,c);renderMonthly(list,R);renderCum(list,R);renderHist();renderTable(R);renderCtx();save()}
+document.getElementById('years').addEventListener('click',e=>{const b=e.target.closest('[data-y]');if(b){setYear(+b.dataset.y);render()}});
+document.getElementById('presets').addEventListener('click',e=>{const p=e.target.dataset?.p;if(!p)return;st.all=false;sel=p==='cm'?new Set(['13588','29365']):p==='c'?new Set(['13588']):p==='m'?new Set(['29365']):new Set();st.all=p==='all';render()});
+document.getElementById('seg').addEventListener('click',e=>{const m=e.target.dataset?.mode;if(!m||e.target.disabled)return;st.mode=m;render()});
+document.getElementById('prow').addEventListener('change',e=>{const v=Math.max(0,Math.min(CUR,+e.target.value));if(e.target.id==='selM')st.m=v;if(e.target.id==='selS'){st.s=v;if(st.e<v)st.e=v}if(e.target.id==='selE'){st.e=v;if(st.s>v)st.s=v}render()});
+document.getElementById('chips').addEventListener('click',e=>{const x=e.target.dataset?.x;if(x){if(st.all){sel=new Set(T.map(t=>t.id));st.all=false}sel.delete(x);render()}});
+const tog=id=>{if(st.all){sel=new Set(T.map(t=>t.id));st.all=false}sel.has(id)?sel.delete(id):sel.add(id);render()};
+document.getElementById('tb').addEventListener('click',e=>{const tr=e.target.closest('tr');if(tr)tog(tr.dataset.id)});
+document.getElementById('tb').addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&e.target.dataset.id){e.preventDefault();const id=e.target.dataset.id;tog(id);document.querySelector(`#tb tr[data-id="${id}"]`)?.focus()}});
+document.getElementById('q').addEventListener('input',()=>renderTable(range()));
+document.querySelectorAll('#mainT th button').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.s;if(sortK===k)sortD*=-1;else{sortK=k;sortD=-1}renderTable(range())}));
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,150)});
+setYear(st.year);render();
+</script>
