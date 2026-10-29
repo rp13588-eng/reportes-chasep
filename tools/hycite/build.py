@@ -132,11 +132,11 @@ def summary():
     d = load(); cur = d['cur']; opn = d['cutDay'] != 1; Y = d['year']
     fp = lambda v: '—' if v is None else ('+' if v > 0 else '−' if v < 0 else '') + f"{abs(v):.1f}%"
     def fm(v):
-        a = abs(v); return ('−' if v < 0 else '') + (f"${a/1e6:.2f} M" if a >= 1e6 else f"${a/1e3:.1f} K")
+        a = abs(v); return ('−' if v < 0 else '') + (f"US${a/1e6:.2f} M" if a >= 1e6 else f"US${a/1e3:.1f} K")
     by = {t['id']: t for t in d['T']}
     groups = [('CHASEP 13588', ['13588']), ('MEJAB 29365', ['29365']), ('CHASEP + MEJAB', ['13588', '29365']), ('México', [t['id'] for t in d['T']])]
     dd, mm, yy = d['cutDate'][8:10].lstrip('0'), MESES[int(d['cutDate'][5:7]) - 1], d['cutDate'][:4]
-    lines = [f"📊 *Crecimiento HyCite México* · corte {dd} {mm[:3]} {yy}", '']
+    lines = [f"📊 *Crecimiento de compras HyCite México* · corte {dd} {mm[:3]} {yy}", 'Compras en USD', '']
     last = cur - 1 if opn else cur
     lines.append(f"*Año a la fecha (ene–{MESES[cur][:3]}{', con ' + MESES[cur] + ' proyectado' if opn else ''})*")
     for name, ids in groups:

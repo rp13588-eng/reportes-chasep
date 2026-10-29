@@ -215,8 +215,8 @@ const ALL=__DATA__;
 const YEARS=Object.keys(ALL.years).map(Number).sort((a,b)=>a-b);
 const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MES=MESES.map(m=>m.slice(0,3));
-const fm=v=>{if(v==null||isNaN(v))return '—';const a=Math.abs(v);const s=v<0?'−':'';return a>=1e6?s+'$'+(a/1e6).toFixed(2)+' M':a>=1e3?s+'$'+(a/1e3).toFixed(1)+' K':s+'$'+a.toFixed(0)};
-const ff=v=>'$'+Math.round(v).toLocaleString('es-MX');
+const fm=v=>{if(v==null||isNaN(v))return '—';const a=Math.abs(v);const s=v<0?'−':'';return a>=1e6?s+'US$'+(a/1e6).toFixed(2)+' M':a>=1e3?s+'US$'+(a/1e3).toFixed(1)+' K':s+'US$'+a.toFixed(0)};
+const ff=v=>'US$'+Math.round(v).toLocaleString('es-MX');
 const pc=(a,b)=>b>0?(a/b-1)*100:null;
 const fp=v=>v==null?'—':(v>0?'+':'')+v.toFixed(1)+'%';
 const cls=v=>v==null?'fl':v>0.5?'up':v<-0.5?'dn':'fl';
@@ -305,7 +305,7 @@ function renderMonthly(list,R){
   document.getElementById('msub').textContent=ANN?`${Y} solo trae cierre anual por territorio; aquí, compras nacionales por mes.`:`El periodo elegido va resaltado${proj?'; '+MESES[CUR].toLowerCase()+' en curso con proyección punteada':''}.`;
   const W=Math.max(300,Math.round(el.clientWidth||640)),H=250,L=46,Rr=8,TP=10,B=26,iw=W-L-Rr,ih=H-TP-B;
   const mx=niceMax(Math.max(1,...a,...b,proj||0));const y=v=>TP+ih-(v/mx)*ih;const gw=iw/Math.max(n,6),bw=Math.min(16,(gw-8)/2);let s='';
-  for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v===0?'0':fm(v).replace('$','')}</text>`}
+  for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v===0?'0':fm(v).replace('US$','')}</text>`}
   const every=gw<26?2:1;
   for(let i=0;i<n;i++){const inR=ANN||(i>=R[0]&&i<=R[1]),op=inR?1:.25;const cx=L+gw*i+gw/2,x1=cx-bw-1,x2=cx+1;
     if(!ANN&&inR&&(R[0]!==0||R[1]!==CUR))s+=`<rect x="${L+gw*i+1}" y="${TP}" width="${gw-2}" height="${ih}" rx="6" fill="var(--sel)"/>`;
@@ -341,7 +341,7 @@ function renderHist(){
     const c=calc(L,[0,C.CUR],C);return {y,b:c.b,a:c.a,g:c.g,proj:c.open?c.cmp:null,cut:C.CUR,open:C.OPEN}});
   const W=Math.max(300,Math.round(el.clientWidth||900)),H=236,L=46,Rr=8,TP=26,B=36,iw=W-L-Rr,ih=H-TP-B;
   const mx=niceMax(Math.max(1,...rows.map(r=>Math.max(r.b||0,r.proj||0))));const y=v=>TP+ih-(v/mx)*ih;const gw=iw/rows.length,bw=Math.min(56,gw*.56);let s='';
-  for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v===0?'0':fm(v).replace('$','')}</text>`}
+  for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v===0?'0':fm(v).replace('US$','')}</text>`}
   rows.forEach((r,i)=>{const cx=L+gw*i+gw/2,x=cx-bw/2;
     if(!r.none){if(r.proj)s+=`<rect x="${x+.75}" y="${y(r.proj)+.75}" width="${bw-1.5}" height="${Math.max(0,y(0)-y(r.proj)-1.5)}" rx="4" fill="none" stroke="var(--y26)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
       s+=rp(x,y(r.b),bw,y(0)-y(r.b),r.y===Y?'var(--brand2)':'var(--y26)',r.y===Y?1:.7);
