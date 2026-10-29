@@ -210,7 +210,8 @@ footer {
     <div class="field">
       <label>Estado</label>
       <select id="fEstado">
-        <option value="">Todos (vigentes)</option>
+        <option value="">Todos (cifras oficiales Hycite)</option>
+        <option value="vigentes">Solo vigentes</option>
         <option value="con_actividad">Con actividad</option>
         <option value="sin_actividad">Sin actividad</option>
         <option value="nuevo">Nuevos</option>
@@ -334,16 +335,16 @@ function getFiltered() {
     if (buscar && !(d.nm.toLowerCase().includes(buscar) || d.id.includes(buscar))) return false;
 
     if (estado === 'baja') return d.bj;
-    if (d.bj) return false;
+    if (estado === 'vigentes') return !d.bj;
     if (estado === 'con_actividad') return d.a > 0;
-    if (estado === 'sin_actividad') return d.a === 0;
+    if (estado === 'sin_actividad') return d.a === 0 && !d.bj;
     if (estado === 'nuevo') return d.nv;
     return true;
   });
 }
 
 function renderKPIs(filtered) {
-  const totalAct = filtered.reduce((a, d) => a + (d.bj ? 0 : d.a), 0);
+  const totalAct = filtered.reduce((a, d) => a + d.a, 0);
   const totalAnt = filtered.reduce((a, d) => a + d.b, 0);
   const varPct = totalAnt !== 0 ? ((totalAct - totalAnt) / totalAnt * 100) : 0;
   const vigentes = filtered.filter(d => !d.bj).length;
@@ -369,7 +370,6 @@ let chartPremierInstance = null;
 function renderCharts(filtered) {
   const bySub = {};
   filtered.forEach(d => {
-    if (d.bj) return;
     if (!bySub[d.st]) bySub[d.st] = {act: 0, ant: 0};
     bySub[d.st].act += d.a;
     bySub[d.st].ant += d.b;
@@ -398,7 +398,7 @@ function renderCharts(filtered) {
   });
 
   const premierAgg = {CHASEP: 0, MEJAB: 0};
-  filtered.forEach(d => { if (!d.bj) premierAgg[d.pr] = (premierAgg[d.pr] || 0) + d.a; });
+  filtered.forEach(d => { premierAgg[d.pr] = (premierAgg[d.pr] || 0) + d.a; });
 
   const ctx2 = document.getElementById('chartPremier').getContext('2d');
   if (chartPremierInstance) chartPremierInstance.destroy();
