@@ -232,6 +232,13 @@ const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const nice=s=>{const d=pd(s);return `martes ${d.getDate()} de ${MESES[d.getMonth()]}`};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 const keep=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+/* liga personal (?m=<speakerId>&f=<AAAA-MM-DD>&n=<nombre>): permite completar perfil desde otro teléfono o navegador */
+try{
+  const q=new URLSearchParams(location.search),m=q.get('m'),f=q.get('f'),n=(q.get('n')||'').trim();
+  if(m&&/^[\w-]{1,40}$/.test(m)&&f&&/^\d{4}-\d{2}-\d{2}$/.test(f)&&!(st.speakerId===m&&st.date===f)){
+    st={name:n||'Mentor',whatsapp:'',email:'',date:f,speakerId:m,draft:{nombre:n}};keep();
+  }else if(m&&st.speakerId===m&&n&&!st.name){st.name=n;keep()}
+}catch(e){}
 let selDate=null,photo=null;
 
 /* hora local */
