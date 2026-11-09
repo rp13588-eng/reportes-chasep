@@ -18,8 +18,9 @@ html,body{margin:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--crema);color:var(--tinta);line-height:1.4;-webkit-font-smoothing:antialiased}
 header{background:linear-gradient(160deg,var(--bosque) 0%,var(--pino) 70%,#24496f 100%);color:#fff;padding:22px 18px 6px;position:relative;overflow:hidden}
 header svg.mtn{position:absolute;right:-10px;bottom:44px;width:260px;opacity:.18}
-.brand{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--plata2)}
-.brand b{color:#fff;letter-spacing:.18em}
+.logos{display:flex;align-items:center;gap:14px}
+.logos:empty{display:none}
+.logos img{height:46px;width:auto}
 h1{margin:6px 0 2px;font-size:30px;line-height:1.05;letter-spacing:.02em;font-weight:800}
 h1 span{color:var(--hoja)}
 .sub{color:#dfe6df;font-size:14px;margin:0 0 16px}
@@ -110,9 +111,9 @@ footer{max-width:880px;margin:0 auto;padding:0 14px 30px;color:var(--plata);font
 <body>
 <header>
   <svg class="mtn" viewBox="0 0 260 120" aria-hidden="true"><path fill="#fff" d="M0 120 70 30l30 38 40-58 50 70 20-20 50 60z"/><path fill="#fff" d="M150 120l-8-30h-6l14-26 14 26h-6l-8 30zM200 120l-6-22h-5l11-20 11 20h-5l-6 22z"/></svg>
-  <div class="brand" id="logos"><b>CHASEP</b></div>
+  <div class="logos" id="logos"></div>
   <h1>I-TEAM <span>BOOTCAMP</span></h1>
-  <p class="sub">Camp Nature · Valle de Bravo · 3 días / 2 noches</p>
+  <p class="sub">CHASEP · Camp Nature · Valle de Bravo · 3 días / 2 noches</p>
   <div class="chips"><span class="chip">FORZA</span><span class="chip">DAMARO</span><span class="chip">HENKEM</span><span class="chip">ARLISSA</span></div>
 </header>
 <div class="tabbar">
