@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I-TEAM BOOTCAMP · Registro y avance</title>
+<meta name="description" content="Registro de asistentes y avance de calificación del I-TEAM BOOTCAMP · CHASEP">
+<style>
+:root{
+  --bosque:#1d3a2a; --pino:#2c5a3d; --musgo:#4f7d52; --hoja:#8db48a;
+  --crema:#f4f1e8; --papel:#fbfaf6; --azul:#064180; --azul2:#006BB5; --azulc:#e8f1fa;
+  --plata:#6b6e70; --plata2:#d7d9dc; --tinta:#1a1a1a;
+  --verde:#1e7d45; --rojo:#c0392b; --ambar:#c98a0b;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--crema);color:var(--tinta);line-height:1.4;-webkit-font-smoothing:antialiased}
+header{background:linear-gradient(160deg,var(--bosque) 0%,var(--pino) 70%,#24496f 100%);color:#fff;padding:22px 18px 0;position:relative;overflow:hidden}
+header svg.mtn{position:absolute;right:-10px;bottom:44px;width:260px;opacity:.18}
+.brand{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--plata2)}
+.brand b{color:#fff;letter-spacing:.18em}
+h1{margin:6px 0 2px;font-size:30px;line-height:1.05;letter-spacing:.02em;font-weight:800}
+h1 span{color:var(--hoja)}
+.sub{color:#dfe6df;font-size:14px;margin:0 0 16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 10px;font-size:12px}
+nav{display:flex;gap:4px;max-width:880px;margin:0 auto}
+nav button{flex:1;appearance:none;border:0;background:rgba(255,255,255,.10);color:#e6ece6;font-weight:700;font-size:15px;padding:12px 8px;border-radius:12px 12px 0 0;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--crema);color:var(--bosque)}
+main{max-width:880px;margin:0 auto;padding:18px 14px 60px}
+section[hidden]{display:none}
+.card{background:var(--papel);border:1px solid #e3dfd2;border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.card h2{margin:0 0 4px;font-size:18px;color:var(--bosque)}
+.card p.hint{margin:0 0 12px;color:#5b615b;font-size:13px}
+label{display:block;font-size:13px;font-weight:700;color:#38433a;margin:12px 0 5px}
+input,select{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid #cfd3c8;border-radius:10px;background:#fff;color:var(--tinta)}
+input:focus,select:focus{outline:none;border-color:var(--azul2);box-shadow:0 0 0 3px rgba(0,107,181,.15)}
+input[readonly]{background:#f1f2ee;color:#444}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.idbox{display:flex;gap:8px}
+.idbox input{flex:1}
+.found{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--azulc);color:var(--azul);font-size:14px;display:none}
+.found.ok{display:block}
+.found.warn{display:block;background:#fff4dc;color:#7a5200}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--pino);background:#fff;color:var(--pino);font-size:22px;font-weight:700;cursor:pointer}
+.stepper output{min-width:40px;text-align:center;font-size:22px;font-weight:800;color:var(--bosque)}
+.ticket{border:1.5px dashed #b9c4b3;border-radius:12px;padding:12px;margin-top:12px;background:#fff;position:relative}
+.ticket .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;margin-bottom:4px}
+.tag.part{background:#e2efe0;color:var(--pino)}
+.tag.acomp{background:#fff1d6;color:#8a5a00}
+.ticket .num{position:absolute;right:12px;top:10px;color:var(--plata);font-weight:800}
+.note{font-size:13px;color:#4a514b;background:#eef2ea;border-radius:10px;padding:10px 12px;margin-top:12px}
+.btn{display:block;width:100%;margin-top:16px;padding:14px;border:0;border-radius:12px;background:var(--azul);color:#fff;font-size:17px;font-weight:800;cursor:pointer}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.sec{background:#fff;color:var(--azul);border:1.5px solid var(--azul)}
+.err{color:var(--rojo);font-size:13px;margin-top:6px;min-height:1em}
+.done{text-align:center;padding:26px 16px}
+.done .folio{font-size:26px;font-weight:900;color:var(--azul);letter-spacing:.04em;margin:8px 0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--papel);border:1px solid #e3dfd2;border-radius:12px;padding:10px;text-align:center}
+.kpi b{display:block;font-size:24px;color:var(--bosque)}
+.kpi small{color:#5b615b;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--pino);padding:8px}
+th:first-child{border-radius:8px 0 0 0}th:last-child{border-radius:0 8px 0 0}
+td{padding:8px;border-bottom:1px solid #ebe8de;vertical-align:top}
+tr:nth-child(even) td{background:#f7f6f0}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.small{font-size:12px;color:#5b615b}
+.subhead{display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px}
+.subhead h3{margin:0;font-size:15px;color:var(--azul);letter-spacing:.08em;text-transform:uppercase}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--azulc);color:var(--azul)}
+.bar{height:12px;border-radius:999px;background:#e4e7df;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--musgo),var(--azul2))}
+.bar.ok i{background:linear-gradient(90deg,var(--verde),var(--musgo))}
+.meta{display:grid;grid-template-columns:90px 1fr 92px;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+.meta b{color:var(--bosque)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.s-verde{background:var(--verde)}.s-azul{background:var(--azul2)}.s-amarillo{background:var(--ambar)}.s-rojo{background:var(--rojo)}.s-gris{background:var(--plata2)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:#4a514b;margin:6px 0 4px}
+.top3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.top3 .card{padding:12px;margin:0}
+.top3 h4{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--azul)}
+.top3 ol{margin:0;padding-left:18px;font-size:13px}
+.show-m{display:none}
+.empty{text-align:center;color:#5b615b;padding:24px 10px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+footer{max-width:880px;margin:0 auto;padding:0 14px 30px;color:var(--plata);font-size:12px;text-align:center}
+@media (max-width:620px){
+  h1{font-size:26px}
+  .row{grid-template-columns:1fr}
+  .top3{grid-template-columns:1fr}
+  .meta{grid-template-columns:72px 1fr 78px;font-size:13px}
+  table{font-size:13px}
+  .hide-m{display:none}
+  .show-m{display:block}
+  .meta{grid-template-columns:104px 1fr 78px}
+}
+</style>
+</head>
+<body>
+<header>
+  <svg class="mtn" viewBox="0 0 260 120" aria-hidden="true"><path fill="#fff" d="M0 120 70 30l30 38 40-58 50 70 20-20 50 60z"/><path fill="#fff" d="M150 120l-8-30h-6l14-26 14 26h-6l-8 30zM200 120l-6-22h-5l11-20 11 20h-5l-6 22z"/></svg>
+  <div class="brand"><b>CHASEP</b> · Royal Prestige</div>
+  <h1>I-TEAM <span>BOOTCAMP</span></h1>
+  <p class="sub">Camp Nature · Valle de Bravo · 3 días / 2 noches</p>
+  <div class="chips"><span class="chip">FORZA</span><span class="chip">DAMARO</span><span class="chip">HENKEM</span><span class="chip">ARLISSA</span></div>
+  <nav role="tablist">
+    <button role="tab" id="tab-reg" aria-selected="true" data-t="registro">Registro</button>
+    <button role="tab" id="tab-av" aria-selected="false" data-t="avance">Avance</button>
+  </nav>
+</header>
+
+<main>
+<!-- ============ REGISTRO ============ -->
+<section id="registro">
+  <div class="card" id="formCard">
+    <h2>Registra tus boletos</h2>
+    <p class="hint">Escribe tu número de distribuidor, elige cuántos boletos quieres y llena los datos de cada persona.</p>
+
+    <label for="fid">Número de distribuidor</label>
+    <div class="idbox"><input id="fid" inputmode="numeric" autocomplete="off" placeholder="Ej. 72772" maxlength="6"></div>
+    <div id="found" class="found"></div>
+
+    <div class="row">
+      <div><label for="fnom">Nombre del distribuidor</label><input id="fnom" autocomplete="off"></div>
+      <div><label for="fsub">Subterritorio</label>
+        <select id="fsub"><option value="">Selecciona…</option><option>FORZA</option><option>DAMARO</option><option>HENKEM</option><option>ARLISSA</option></select></div>
+    </div>
+
+    <label>¿Cuántos boletos?</label>
+    <div class="stepper"><button type="button" id="menos" aria-label="Menos">−</button><output id="nbol">1</output><button type="button" id="mas" aria-label="Más">+</button></div>
+
+    <div id="tickets"></div>
+
+    <div class="note" id="nota"></div>
+    <div class="err" id="err"></div>
+    <button class="btn" id="enviar">Enviar registro</button>
+  </div>
+
+  <div class="card done" id="doneCard" hidden>
+    <div style="font-size:40px">🏕️</div>
+    <h2>¡Registro recibido!</h2>
+    <div class="small">Tu folio</div>
+    <div class="folio" id="folio"></div>
+    <div id="resumen" class="small"></div>
+    <button class="btn sec" id="otro">Registrar otro</button>
+  </div>
+
+  <div class="subhead"><h3>Registrados</h3><span class="pill" id="regAct">cargando…</span></div>
+  <div class="kpis">
+    <div class="kpi"><b id="kReg">–</b><small>registros</small></div>
+    <div class="kpi"><b id="kBol">–</b><small>boletos</small></div>
+    <div class="kpi"><b id="kAco">–</b><small>acompañantes</small></div>
+  </div>
+  <div class="card scroll" id="listaReg"><div class="empty">Cargando registros…</div></div>
+</section>
+
+<!-- ============ AVANCE ============ -->
+<section id="avance" hidden>
+  <div id="avanceBox"><div class="card empty">Cargando avance…</div></div>
+</section>
+</main>
+<footer>I-TEAM BOOTCAMP · CHASEP · Territorio 13588</footer>
+
+<script>
+(function(){
+'use strict';
+var FORM='https://docs.google.com/forms/d/e/1FAIpQLSeS7SaRbIC2PT04nn5A5RGmxzIUG9g0E3U1zwxLxCo8z_1nZQ/formResponse';
+var F={id:'entry.513435289',nom:'entry.224472429',sub:'entry.2131347231',bol:'entry.362294660',det:'entry.442358397',por:'entry.1134189497',folio:'entry.1786864295'};
+var CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vRpa9qLXxYuoOgDxRfbOM9XLiGEi1H-mFJmyMSP66nHWaUTl_RisfyTfqlV24wxvBXHaNHi8yWKvbFL/pub?gid=875669034&single=true&output=csv';
+var BOLETO=7500, MAXB=10;
+var qs=new URLSearchParams(location.search);
+var OFICINA=qs.has('oficina');
+var P={}, PL=[], REG=[], AV=null;
+var $=function(id){return document.getElementById(id)};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var money=function(n){return '$'+Math.round(n).toLocaleString('es-MX')};
+var usd=function(n){return n==null?'–':'$'+Math.round(n).toLocaleString('en-US')};
+
+/* ---------- tabs ---------- */
+function show(t){
+  document.querySelectorAll('nav button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t)});
+  $('registro').hidden=t!=='registro'; $('avance').hidden=t!=='avance';
+  try{history.replaceState(null,'',(OFICINA?'?oficina':'')+'#'+t)}catch(e){}
+}
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){show(b.dataset.t)}});
+if(location.hash==='#avance') show('avance');
+
+/* ---------- datos ---------- */
+fetch('participantes.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){
+  PL=d.participantes; PL.forEach(function(p){P[p.id]=p}); lookup(); renderAvance();
+}).catch(function(){});
+fetch('avance.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){AV=d;renderAvance()}).catch(function(){AV=null;renderAvance()});
+loadReg();
+
+/* ---------- formulario ---------- */
+var n=1, base=1, cur=null;
+function incluidos(){return cur&&cur.pareja?2:1}
+function lookup(){
+  var v=$('fid').value.replace(/\D/g,''); $('fid').value=v; cur=P[v]||null;
+  var f=$('found'); f.className='found';
+  if(cur){
+    $('fnom').value=cur.nombre; $('fnom').readOnly=true;
+    $('fsub').value=cur.sub; $('fsub').disabled=true;
+    f.className='found ok';
+    f.innerHTML='✔ '+esc(cur.nombre)+' · '+esc(cur.sub)+' · '+(cur.tipo==='DJ'?'DJ':'Distribuidor autorizado')+(cur.pareja?' · pareja (2 lugares)':'');
+    var prev=REG.filter(function(r){return r.id===v&&!/cancel/i.test(r.estatus)});
+    if(prev.length){f.className='found warn';f.innerHTML+='<br>⚠️ Ya hay '+prev.length+' registro(s) con este número (folio '+esc(prev.map(function(r){return r.folio}).join(', '))+'). Si quieres agregar boletos, adelante; para cambiar uno existente avisa a la oficina.'}
+  }else{
+    $('fnom').readOnly=false; $('fsub').disabled=false;
+    if(v.length>=4){f.className='found warn';f.textContent='No encontramos ese número en FORZA, DAMARO, HENKEM o ARLISSA. Si eres alta nueva, escribe tu nombre y subterritorio.'}
+  }
+  base=incluidos(); if(n<base) n=base; drawTickets();
+}
+$('fid').addEventListener('input',lookup);
+$('menos').onclick=function(){if(n>1){n--;drawTickets()}};
+$('mas').onclick=function(){if(n<MAXB){n++;drawTickets()}};
+
+function drawTickets(){
+  $('nbol').textContent=n;
+  var box=$('tickets'), old={};
+  box.querySelectorAll('.ticket').forEach(function(t,i){old[i]={n:t.querySelector('.tn').value,w:t.querySelector('.tw').value,s:t.querySelector('.ts').value}});
+  var h='';
+  for(var i=0;i<n;i++){
+    var acomp=i>=incluidos();
+    var o=old[i]||{n:'',w:'',s:''};
+    if(i===0&&!o.n&&cur&&!cur.pareja) o.n=cur.nombre;
+    if(cur&&cur.pareja&&i<2&&!o.n){var pts=cur.nombre.split(' & ');o.n=pts[i]||''}
+    h+='<div class="ticket"><span class="num">#'+(i+1)+'</span>'+
+      '<span class="tag '+(acomp?'acomp':'part')+'">'+(acomp?'Acompañante':'Participante')+'</span>'+
+      '<label>Nombre completo</label><input class="tn" value="'+esc(o.n)+'" autocomplete="off">'+
+      '<div class="row"><div><label>WhatsApp (10 dígitos)</label><input class="tw" inputmode="tel" maxlength="14" placeholder="55 1234 5678" value="'+esc(o.w)+'"></div>'+
+      '<div><label>Talla de playera</label><select class="ts">'+['','XS','S','M','L','XL','XXL'].map(function(s){return '<option'+(s===o.s?' selected':'')+' value="'+s+'">'+(s||'Selecciona…')+'</option>'}).join('')+'</select></div></div></div>';
+  }
+  box.innerHTML=h;
+  var a=Math.max(0,n-incluidos());
+  $('nota').innerHTML='Boleto: <b>'+money(BOLETO)+' MXN</b> por persona, en 3 pagos (nov, dic, ene). '+
+    'Si calificas, tu lugar queda cubierto total o parcialmente según las reglas del incentivo.'+
+    (a?'<br><b>'+a+' acompañante'+(a>1?'s':'')+'</b> · '+money(a*BOLETO)+' MXN (cada uno paga su lugar).':'');
+}
+drawTickets();
+
+$('enviar').onclick=function(){
+  var err=$('err'); err.textContent='';
+  var id=$('fid').value.trim(), nom=$('fnom').value.trim(), sub=$('fsub').value;
+  if(!/^\d{4,6}$/.test(id)) return err.textContent='Escribe tu número de distribuidor.';
+  if(!nom) return err.textContent='Escribe el nombre del distribuidor.';
+  if(!sub) return err.textContent='Elige tu subterritorio.';
+  var ts=[],bad=false;
+  document.querySelectorAll('#tickets .ticket').forEach(function(t,i){
+    var nm=t.querySelector('.tn').value.replace(/[|;]/g,' ').replace(/\s+/g,' ').trim();
+    var w=t.querySelector('.tw').value.replace(/\D/g,'');
+    var s=t.querySelector('.ts').value;
+    if(w.length===12&&w.indexOf('52')===0) w=w.slice(2);
+    if(w.length===13&&w.indexOf('521')===0) w=w.slice(3);
+    if(!nm||w.length!==10||!s){bad=true;t.style.borderColor='#c0392b'}else t.style.borderColor='';
+    ts.push({n:nm,t:i>=incluidos()?'Acompañante':'Participante',s:s,w:w});
+  });
+  if(bad) return err.textContent='Completa nombre, WhatsApp (10 dígitos) y talla en cada boleto.';
+  var folio='BC-'+id+'-'+Date.now().toString(36).slice(-5).toUpperCase();
+  var det=ts.map(function(x){return [x.n,x.t,x.s,x.w].join('|')}).join(';');
+  var body=new URLSearchParams();
+  body.append(F.id,id);body.append(F.nom,nom);body.append(F.sub,sub);body.append(F.bol,String(ts.length));
+  body.append(F.det,det);body.append(F.por,OFICINA?'Oficina':'Distribuidor');body.append(F.folio,folio);
+  var b=$('enviar'); b.disabled=true; b.textContent='Enviando…';
+  fetch(FORM,{method:'POST',mode:'no-cors',body:body}).then(function(){
+    $('formCard').hidden=true; $('doneCard').hidden=false;
+    $('folio').textContent=folio;
+    var a=ts.filter(function(x){return x.t==='Acompañante'}).length;
+    $('resumen').innerHTML=esc(nom)+' · '+esc(sub)+'<br>'+ts.length+' boleto'+(ts.length>1?'s':'')+(a?' ('+a+' acompañante'+(a>1?'s':'')+')':'')+'<br>'+ts.map(function(x){return esc(x.n)+' · talla '+esc(x.s)}).join('<br>')+'<br><br>Guarda tu folio. La lista se actualiza en unos minutos.';
+    REG.push({id:id,nombre:nom,sub:sub,boletos:ts.length,det:ts.map(function(x){return {n:x.n,t:x.t,s:x.s}}),folio:folio,estatus:'',fecha:'',pend:true});
+    renderReg();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }).catch(function(){err.textContent='No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'}).finally(function(){b.disabled=false;b.textContent='Enviar registro'});
+};
+$('otro').onclick=function(){
+  $('doneCard').hidden=true;$('formCard').hidden=false;
+  $('fid').value='';$('fnom').value='';$('fsub').value='';cur=null;n=1;$('found').className='found';
+  $('fnom').readOnly=false;$('fsub').disabled=false;$('tickets').innerHTML='';drawTickets();
+};
+
+/* ---------- lista de registros (CSV público, sin teléfonos) ---------- */
+function parseCSV(t){
+  var rows=[],row=[],f='',q=false;
+  for(var i=0;i<t.length;i++){var c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true; else if(c===','){row.push(f);f=''} else if(c==='\n'){row.push(f);rows.push(row);row=[];f=''} else if(c!=='\r')f+=c;}
+  if(f||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+function loadReg(){
+  fetch(CSV,{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+    var rows=parseCSV(t).slice(1).filter(function(r){return r[1]});
+    var pend=REG.filter(function(r){return r.pend});
+    REG=rows.map(function(r){
+      var det=(r[5]||'').split(';').filter(Boolean).map(function(x){var p=x.split('|');return {n:p[0],t:p[1],s:p[2]}});
+      return {fecha:r[0],id:r[1].trim(),nombre:r[2],sub:r[3],boletos:+r[4]||det.length,det:det,por:r[6],folio:r[7],estatus:r[8]||''};
+    });
+    pend.forEach(function(p){if(!REG.some(function(r){return r.folio===p.folio}))REG.push(p)});
+    $('regAct').textContent='actualizado '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+    renderReg(); lookup();
+  }).catch(function(){$('regAct').textContent='sin conexión';$('listaReg').innerHTML='<div class="empty">No se pudo cargar la lista. Intenta más tarde.</div>'});
+}
+setInterval(loadReg,120000);
+function renderReg(){
+  var act=REG.filter(function(r){return !/cancel/i.test(r.estatus)});
+  var bol=0,aco=0; act.forEach(function(r){bol+=r.det.length||r.boletos;aco+=r.det.filter(function(d){return d.t==='Acompañante'}).length});
+  $('kReg').textContent=act.length;$('kBol').textContent=bol;$('kAco').textContent=aco;
+  if(!act.length){$('listaReg').innerHTML='<div class="empty">Aún no hay registros. ¡Sé el primero! 🏕️</div>';return}
+  var h='';
+  ['FORZA','DAMARO','HENKEM','ARLISSA','OTRO'].forEach(function(s){
+    var g=act.filter(function(r){return (['FORZA','DAMARO','HENKEM','ARLISSA'].indexOf(r.sub)>=0?r.sub:'OTRO')===s});
+    if(!g.length)return;
+    var gb=g.reduce(function(a,r){return a+(r.det.length||r.boletos)},0);
+    h+='<div class="subhead"><h3>'+s+'</h3><span class="pill">'+gb+' boleto'+(gb>1?'s':'')+'</span></div><table><thead><tr><th>ID</th><th>Distribuidor</th><th>Boletos</th><th class="hide-m">Folio</th></tr></thead><tbody>';
+    g.forEach(function(r){
+      h+='<tr><td>'+esc(r.id)+'</td><td><b>'+esc(r.nombre)+'</b><div class="small">'+r.det.map(function(d){return esc(d.n)+(d.t==='Acompañante'?' <i>(acomp.)</i>':'')}).join(' · ')+'</div></td><td class="n">'+(r.det.length||r.boletos)+(r.pend?' ⏳':'')+'</td><td class="hide-m small">'+esc(r.folio)+'</td></tr>';
+    });
+    h+='</tbody></table>';
+  });
+  $('listaReg').innerHTML=h;
+}
+
+/* ---------- avance ---------- */
+var ST={verde:['s-verde','Calificado completo'],azul:['s-azul','Calificado subsidiado'],amarillo:['s-amarillo','En ritmo'],rojo:['s-rojo','En riesgo'],gris:['s-gris','Sin corte']};
+function renderAvance(){
+  var box=$('avanceBox'); if(!PL.length)return;
+  var legend='<div class="legend">'+['verde','azul','amarillo','rojo'].map(function(k){return '<span><i class="dot '+ST[k][0]+'"></i>'+ST[k][1]+'</span>'}).join('')+'</div>';
+  var reglas='<div class="card"><h2>Cómo se califica</h2><p class="hint">Periodo: 1 nov – 31 dic 2026. Calificación individual.</p>'+
+    '<table><thead><tr><th>Nivel</th><th>Ventas</th><th>Compras</th><th>Recluta</th></tr></thead><tbody>'+
+    '<tr><td><i class="dot s-verde"></i>Boleto completo</td><td class="n">30,000 USD</td><td class="n">8,000 USD</td><td>1</td></tr>'+
+    '<tr><td><i class="dot s-azul"></i>Boleto subsidiado</td><td class="n">24,000 USD</td><td class="n">6,000 USD</td><td>1</td></tr>'+
+    '<tr><td>Pareja oficial (2 boletos)</td><td class="n">45,000 USD</td><td class="n">12,000 USD</td><td>1</td></tr></tbody></table>'+
+    '<p class="small" style="margin-top:8px">Compras = mercancía sin premiums. Recluta = código nuevo dado de alta en nov–dic con al menos 1 venta, directo o en tu organización.</p></div>';
+  if(!AV||!AV.participantes){
+    var h='<div class="card"><h2>Avance de calificación</h2><p class="hint">El primer corte se publica el lunes a las 6:00 pm. Aquí verás ventas, compras y estatus de cada participante.</p>'+legend+'</div>';
+    ['FORZA','DAMARO','HENKEM','ARLISSA'].forEach(function(s){
+      var g=PL.filter(function(p){return p.sub===s&&!p.anfitrion});
+      h+='<div class="subhead"><h3>'+s+'</h3><span class="pill">'+g.length+' participantes</span></div><div class="card scroll"><table><thead><tr><th>Participante</th><th>Tipo</th><th>Estatus</th></tr></thead><tbody>'+
+        g.map(function(p){return '<tr><td>'+esc(p.nombre)+'<div class="small">'+esc(p.id)+'</div></td><td>'+(p.tipo==='DJ'?'DJ':'Dist.')+'</td><td style="white-space:nowrap"><i class="dot s-gris"></i>Sin corte</td></tr>'}).join('')+'</tbody></table></div>';
+    });
+    box.innerHTML=h+reglas; return;
+  }
+  var A=AV, h='';
+  h+='<div class="card"><h2>Corte al '+esc(A.corte_texto||A.corte)+'</h2><p class="hint">Faltan <b>'+esc(A.dias_restantes)+' días</b> para el cierre (31 dic). Ritmo esperado hoy: '+usd(A.ritmo_24k)+' de ventas para ir en camino al subsidiado.</p>'+legend+'</div>';
+  if(A.subterritorios&&A.subterritorios.length){
+    h+='<div class="card"><h2>Meta mensual de compras por subterritorio</h2><p class="hint">Se mide cada mes por separado (noviembre y diciembre).</p>';
+    A.subterritorios.forEach(function(s){
+      ['nov','dic'].forEach(function(m){
+        var c=s['compras_'+m]; if(c==null)return; var pct=Math.min(100,Math.round(c/s.meta*100));
+        h+='<div class="meta"><b>'+esc(s.sub)+' '+m+'</b><div class="bar'+(c>=s.meta?' ok':'')+'"><i style="width:'+pct+'%"></i></div><span class="n small">'+usd(c)+' / '+usd(s.meta).replace('$','')+'</span></div>';
+      });
+    });
+    h+='</div>';
+  }
+  if(A.top){
+    var nm=function(id){return P[id]?P[id].nombre:id};
+    h+='<div class="top3">'+[['Top DJ',A.top.dj,nm],['Top Distribuidor',A.top.dist,nm],['Top Subterritorio',A.top.sub,function(x){return x}]].map(function(t){
+      return '<div class="card"><h4>'+t[0]+'</h4><ol>'+(t[1]||[]).slice(0,3).map(function(x){return '<li>'+esc(t[2](x))+'</li>'}).join('')+'</ol></div>'}).join('')+'</div>';
+  }
+  [['DJ','DJs'],['Distribuidor','Distribuidores autorizados']].forEach(function(tp){
+    var g=A.participantes.filter(function(p){return (p.tipo||(P[p.id]&&P[p.id].tipo))===tp[0]}).sort(function(a,b){return (b.ventas||0)-(a.ventas||0)});
+    if(!g.length)return;
+    h+='<div class="subhead"><h3>'+tp[1]+'</h3><span class="pill">'+g.length+'</span></div><div class="card scroll"><table><thead><tr><th>Participante</th><th>Ventas</th><th>Compras</th><th>Recluta</th><th class="hide-m">Le falta</th></tr></thead><tbody>';
+    g.forEach(function(p){
+      var st=ST[p.estatus]||ST.gris, nombre=p.nombre||(P[p.id]&&P[p.id].nombre)||p.id;
+      h+='<tr><td><i class="dot '+st[0]+'" title="'+st[1]+'"></i><b>'+esc(nombre)+'</b><div class="small">'+esc(p.sub||'')+' · '+esc(p.id)+'</div><div class="small show-m">'+(p.falta?'Falta: '+esc(p.falta):'')+'</div></td>'+
+        '<td class="n">'+usd(p.ventas)+'</td><td class="n">'+usd(p.compras)+'</td><td>'+(p.recluta?'✔':'✖')+'</td><td class="hide-m small">'+esc(p.falta||'')+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  });
+  box.innerHTML=h+reglas;
+}
+})();
+</script>
+</body>
+</html>
