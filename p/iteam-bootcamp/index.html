@@ -16,7 +16,7 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--crema);color:var(--tinta);line-height:1.4;-webkit-font-smoothing:antialiased}
-header{background:linear-gradient(160deg,var(--bosque) 0%,var(--pino) 70%,#24496f 100%);color:#fff;padding:22px 18px 0;position:relative;overflow:hidden}
+header{background:linear-gradient(160deg,var(--bosque) 0%,var(--pino) 70%,#24496f 100%);color:#fff;padding:22px 18px 6px;position:relative;overflow:hidden}
 header svg.mtn{position:absolute;right:-10px;bottom:44px;width:260px;opacity:.18}
 .brand{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--plata2)}
 .brand b{color:#fff;letter-spacing:.18em}
@@ -25,9 +25,16 @@ h1 span{color:var(--hoja)}
 .sub{color:#dfe6df;font-size:14px;margin:0 0 16px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 10px;font-size:12px}
-nav{display:flex;gap:4px;max-width:880px;margin:0 auto}
-nav button{flex:1;appearance:none;border:0;background:rgba(255,255,255,.10);color:#e6ece6;font-weight:700;font-size:15px;padding:12px 8px;border-radius:12px 12px 0 0;cursor:pointer}
-nav button[aria-selected="true"]{background:var(--crema);color:var(--bosque)}
+.tabbar{position:sticky;top:0;z-index:20;background:var(--bosque);padding:10px 14px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+nav{display:flex;gap:6px;max-width:880px;margin:0 auto;background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.28);border-radius:16px;padding:5px}
+nav button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;appearance:none;border:0;background:transparent;color:#e9efe9;font-weight:800;font-size:16px;letter-spacing:.04em;text-transform:uppercase;padding:13px 8px;border-radius:12px;cursor:pointer;transition:background .15s,color .15s}
+nav button svg{width:20px;height:20px;flex:none}
+nav button .cnt{font-size:12px;font-weight:800;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 8px;letter-spacing:0}
+nav button[aria-selected="true"]{background:#fff;color:var(--azul);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+nav button[aria-selected="true"] .cnt{background:var(--azul);color:#fff}
+nav button:focus-visible{outline:3px solid var(--hoja);outline-offset:2px}
+.sectitle{display:flex;align-items:center;gap:10px;margin:2px 0 14px;padding:12px 14px;border-radius:12px;background:var(--azul);color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:15px}
+.sectitle.av{background:var(--pino)}
 main{max-width:880px;margin:0 auto;padding:18px 14px 60px}
 section[hidden]{display:none}
 .card{background:var(--papel);border:1px solid #dde3e0;border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
@@ -103,19 +110,22 @@ footer{max-width:880px;margin:0 auto;padding:0 14px 30px;color:var(--plata);font
 <body>
 <header>
   <svg class="mtn" viewBox="0 0 260 120" aria-hidden="true"><path fill="#fff" d="M0 120 70 30l30 38 40-58 50 70 20-20 50 60z"/><path fill="#fff" d="M150 120l-8-30h-6l14-26 14 26h-6l-8 30zM200 120l-6-22h-5l11-20 11 20h-5l-6 22z"/></svg>
-  <div class="brand"><b>CHASEP</b> · Royal Prestige</div>
+  <div class="brand" id="logos"><b>CHASEP</b></div>
   <h1>I-TEAM <span>BOOTCAMP</span></h1>
   <p class="sub">Camp Nature · Valle de Bravo · 3 días / 2 noches</p>
   <div class="chips"><span class="chip">FORZA</span><span class="chip">DAMARO</span><span class="chip">HENKEM</span><span class="chip">ARLISSA</span></div>
-  <nav role="tablist">
-    <button role="tab" id="tab-reg" aria-selected="true" data-t="registro">Registro</button>
-    <button role="tab" id="tab-av" aria-selected="false" data-t="avance">Avance</button>
-  </nav>
 </header>
+<div class="tabbar">
+  <nav role="tablist" aria-label="Secciones">
+    <button role="tab" id="tab-reg" aria-selected="true" aria-controls="registro" data-t="registro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 12 4l9 16z"/><path d="M12 20v-6"/></svg>Registro<span class="cnt" id="cReg">0</span></button>
+    <button role="tab" id="tab-av" aria-selected="false" aria-controls="avance" data-t="avance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Avance</button>
+  </nav>
+</div>
 
 <main>
 <!-- ============ REGISTRO ============ -->
 <section id="registro">
+  <div class="sectitle">Registro de asistentes</div>
   <div class="card" id="formCard">
     <h2>Registra tus boletos</h2>
     <p class="hint">Escribe tu número de distribuidor, elige cuántos boletos quieres y llena los datos de cada persona.</p>
@@ -160,6 +170,7 @@ footer{max-width:880px;margin:0 auto;padding:0 14px 30px;color:var(--plata);font
 
 <!-- ============ AVANCE ============ -->
 <section id="avance" hidden>
+  <div class="sectitle av">Avance de calificación · solo registrados</div>
   <div id="avanceBox"><div class="card empty">Cargando avance…</div></div>
 </section>
 </main>
@@ -184,6 +195,7 @@ var usd=function(n){return n==null?'–':'$'+Math.round(n).toLocaleString('en-US
 function show(t){
   document.querySelectorAll('nav button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t)});
   $('registro').hidden=t!=='registro'; $('avance').hidden=t!=='avance';
+  var tb=document.querySelector('.tabbar'); if(tb&&window.scrollY>tb.offsetTop) window.scrollTo({top:tb.offsetTop});
   try{history.replaceState(null,'',(OFICINA?'?oficina':'')+'#'+t)}catch(e){}
 }
 document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){show(b.dataset.t)}});
@@ -308,7 +320,7 @@ setInterval(loadReg,120000);
 function renderReg(){
   var act=REG.filter(function(r){return !/cancel/i.test(r.estatus)});
   var bol=0,aco=0; act.forEach(function(r){bol+=r.det.length||r.boletos;aco+=r.det.filter(function(d){return d.t==='Acompañante'}).length});
-  $('kReg').textContent=act.length;$('kBol').textContent=bol;$('kAco').textContent=aco;
+  $('kReg').textContent=act.length; $('cReg').textContent=act.length; renderAvance();$('kBol').textContent=bol;$('kAco').textContent=aco;
   if(!act.length){$('listaReg').innerHTML='<div class="empty">Aún no hay registros. ¡Sé el primero! 🏕️</div>';return}
   var h='';
   ['FORZA','DAMARO','HENKEM','ARLISSA','OTRO'].forEach(function(s){
@@ -328,6 +340,8 @@ function renderReg(){
 var ST={verde:['s-verde','Calificado completo'],azul:['s-azul','Calificado subsidiado'],amarillo:['s-amarillo','En ritmo'],rojo:['s-rojo','En riesgo'],gris:['s-gris','Sin corte']};
 function renderAvance(){
   var box=$('avanceBox'); if(!PL.length)return;
+  var RID={}; REG.forEach(function(r){if(!/cancel/i.test(r.estatus))RID[r.id]=1});
+  var esReg=function(id){return !!RID[id]};
   var legend='<div class="legend">'+['verde','azul','amarillo','rojo'].map(function(k){return '<span><i class="dot '+ST[k][0]+'"></i>'+ST[k][1]+'</span>'}).join('')+'</div>';
   var reglas='<div class="card"><h2>Cómo se califica</h2><p class="hint">Periodo: 1 nov – 31 dic 2026. Calificación individual.</p>'+
     '<table><thead><tr><th>Nivel</th><th>Ventas</th><th>Compras</th><th>Recluta</th></tr></thead><tbody>'+
@@ -336,12 +350,15 @@ function renderAvance(){
     '<tr><td>Pareja oficial (2 boletos)</td><td class="n">45,000 USD</td><td class="n">12,000 USD</td><td>1</td></tr></tbody></table>'+
     '<p class="small" style="margin-top:8px">Compras = mercancía sin premiums. Recluta = código nuevo dado de alta en nov–dic con al menos 1 venta, directo o en tu organización.</p></div>';
   if(!AV||!AV.participantes){
-    var h='<div class="card"><h2>Avance de calificación</h2><p class="hint">El primer corte se publica el lunes a las 6:00 pm. Aquí verás ventas, compras y estatus de cada participante.</p>'+legend+'</div>';
+    var h='<div class="card"><h2>Avance de calificación</h2><p class="hint">Aquí aparecen los distribuidores conforme se registran. El primer corte se publica el lunes a las 6:00 pm con ventas, compras y estatus.</p>'+legend+'</div>';
+    var any=false;
     ['FORZA','DAMARO','HENKEM','ARLISSA'].forEach(function(s){
-      var g=PL.filter(function(p){return p.sub===s&&!p.anfitrion});
+      var g=PL.filter(function(p){return p.sub===s&&!p.anfitrion&&esReg(p.id)});
+      if(!g.length)return; any=true;
       h+='<div class="subhead"><h3>'+s+'</h3><span class="pill">'+g.length+' participantes</span></div><div class="card scroll"><table><thead><tr><th>Participante</th><th>Tipo</th><th>Estatus</th></tr></thead><tbody>'+
         g.map(function(p){return '<tr><td>'+esc(p.nombre)+'<div class="small">'+esc(p.id)+'</div></td><td>'+(p.tipo==='DJ'?'DJ':'Dist.')+'</td><td style="white-space:nowrap"><i class="dot s-gris"></i>Sin corte</td></tr>'}).join('')+'</tbody></table></div>';
     });
+    if(!any)h+='<div class="card empty">Aún no hay distribuidores registrados. Cuando se registren aparecerán aquí con su avance. 🏕️</div>';
     box.innerHTML=h+reglas; return;
   }
   var A=AV, h='';
@@ -356,13 +373,21 @@ function renderAvance(){
     });
     h+='</div>';
   }
-  if(A.top){
-    var nm=function(id){return P[id]?P[id].nombre:id};
-    h+='<div class="top3">'+[['Top DJ',A.top.dj,nm],['Top Distribuidor',A.top.dist,nm],['Top Subterritorio',A.top.sub,function(x){return x}]].map(function(t){
-      return '<div class="card"><h4>'+t[0]+'</h4><ol>'+(t[1]||[]).slice(0,3).map(function(x){return '<li>'+esc(t[2](x))+'</li>'}).join('')+'</ol></div>'}).join('')+'</div>';
+  var R=(A.participantes||[]).filter(function(p){return esReg(p.id)});
+  var tipoDe=function(p){return p.tipo||(P[p.id]&&P[p.id].tipo)};
+  var val=function(p){return Math.min(p.ventas||0,(p.compras||0)*3.75)};
+  var nmOf=function(p){return p.nombre||(P[p.id]&&P[p.id].nombre)||p.id};
+  if(R.length){
+    var rk=function(t){return R.filter(function(p){return tipoDe(p)===t&&val(p)>0}).sort(function(a,b){return val(b)-val(a)}).slice(0,3).map(nmOf)};
+    var ss={}; R.forEach(function(p){if(p.sub)ss[p.sub]=(ss[p.sub]||0)+val(p)});
+    var rs=Object.keys(ss).filter(function(k){return ss[k]>0}).sort(function(a,b){return ss[b]-ss[a]}).slice(0,3);
+    h+='<div class="top3">'+[['Top DJ',rk('DJ')],['Top Distribuidor',rk('Distribuidor')],['Top Subterritorio',rs]].map(function(t){
+      return '<div class="card"><h4>'+t[0]+'</h4>'+(t[1].length?'<ol>'+t[1].map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol>':'<div class="small">Sin ventas aún</div>')+'</div>'}).join('')+'</div>';
+  }else{
+    h+='<div class="card empty">Aún no hay distribuidores registrados. Cuando se registren aparecerán aquí con su avance. 🏕️</div>';
   }
   [['DJ','DJs'],['Distribuidor','Distribuidores autorizados']].forEach(function(tp){
-    var g=A.participantes.filter(function(p){return (p.tipo||(P[p.id]&&P[p.id].tipo))===tp[0]}).sort(function(a,b){return (b.ventas||0)-(a.ventas||0)});
+    var g=R.filter(function(p){return tipoDe(p)===tp[0]}).sort(function(a,b){return (b.ventas||0)-(a.ventas||0)});
     if(!g.length)return;
     h+='<div class="subhead"><h3>'+tp[1]+'</h3><span class="pill">'+g.length+'</span></div><div class="card scroll"><table><thead><tr><th>Participante</th><th>Ventas</th><th>Compras</th><th>Recluta</th><th class="hide-m">Le falta</th></tr></thead><tbody>';
     g.forEach(function(p){
