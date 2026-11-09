@@ -352,9 +352,9 @@ function renderAvance(){
   var legend='<div class="legend">'+['verde','azul','amarillo','rojo'].map(function(k){return '<span><i class="dot '+ST[k][0]+'"></i>'+ST[k][1]+'</span>'}).join('')+'</div>';
   var reglas='<div class="card"><h2>Cómo se califica</h2><p class="hint">Periodo: 1 nov – 31 dic 2026. Calificación individual.</p>'+
     '<table><thead><tr><th>Nivel</th><th>Ventas</th><th>Compras</th><th>Recluta</th></tr></thead><tbody>'+
-    '<tr><td><i class="dot s-verde"></i>Boleto completo</td><td class="n">30,000 USD</td><td class="n">8,000 USD</td><td>1</td></tr>'+
-    '<tr><td><i class="dot s-azul"></i>Boleto subsidiado</td><td class="n">24,000 USD</td><td class="n">6,000 USD</td><td>1</td></tr>'+
-    '<tr><td>Pareja oficial (2 boletos)</td><td class="n">45,000 USD</td><td class="n">12,000 USD</td><td>1</td></tr></tbody></table>'+
+    '<tr><td><i class="dot s-verde"></i>Boleto completo</td><td class="n">24,000 USD</td><td class="n">8,000 USD</td><td>1</td></tr>'+
+    '<tr><td><i class="dot s-azul"></i>Boleto subsidiado</td><td class="n">20,000 USD</td><td class="n">6,500 USD</td><td>1</td></tr>'+
+    '<tr><td>Pareja oficial (2 boletos)</td><td class="n">36,000 USD</td><td class="n">12,000 USD</td><td>1</td></tr></tbody></table>'+
     '<p class="small" style="margin-top:8px">Compras = mercancía sin premiums. Recluta = código nuevo dado de alta en nov–dic con al menos 1 venta, directo o en tu organización.</p></div>';
   if(!AV||!AV.participantes){
     var h='<div class="card"><h2>Avance de calificación</h2><p class="hint">Aquí aparecen los distribuidores conforme se registran. El primer corte se publica el lunes a las 6:00 pm con ventas, compras y estatus.</p>'+legend+'</div>';
@@ -369,7 +369,7 @@ function renderAvance(){
     box.innerHTML=h+reglas; return;
   }
   var A=AV, h='';
-  h+='<div class="card"><h2>Corte al '+esc(A.corte_texto||A.corte)+'</h2><p class="hint">Faltan <b>'+esc(A.dias_restantes)+' días</b> para el cierre (31 dic). Ritmo esperado hoy: '+usd(A.ritmo_24k)+' de ventas para ir en camino al subsidiado.</p>'+legend+'</div>';
+  h+='<div class="card"><h2>Corte al '+esc(A.corte_texto||A.corte)+'</h2><p class="hint">Faltan <b>'+esc(A.dias_restantes)+' días</b> para el cierre (31 dic). Ritmo esperado hoy: '+usd(A.ritmo_sub!=null?A.ritmo_sub:A.ritmo_24k)+' de ventas para ir en camino al subsidiado.</p>'+legend+'</div>';
   if(A.subterritorios&&A.subterritorios.length){
     h+='<div class="card"><h2>Meta mensual de compras por subterritorio</h2><p class="hint">Se mide cada mes por separado (noviembre y diciembre).</p>';
     A.subterritorios.forEach(function(s){
@@ -382,7 +382,7 @@ function renderAvance(){
   }
   var R=(A.participantes||[]).filter(function(p){return esReg(p.id)});
   var tipoDe=function(p){return p.tipo||(P[p.id]&&P[p.id].tipo)};
-  var val=function(p){return Math.min(p.ventas||0,(p.compras||0)*3.75)};
+  var val=function(p){return Math.min(p.ventas||0,(p.compras||0)*3)};
   var nmOf=function(p){return p.nombre||(P[p.id]&&P[p.id].nombre)||p.id};
   if(R.length){
     var rk=function(t){return R.filter(function(p){return tipoDe(p)===t&&val(p)>0}).sort(function(a,b){return val(b)-val(a)}).slice(0,3).map(nmOf)};

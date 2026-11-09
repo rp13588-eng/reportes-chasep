@@ -11,9 +11,11 @@ Página: https://rp13588-eng.github.io/reportes-chasep/p/iteam-bootcamp/ (oficin
 - `participantes.json`: lista de participantes (regenerar con `build_participantes.py` en cada corte).
 - `avance.json`: lo escribe el corte de los lunes. Esquema:
 ```json
-{"corte":"AAAA-MM-DD","corte_texto":"16 nov 2026","dias_restantes":45,"ritmo_24k":6295,
+{"corte":"AAAA-MM-DD","corte_texto":"16 nov 2026","dias_restantes":45,"ritmo_sub":5246,
  "subterritorios":[{"sub":"FORZA","meta":40000,"compras_nov":0,"compras_dic":null,"ventas":0,"calificados":0}],
  "top":{"dj":["id"],"dist":["id"],"sub":["FORZA"]},
  "participantes":[{"id":"72772","nombre":"…","sub":"FORZA","tipo":"DJ|Distribuidor","ventas":0,"compras":0,
-   "recluta":false,"estatus":"verde|azul|amarillo|rojo","falta":"19,000 V · 5,000 C · recluta"}]}
+   "recluta":false,"estatus":"verde|azul|amarillo|rojo","falta":"15,000 V · 5,500 C · recluta"}]}
 ```
+
+Cuotas (corregidas 9-nov-2026): completo 24,000 V + 8,000 C + recluta · subsidiado 20,000 V + 6,500 C + recluta · pareja 36,000 V + 12,000 C + recluta. Ranking: ventas válidas = mín(ventas, compras × 3). `ritmo_sub` = ritmo esperado de ventas para 20k.
