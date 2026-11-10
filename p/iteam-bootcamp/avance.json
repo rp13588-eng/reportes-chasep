@@ -1,0 +1,46 @@
+{
+ "corte": "2026-11-09",
+ "corte_texto": "9 nov 2026",
+ "dias_restantes": 52,
+ "ritmo_sub": 2951,
+ "subterritorios": [
+  {
+   "sub": "FORZA",
+   "meta": 40000,
+   "compras_nov": 2427.71,
+   "compras_dic": null,
+   "ventas": 0,
+   "calificados": 0
+  },
+  {
+   "sub": "DAMARO",
+   "meta": 40000,
+   "compras_nov": 2726.78,
+   "compras_dic": null,
+   "ventas": 0,
+   "calificados": 0
+  },
+  {
+   "sub": "HENKEM",
+   "meta": 40000,
+   "compras_nov": 5974.08,
+   "compras_dic": null,
+   "ventas": 0,
+   "calificados": 0
+  },
+  {
+   "sub": "ARLISSA",
+   "meta": 25000,
+   "compras_nov": 1826.04,
+   "compras_dic": null,
+   "ventas": 0,
+   "calificados": 0
+  }
+ ],
+ "top": {
+  "dj": [],
+  "dist": [],
+  "sub": []
+ },
+ "participantes": []
+}
