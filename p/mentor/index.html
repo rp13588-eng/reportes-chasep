@@ -76,6 +76,7 @@ textarea.inp{min-height:96px;resize:vertical;line-height:1.45}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--silver);box-shadow:none;margin-top:10px}
 .note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px;font-weight:300}
+.who{text-align:center;font-size:13px;color:var(--silver);margin:-6px 0 14px}.who a{color:inherit;text-decoration:underline;cursor:pointer;margin-left:6px}
 .msg{border-radius:12px;padding:12px 14px;font-size:14px;margin-top:12px}
 .msg.bad{background:rgba(240,144,127,.12);border:1px solid rgba(240,144,127,.4);color:#ffd5cc}
 .msg.ok{background:rgba(127,211,166,.1);border:1px solid rgba(127,211,166,.35);color:#d3f5e2}
@@ -114,6 +115,7 @@ footer img{width:150px;border-radius:12px}
     <div class="step" data-s="2"><i>2</i>Perfil</div>
     <div class="step" data-s="3"><i>3</i>Foto</div>
   </div>
+  <div id="who" class="who hide"></div>
 
   <!-- PASO 1 -->
   <section id="s1">
@@ -231,6 +233,8 @@ const $=id=>document.getElementById(id);
 const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const nice=s=>{const d=pd(s);return `martes ${d.getDate()} de ${MESES[d.getMonth()]}`};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+/* ?nuevo=1 o "Empezar de nuevo": borra lo guardado en este navegador */
+try{if(new URLSearchParams(location.search).has('nuevo')){localStorage.removeItem(KEY);st={};history.replaceState(null,'',location.pathname)}}catch(e){}
 const keep=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
 /* liga personal (?m=<speakerId>&f=<AAAA-MM-DD>&n=<nombre>): permite completar perfil desde otro teléfono o navegador */
 try{
@@ -370,6 +374,13 @@ function done(){
   const det=encodeURIComponent("The Mentor's Room · CHASEP\nZoom: https://us06web.zoom.us/my/chasepenterprise?pwd=WFVQUEI3NVBJemRGZWJVYlg4MmUzZz09\nID 780 780 2020 · Código 0000");
   $('gcal').href=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("The Mentor's Room · Mi conexión")}&dates=${ymd}T160000Z/${ymd}T170000Z&details=${det}`;
   step(4);
+}
+
+/* ---------- quién está registrado en este navegador ---------- */
+if(st.speakerId&&st.date){
+  $('who').innerHTML=`Registro de <b>${String(st.name||'').replace(/[<>&]/g,'')}</b> · ${nice(st.date)}<a id="reset">¿No eres tú? Empezar de nuevo</a>`;
+  $('who').classList.remove('hide');
+  $('reset').onclick=()=>{try{localStorage.removeItem(KEY)}catch(e){}location.href=location.pathname};
 }
 
 /* ---------- arranque ---------- */
