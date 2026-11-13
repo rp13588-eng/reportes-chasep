@@ -54,7 +54,11 @@ h2{font-size:1.7rem;color:var(--navy);margin-bottom:12px}
 .datos dd{margin:2px 0 0;font-weight:600;font-size:.98rem;line-height:1.3}
 .nota{margin:12px 0 0;padding:10px 12px;border-left:3px solid var(--hielo);background:rgba(127,182,255,.1);border-radius:0 8px 8px 0;font-size:.9rem;line-height:1.45;color:var(--plata2)}
 .lugar{margin-top:12px}
-.cta{margin-top:16px;width:100%;background:var(--acento)}
+.cierre{margin:16px 0 0;padding:12px 14px;border:1.5px solid var(--hielo);border-radius:var(--r);background:rgba(127,182,255,.14);text-align:center;font-size:1.02rem;color:#fff}
+.cierre b{color:var(--hielo)}
+.cierre-f{margin:-4px 0 6px;font-size:.95rem;color:var(--no);font-weight:600}
+.cierre-f b{font-weight:700}
+.cta{margin-top:12px;width:100%;background:var(--acento)}
 .lugar{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:var(--r);background:rgba(255,255,255,.08);border:1px solid rgba(201,211,224,.3);color:#fff;text-decoration:none}
 .lugar svg{flex:none;margin-top:2px;color:var(--hielo)}
 .lugar b{display:block}.lugar small{display:block;color:var(--plata);font-size:.88rem}.lugar em{display:block;font-style:normal;font-weight:600;color:var(--hielo);margin-top:4px}
