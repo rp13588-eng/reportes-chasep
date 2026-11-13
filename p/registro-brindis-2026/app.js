@@ -298,7 +298,7 @@
     e.preventDefault();
     var por = $('#l-por').value, clave = $('#l-clave').value, err = $('#e-login');
     err.textContent = '';
-    if (!por) { err.textContent = 'Elige tu nombre.'; return; }
+    if (!por) { err.textContent = 'Elige tu panel.'; return; }
     var b = $('button[type=submit]', this); ocupado(b, true, 'Entrando…');
     api('admin_login', { por: por, clave: clave }).then(function (r) {
       ocupado(b, false);
@@ -316,7 +316,8 @@
       ocupado(b, false);
       if (!r.ok) { sesion = null; ss.del('brindis-sesion'); iniciarPanel(); $('#e-login').textContent = r.error; return; }
       datos = r.registros;
-      var pres = {}; datos.forEach(function (d) { pres[d.premier] = 1; });
+      var pres = {}; datos.forEach(function (d) { pres[d.grupo] = 1; });
+      $('#p-premier').hidden = Object.keys(pres).length < 2;
       var sel = $('#p-premier'), v = sel.value; sel.length = 1;
       Object.keys(pres).sort().forEach(function (p) { var o = el('option', null, p); o.value = p; sel.appendChild(o); });
       sel.value = v;
@@ -345,7 +346,7 @@
     var grupos = {};
     datos.forEach(function (d) { (grupos[d.folio] = grupos[d.folio] || []).push(d); });
     var visibles = Object.keys(grupos).map(function (f) { return grupos[f]; }).filter(function (g) {
-      if (pre && g[0].premier !== pre) return false;
+      if (pre && g[0].grupo !== pre) return false;
       if (filtro && !g.some(function (d) { return d.estado === filtro; })) return false;
       if (q && !g.some(function (d) { return (d.nombre + ' ' + d.num + ' ' + d.registradoPor).toLowerCase().indexOf(q) >= 0; })) return false;
       return true;
@@ -354,10 +355,10 @@
     if (!visibles.length) { lista.appendChild(el('div', 'vacio', datos.length ? 'No hay registros con este filtro.' : 'Todavía no hay registros.')); return; }
 
     var arbol = {};
-    visibles.forEach(function (g) { var p = g[0].premier, s = g[0].subterritorio; ((arbol[p] = arbol[p] || {})[s] = arbol[p][s] || []).push(g); });
+    visibles.forEach(function (g) { var p = g[0].grupo, s = g[0].subterritorio; ((arbol[p] = arbol[p] || {})[s] = arbol[p][s] || []).push(g); });
     Object.keys(arbol).sort().forEach(function (p) {
       var personasP = 0; Object.keys(arbol[p]).forEach(function (s) { arbol[p][s].forEach(function (g) { personasP += g.length; }); });
-      var hp = el('div', 'premier'); hp.appendChild(el('h3', null, 'Premier ' + p)); hp.appendChild(el('span', null, personasP + ' personas')); lista.appendChild(hp);
+      var hp = el('div', 'premier'); hp.appendChild(el('h3', null, 'Red ' + p)); hp.appendChild(el('span', null, personasP + ' personas')); lista.appendChild(hp);
       Object.keys(arbol[p]).sort().forEach(function (s) {
         var gs = arbol[p][s], n = 0; gs.forEach(function (g) { n += g.length; });
         var hs = el('div', 'subt'); hs.appendChild(el('h4', null, s)); hs.appendChild(el('span', null, n + ' personas · ' + gs.length + (gs.length === 1 ? ' registro' : ' registros'))); lista.appendChild(hs);
@@ -399,7 +400,7 @@
       ocupado(b, true, '…');
       api('admin_estado', Object.assign({ id: d.id, cambio: cambio }, sesion)).then(function (r) {
         if (!r.ok) { ocupado(b, false); toast(r.error); return; }
-        d.estado = r.estado; d.decididoPor = r.estado === 'Pendiente' ? '' : sesion.por;
+        d.estado = r.estado; d.decididoPor = r.estado === 'Pendiente' ? '' : 'Panel ' + sesion.por;
         d.fechaDecision = r.estado === 'Pendiente' ? '' : 'ahora';
         toast(d.nombre + ': ' + r.estado);
         pintarPanel();
@@ -409,10 +410,10 @@
   }
 
   $('#b-csv').addEventListener('click', function () {
-    var cols = [['folio', 'Folio'], ['premier', 'Premier'], ['subterritorio', 'Subterritorio'], ['registradoPor', 'Registrado por'], ['num', 'Num distribuidor'],
+    var cols = [['folio', 'Folio'], ['grupo', 'Red'], ['premier', 'Premier'], ['subterritorio', 'Subterritorio'], ['registradoPor', 'Registrado por'], ['num', 'Num distribuidor'],
       ['nombre', 'Nombre'], ['tipo', 'Tipo'], ['whatsapp', 'WhatsApp'], ['estado', 'Estado'], ['decididoPor', 'Decidido por'], ['fecha', 'Fecha registro']];
     var esc = function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
-    var orden = datos.slice().sort(function (a, b) { return (a.premier + a.subterritorio + a.folio).localeCompare(b.premier + b.subterritorio + b.folio); });
+    var orden = datos.slice().sort(function (a, b) { return (a.grupo + a.subterritorio + a.folio).localeCompare(b.grupo + b.subterritorio + b.folio); });
     var csv = '﻿' + cols.map(function (c) { return c[1]; }).join(',') + '\n' + orden.map(function (d) { return cols.map(function (c) { return esc(d[c[0]]); }).join(','); }).join('\n');
     var a = el('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'registro-brindis-chasep.csv'; document.body.appendChild(a); a.click(); a.remove();
   });
