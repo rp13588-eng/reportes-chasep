@@ -222,28 +222,25 @@
   window.dibujarInvitacion = function (datos) {
     var W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var c = cv.getContext('2d');
-    return Promise.all([fuentes(), cargarImg('img/logo-chasep-blanco.png'), cargarImg('img/logo-healthy.png'), cargarImg('img/logo-mejab.png')]).then(function (res) {
-      var logos = res.slice(1);
+    return Promise.all([fuentes(), cargarImg('img/w-chasep.png'), cargarImg('img/w-healthy.png'), cargarImg('img/w-mejab.png'), cargarImg('img/cam-hero.jpg')]).then(function (res) {
+      var logos = res.slice(1, 4), foto = res[4];
       var led = document.createElement('canvas'); led.width = W; led.height = 560; pintarLED(led, W, 560, 900, 3);
       c.fillStyle = '#070F24'; c.fillRect(0, 0, W, H);
-      c.drawImage(led, 0, 0);
-      var g = c.createLinearGradient(0, 120, 0, 560); g.addColorStop(0, 'rgba(7,15,36,0.05)'); g.addColorStop(1, 'rgba(7,15,36,1)');
-      c.fillStyle = g; c.fillRect(0, 0, W, 560);
-      // logos en tarjetas blancas
-      var alturas = [104, 104, 70], pad = 14, gap = 20, cajas = logos.map(function (l, k) {
-        if (!l) return null; var h = alturas[k]; return { img: l, w: h * l.width / l.height, h: h };
-      }).filter(Boolean);
-      var total = cajas.reduce(function (s, b) { return s + b.w + pad * 2; }, 0) + gap * (cajas.length - 1), x = (W - total) / 2;
-      cajas.forEach(function (b) {
-        var bw = b.w + pad * 2, bh = 104 + pad * 2;
-        c.fillStyle = '#fff'; c.beginPath(); if (c.roundRect) c.roundRect(x, 76, bw, bh, 16); else c.rect(x, 76, bw, bh); c.fill();
-        c.drawImage(b.img, x + pad, 76 + (bh - b.h) / 2, b.w, b.h); x += bw + gap;
-      });
-      c.textAlign = 'center'; c.fillStyle = '#C9D3E0';
-      c.font = '600 26px Figtree'; c.fillText('I N V I T A C I Ó N   P E R S O N A L', W / 2, 286);
-      c.save(); c.shadowColor = 'rgba(127,182,255,.6)'; c.shadowBlur = 24;
-      c.fillStyle = '#fff'; c.font = '400 116px Limelight'; c.fillText('BRINDIS 2026', W / 2, 410); c.restore();
-      c.fillStyle = '#C9D3E0'; c.font = '400 52px Poiret'; c.fillText('C H A S E P   G L O B A L', W / 2, 484);
+      // foto real del Salon Camarena arriba
+      if (foto) { var fh = 640, fw = fh * foto.width / foto.height; c.drawImage(foto, (W - fw) * .3, 0, fw, fh); }
+      var g = c.createLinearGradient(0, 0, 0, 640);
+      g.addColorStop(0, 'rgba(7,15,36,0.55)'); g.addColorStop(.25, 'rgba(7,15,36,0.15)'); g.addColorStop(.7, 'rgba(7,15,36,0.8)'); g.addColorStop(1, 'rgba(7,15,36,1)');
+      c.fillStyle = g; c.fillRect(0, 0, W, 640);
+      // logos blancos, discretos
+      var alts = [62, 62, 42], gap = 46, ls = logos.map(function (l, k) { return l ? { img: l, h: alts[k], w: alts[k] * l.width / l.height } : null; }).filter(Boolean);
+      var tw = ls.reduce(function (s, b) { return s + b.w; }, 0) + gap * (ls.length - 1), lx = (W - tw) / 2;
+      c.globalAlpha = .92; ls.forEach(function (b) { c.drawImage(b.img, lx, 82 + (62 - b.h) / 2, b.w, b.h); lx += b.w + gap; }); c.globalAlpha = 1;
+      c.textAlign = 'center'; c.fillStyle = '#E6EBF2';
+      c.font = '600 26px Figtree'; c.fillText('I N V I T A C I Ó N   P E R S O N A L', W / 2, 300);
+      c.save(); c.shadowColor = 'rgba(127,182,255,.65)'; c.shadowBlur = 26;
+      c.fillStyle = '#fff'; c.font = '400 150px Limelight'; c.fillText('BRINDIS', W / 2, 440); c.restore();
+      c.fillStyle = '#E6EBF2'; c.font = '400 44px Poiret'; c.fillText('C H A S E P   G L O B A L', W / 2 - 70, 512);
+      c.fillStyle = '#7FB6FF'; c.font = '400 58px Limelight'; c.fillText('2026', W / 2 + 330, 514);
       // banda LED inferior
       c.save(); c.translate(0, H); c.scale(1, -1); c.globalAlpha = .55; c.drawImage(led, 0, 0, W, 170); c.restore();
       var g2 = c.createLinearGradient(0, H - 170, 0, H); g2.addColorStop(0, 'rgba(7,15,36,1)'); g2.addColorStop(1, 'rgba(7,15,36,0.35)');
@@ -266,11 +263,12 @@
       y = 900;
       c.fillStyle = 'rgba(201,211,224,.45)'; c.fillRect(W / 2 - 170, y, 340, 2);
       c.fillStyle = '#fff'; c.font = '700 44px Figtree'; c.fillText(EV.fecha, W / 2, y + 70);
-      c.fillStyle = '#C9D3E0'; c.font = '500 34px Figtree'; c.fillText('Acceso ' + EV.acceso + '  ·  Inicio ' + EV.inicio, W / 2, y + 122);
+      c.fillStyle = '#C9D3E0'; c.font = '500 34px Figtree'; c.fillText('Acceso ' + EV.acceso + '  ·  Inicio ' + EV.inicio + '  ·  Cierre ' + EV.fin, W / 2, y + 122);
       c.save(); c.shadowColor = 'rgba(127,182,255,.6)'; c.shadowBlur = 18; c.fillStyle = '#fff'; c.font = '400 60px Limelight'; c.fillText(EV.lugar.toUpperCase(), W / 2, y + 204); c.restore();
       c.fillStyle = '#C9D3E0'; c.font = '400 28px Figtree';
       envolver(c, EV.direccion, W - 220).forEach(function (l, k) { c.fillText(l, W / 2, y + 246 + k * 36); });
-      c.fillStyle = '#7FB6FF'; c.font = '600 30px Figtree'; c.fillText('Vestimenta: ' + EV.vestimenta, W / 2, H - 88);
+      c.fillStyle = '#7FB6FF'; c.font = '600 30px Figtree'; c.fillText('Vestimenta: ' + EV.vestimenta, W / 2, H - 112);
+      c.fillStyle = '#C9D3E0'; c.font = '400 22px Figtree'; c.fillText('Después de las 12:00 am, el consumo y uso del lugar corre por cuenta de cada asistente.', W / 2, H - 70);
       return cv;
     });
   };
