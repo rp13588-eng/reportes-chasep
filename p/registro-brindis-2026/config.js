@@ -1,5 +1,5 @@
 // URL de la app web de Google Apps Script (termina en /exec).
-window.API_URL = '';
+window.API_URL = 'https://script.google.com/macros/s/AKfycbysBYmz79nniiIA1Ymra3oNE1o5xjZzmCxIeJg3j3ut8IbxKw8sNHiMX6weRStH3qMgzQ/exec';
 window.EVENTO = {
   titulo: 'Brindis de Fin de Año CHASEP',
   fecha: 'Martes 15 de diciembre de 2026',
