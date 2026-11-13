@@ -1,0 +1,320 @@
+/**
+ * Registro · Brindis de Fin de Año CHASEP 2026 · Salón Camarena
+ *
+ * Instalacion (una sola vez):
+ * 1. Abre la hoja "Registro Brindis CHASEP 2026" (ya creada).
+ * 2. Extensiones > Apps Script. Borra lo que haya, pega este archivo y guarda.
+ * 3. Arriba elige la funcion `configurar` y dale Ejecutar. Acepta los permisos.
+ * 4. Implementar > Nueva implementacion > Tipo: App web.
+ *    Ejecutar como: Yo. Quien tiene acceso: Cualquier usuario. Implementar.
+ * 5. Copia la URL de la app web (termina en /exec) y mandasela a Claude.
+ *
+ * La lista de distribuidores se lee en vivo del archivo
+ * "DISTRUBUCIONES CHASEP & MEJAB" (pestanas CHASEP y MEJAB). Si das de alta
+ * o de baja a alguien ahi, el registro se actualiza solo.
+ */
+
+// ---------- ajustes ----------
+var CLAVE = '__CLAVE__';                       // contrasena del panel
+var APROBADORES = ['Alejandro', 'Joanna', 'Vanessa', 'Abdul'];
+var MAX_EMPRENDEDORES = 2;
+var REGISTRO_ABIERTO = true;                       // false = registro cerrado
+var FUENTE_ID = '1Z0X2oGDuehvK660O_l5Y9CwYYbbWQmEIY-fi3GOQE6I';
+var FUENTE_PESTANAS = ['CHASEP', 'MEJAB'];
+var REGISTRO_ID = '1ReEAw8Cu3tmQ4xrgHy0nESrrjpNQgTNHvJhG5i0LRvw'; // hoja "Registro Brindis CHASEP 2026"
+
+var HOJA_REG = 'Registros';
+var COLS = ['ID', 'Fecha registro', 'Folio', 'Invitacion', 'Tipo invitado', 'Nombre', 'WhatsApp',
+  'Num distribuidor', 'Registrado por', 'WhatsApp registro', 'Nivel', 'Subterritorio', 'Premier',
+  'Estado', 'Decidido por', 'Fecha decision', 'WhatsApp enviado', 'Recordatorio enviado'];
+
+function libro() { return SpreadsheetApp.openById(REGISTRO_ID); }
+
+function configurar() {
+  var ss = libro();
+  var sh = ss.getSheetByName(HOJA_REG) || ss.insertSheet(HOJA_REG);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(COLS);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, COLS.length).setFontWeight('bold').setBackground('#0E2350').setFontColor('#FFFFFF');
+  }
+  sh.getRange('G:G').setNumberFormat('@');
+  sh.getRange('J:J').setNumberFormat('@');
+  var hoja1 = ss.getSheetByName('Hoja 1') || ss.getSheetByName('Sheet1');
+  if (hoja1 && ss.getSheets().length > 1 && hoja1.getLastRow() === 0) ss.deleteSheet(hoja1);
+  var n = listaDistribuidores().length;
+  Logger.log('Listo. Distribuidores leidos de la fuente: ' + n);
+}
+
+// ---------- HTTP ----------
+function doGet() { return salida({ ok: true, servicio: 'registro-brindis-chasep' }); }
+
+function doPost(e) {
+  var r;
+  try {
+    var q = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    var f = ACCIONES[q.accion];
+    r = f ? f(q) : { ok: false, error: 'Accion no valida.' };
+  } catch (err) {
+    r = { ok: false, error: 'Error del servidor: ' + err.message };
+  }
+  return salida(r);
+}
+
+function salida(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+var ACCIONES = {
+  buscar: buscar, registrar: registrar, consultar: consultar, invitacion: invitacion,
+  admin_login: adminLogin, admin_lista: adminLista, admin_estado: adminEstado,
+  cola_whatsapp: colaWhatsapp, marcar_enviado: marcarEnviado
+};
+
+// ---------- utilidades ----------
+function txt(x) { return String(x == null ? '' : x).replace(/\s+/g, ' ').trim(); }
+function numDist(x) { return txt(x).replace(/\D/g, '').replace(/^0+/, ''); }
+function norm(x) { return txt(x).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+function whatsapp(x) {
+  var d = txt(x).replace(/\D/g, '');
+  if (d.length === 13 && d.indexOf('521') === 0) d = d.slice(3);
+  if (d.length === 12 && d.indexOf('52') === 0) d = d.slice(2);
+  return d.length === 10 ? d : '';
+}
+
+function nombreBonito(s) {
+  var menores = { de: 1, del: 1, la: 1, las: 1, los: 1, y: 1 };
+  return txt(s).toLowerCase().split(' ').map(function (w, i) {
+    if (i > 0 && menores[w]) return w;
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }).join(' ');
+}
+
+// Solo "&" separa a una pareja que trabaja oficialmente junta.
+function partes(nombre) {
+  return txt(nombre).split('&').map(function (s) { return nombreBonito(s); }).filter(function (s) { return s; });
+}
+
+function token() { return Utilities.getUuid().replace(/-/g, '').slice(0, 12).toUpperCase(); }
+function ahora() { return Utilities.formatDate(new Date(), 'America/Mexico_City', 'yyyy-MM-dd HH:mm'); }
+function esAdmin(q) { return txt(q.clave) === CLAVE && APROBADORES.indexOf(txt(q.por)) >= 0; }
+
+function hojaReg() { return libro().getSheetByName(HOJA_REG); }
+
+function registros() {
+  var v = hojaReg().getDataRange().getValues();
+  var h = v.shift() || [];
+  return v.map(function (row, i) {
+    var o = { _fila: i + 2 };
+    h.forEach(function (k, j) { o[k] = row[j]; });
+    return o;
+  });
+}
+
+function listaDistribuidores() {
+  var cache = CacheService.getScriptCache();
+  var c = cache.get('dist');
+  if (c) return JSON.parse(c);
+  var ss = SpreadsheetApp.openById(FUENTE_ID);
+  var out = [];
+  FUENTE_PESTANAS.forEach(function (tab) {
+    var sh = ss.getSheetByName(tab);
+    if (!sh) return;
+    var v = sh.getDataRange().getDisplayValues();
+    var h = (v.shift() || []).map(norm);
+    var col = function (re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; };
+    var cNum = col(/^id|distribuidor/), cNom = col(/^nombre/), cSub = col(/subterritorio/),
+        cPre = col(/premier/), cNiv = col(/nivel/);
+    v.forEach(function (r) {
+      var n = numDist(r[cNum]);
+      if (!n || !txt(r[cNom])) return;
+      var nivel = txt(r[cNiv]).toUpperCase();
+      out.push({ num: n, nombre: txt(r[cNom]), nivel: nivel,
+        tipo: nivel === 'DJ' ? 'Distribuidor Junior' : 'Distribuidor',
+        subterritorio: txt(r[cSub]).toUpperCase(), premier: txt(r[cPre]).toUpperCase() || tab });
+    });
+  });
+  cache.put('dist', JSON.stringify(out), 300);
+  return out;
+}
+
+function distribuidor(n) {
+  n = numDist(n);
+  if (!n) return null;
+  var d = listaDistribuidores().filter(function (r) { return r.num === n; })[0];
+  if (!d) return null;
+  d.partes = partes(d.nombre);
+  return d;
+}
+
+function publico(r) {
+  return { id: r.ID, tipo: r['Tipo invitado'], nombre: r.Nombre, estado: r.Estado,
+    invitacion: r.Estado === 'Aprobado' ? r.Invitacion : '' };
+}
+
+// ---------- registro publico ----------
+function buscar(q) {
+  var d = distribuidor(q.num);
+  if (!d) return { ok: false, error: 'No encontramos ese número de distribuidor. Revísalo o consulta con la administradora de tu territorio.' };
+  var ya = registros().some(function (r) { return numDist(r['Num distribuidor']) === d.num; });
+  return { ok: true, num: d.num, nombre: nombreBonito(d.nombre.replace(/&/g, 'y')), tipo: d.tipo,
+    subterritorio: d.subterritorio, premier: d.premier,
+    pareja: d.partes.length >= 2 ? d.partes.slice(0, 2) : [], registrado: ya,
+    abierto: REGISTRO_ABIERTO, maxEmprendedores: MAX_EMPRENDEDORES };
+}
+
+function registrar(q) {
+  if (!REGISTRO_ABIERTO) return { ok: false, error: 'El registro ya está cerrado.' };
+  var d = distribuidor(q.num);
+  if (!d) return { ok: false, error: 'Número de distribuidor no encontrado.' };
+  var wa = whatsapp(q.whatsapp);
+  if (!wa) return { ok: false, error: 'Escribe tu WhatsApp a 10 dígitos.' };
+
+  var inv = token();
+  var gente = [];
+  if (d.partes.length >= 2) {
+    var a = txt(q.asisten); // 'ambos' | '0' | '1'
+    if (a === 'ambos') {
+      gente.push({ nombre: d.partes[0], tipo: d.tipo, wa: wa, inv: inv });
+      gente.push({ nombre: d.partes[1], tipo: 'Pareja', wa: wa, inv: inv });
+    } else if (a === '0' || a === '1') {
+      gente.push({ nombre: d.partes[+a], tipo: d.tipo, wa: wa, inv: inv });
+    } else {
+      return { ok: false, error: 'Indica quién asiste.' };
+    }
+  } else {
+    gente.push({ nombre: nombreBonito(d.nombre), tipo: d.tipo, wa: wa, inv: inv });
+  }
+
+  var emps = (q.emprendedores || []).filter(function (x) { return txt(x.nombre) || txt(x.whatsapp); });
+  if (emps.length > MAX_EMPRENDEDORES) return { ok: false, error: 'Máximo ' + MAX_EMPRENDEDORES + ' emprendedores.' };
+  for (var i = 0; i < emps.length; i++) {
+    var w = whatsapp(emps[i].whatsapp);
+    if (txt(emps[i].nombre).split(' ').length < 2) return { ok: false, error: 'Escribe nombre y apellido del emprendedor ' + (i + 1) + '.' };
+    if (!w) return { ok: false, error: 'El WhatsApp del emprendedor ' + (i + 1) + ' debe tener 10 dígitos.' };
+    if (w === wa) return { ok: false, error: 'El WhatsApp del emprendedor ' + (i + 1) + ' debe ser el suyo, no el tuyo.' };
+    gente.push({ nombre: nombreBonito(emps[i].nombre), tipo: 'Emprendedor', wa: w, inv: token() });
+  }
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var regs = registros();
+    if (regs.some(function (r) { return numDist(r['Num distribuidor']) === d.num; })) {
+      return { ok: false, registrado: true, error: 'Este número ya tiene un registro. Consúltalo en "Mi registro".' };
+    }
+    var folios = {};
+    regs.forEach(function (r) { folios[r.Folio] = 1; });
+    var folio = 'B' + (1001 + Object.keys(folios).length);
+    var sh = hojaReg(), fecha = ahora();
+    var filas = gente.map(function (p, k) {
+      var row = { 'ID': folio + '-' + (k + 1), 'Fecha registro': fecha, 'Folio': folio, 'Invitacion': p.inv,
+        'Tipo invitado': p.tipo, 'Nombre': p.nombre, 'WhatsApp': p.wa, 'Num distribuidor': d.num,
+        'Registrado por': nombreBonito(d.nombre.replace(/&/g, 'y')), 'WhatsApp registro': wa, 'Nivel': d.nivel,
+        'Subterritorio': d.subterritorio, 'Premier': d.premier, 'Estado': 'Pendiente',
+        'Decidido por': '', 'Fecha decision': '', 'WhatsApp enviado': '', 'Recordatorio enviado': '' };
+      return row;
+    });
+    sh.getRange(sh.getLastRow() + 1, 1, filas.length, COLS.length)
+      .setValues(filas.map(function (row) { return COLS.map(function (c) { return row[c]; }); }));
+    return { ok: true, folio: folio, personas: filas.map(publico) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function consultar(q) {
+  var n = numDist(q.num), wa = whatsapp(q.whatsapp);
+  var mios = registros().filter(function (r) { return numDist(r['Num distribuidor']) === n; });
+  if (!mios.length) return { ok: false, error: 'No hay registro con ese número de distribuidor.' };
+  if (!wa || whatsapp(mios[0]['WhatsApp registro']) !== wa) return { ok: false, error: 'El WhatsApp no coincide con el que se usó en el registro.' };
+  return { ok: true, folio: mios[0].Folio, registradoPor: mios[0]['Registrado por'], personas: mios.map(publico) };
+}
+
+// Datos para el flyer personalizado (solo personas aprobadas).
+function invitacion(q) {
+  var t = txt(q.invitacion).toUpperCase();
+  var rs = registros().filter(function (r) { return txt(r.Invitacion) === t && r.Estado === 'Aprobado'; });
+  if (!t || !rs.length) return { ok: false, error: 'Invitación no disponible.' };
+  return { ok: true, nombres: rs.map(function (r) { return r.Nombre; }), tipo: rs[0]['Tipo invitado'],
+    invitadoPor: rs[0]['Tipo invitado'] === 'Emprendedor' ? rs[0]['Registrado por'] : '' };
+}
+
+// ---------- panel ----------
+function adminLogin(q) {
+  return esAdmin(q) ? { ok: true } : { ok: false, error: 'Contraseña incorrecta.' };
+}
+
+function adminLista(q) {
+  if (!esAdmin(q)) return { ok: false, error: 'Sesión no válida.' };
+  var lista = registros().map(function (r) {
+    return { id: r.ID, folio: r.Folio, fecha: txt(r['Fecha registro']), tipo: r['Tipo invitado'], nombre: r.Nombre,
+      whatsapp: txt(r.WhatsApp), num: txt(r['Num distribuidor']), registradoPor: r['Registrado por'],
+      nivel: txt(r.Nivel), subterritorio: txt(r.Subterritorio) || 'SIN SUBTERRITORIO',
+      premier: txt(r.Premier) || 'SIN PREMIER', estado: r.Estado, decididoPor: txt(r['Decidido por']),
+      fechaDecision: txt(r['Fecha decision']), enviado: txt(r['WhatsApp enviado']) };
+  });
+  return { ok: true, registros: lista, abierto: REGISTRO_ABIERTO };
+}
+
+function adminEstado(q) {
+  if (!esAdmin(q)) return { ok: false, error: 'Sesión no válida.' };
+  var estado = { aprobar: 'Aprobado', rechazar: 'No aprobado', pendiente: 'Pendiente' }[q.cambio];
+  if (!estado) return { ok: false, error: 'Cambio no válido.' };
+  var ids = [].concat(q.id || []);
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var sh = hojaReg(), c = COLS.indexOf('Estado') + 1, hechos = 0, bloqueados = 0;
+    registros().forEach(function (r) {
+      if (ids.indexOf(r.ID) < 0) return;
+      if (txt(r['WhatsApp enviado'])) { bloqueados++; return; }
+      var quien = estado === 'Pendiente' ? '' : txt(q.por), cuando = estado === 'Pendiente' ? '' : ahora();
+      sh.getRange(r._fila, c, 1, 3).setValues([[estado, quien, cuando]]);
+      hechos++;
+    });
+    if (!hechos && bloqueados) return { ok: false, error: 'Ya se le envió su mensaje por WhatsApp; no se puede cambiar.' };
+    return { ok: hechos > 0, cambiados: hechos, estado: estado };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ---------- WhatsApp (lo usa la tarea de la Mac mini) ----------
+// Agrupa por invitacion. Solo sale cuando ya nadie de esa invitacion esta Pendiente.
+function colaWhatsapp(q) {
+  if (!esAdmin(q)) return { ok: false, error: 'Sesión no válida.' };
+  var grupos = {};
+  registros().forEach(function (r) {
+    if (txt(r['WhatsApp enviado'])) return;
+    (grupos[r.Invitacion] = grupos[r.Invitacion] || []).push(r);
+  });
+  var todos = registros();
+  var cola = [];
+  Object.keys(grupos).forEach(function (inv) {
+    var g = grupos[inv];
+    var completos = todos.filter(function (r) { return r.Invitacion === inv; });
+    if (completos.some(function (r) { return r.Estado === 'Pendiente'; })) return;
+    var ok = completos.filter(function (r) { return r.Estado === 'Aprobado'; });
+    var no = completos.filter(function (r) { return r.Estado === 'No aprobado'; });
+    var r0 = completos[0];
+    if (ok.length) cola.push({ tipo: 'confirmacion', invitacion: inv, ids: ok.map(function (r) { return r.ID; }),
+      para: txt(ok[0].WhatsApp), nombres: ok.map(function (r) { return r.Nombre; }), tipoInvitado: r0['Tipo invitado'] });
+    if (no.length) cola.push({ tipo: 'no_aprobado', invitacion: inv, ids: no.map(function (r) { return r.ID; }),
+      para: txt(r0['WhatsApp registro']), nombres: no.map(function (r) { return r.Nombre; }),
+      registradoPor: r0['Registrado por'] });
+  });
+  return { ok: true, cola: cola };
+}
+
+function marcarEnviado(q) {
+  if (!esAdmin(q)) return { ok: false, error: 'Sesión no válida.' };
+  var ids = [].concat(q.id || []);
+  var campo = q.recordatorio ? 'Recordatorio enviado' : 'WhatsApp enviado';
+  var sh = hojaReg(), c = COLS.indexOf(campo) + 1, n = 0;
+  registros().forEach(function (r) {
+    if (ids.indexOf(r.ID) >= 0) { sh.getRange(r._fila, c).setValue(ahora()); n++; }
+  });
+  return { ok: true, marcados: n };
+}
