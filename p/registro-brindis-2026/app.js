@@ -207,7 +207,7 @@
   function cargarImg(src) { return new Promise(function (ok) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = function () { ok(null); }; i.src = src; }); }
   function fuentes() {
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
-    return Promise.all(['500 40px Bodoni', '700 40px Bodoni', '400 20px Figtree', '500 20px Figtree', '600 20px Figtree', '700 20px Figtree'].map(function (f) { return document.fonts.load(f); })).catch(function () {});
+    return Promise.all(['400 40px Limelight', '400 40px Poiret', '500 40px Bodoni', '700 40px Bodoni', '400 20px Figtree', '500 20px Figtree', '600 20px Figtree', '700 20px Figtree'].map(function (f) { return document.fonts.load(f); })).catch(function () {});
   }
   function ajustar(c, texto, maxW, tam, peso, fam) {
     var t = tam; c.font = peso + ' ' + t + 'px ' + fam;
@@ -222,23 +222,28 @@
   window.dibujarInvitacion = function (datos) {
     var W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var c = cv.getContext('2d');
-    return Promise.all([fuentes(), cargarImg('img/logo-chasep.png')]).then(function (res) {
-      var logo = res[1];
+    return Promise.all([fuentes(), cargarImg('img/logo-chasep-blanco.png'), cargarImg('img/logo-healthy.png'), cargarImg('img/logo-mejab.png')]).then(function (res) {
+      var logos = res.slice(1);
       var led = document.createElement('canvas'); led.width = W; led.height = 560; pintarLED(led, W, 560, 900, 3);
       c.fillStyle = '#070F24'; c.fillRect(0, 0, W, H);
       c.drawImage(led, 0, 0);
       var g = c.createLinearGradient(0, 120, 0, 560); g.addColorStop(0, 'rgba(7,15,36,0.05)'); g.addColorStop(1, 'rgba(7,15,36,1)');
       c.fillStyle = g; c.fillRect(0, 0, W, 560);
-      // marco plateado
-      if (logo) {
-        var lw = 150, lh = lw * logo.height / logo.width;
-        c.fillStyle = '#fff'; c.beginPath(); c.roundRect ? c.roundRect(W / 2 - lw / 2 - 14, 80, lw + 28, lh + 28, 18) : c.rect(W / 2 - lw / 2 - 14, 80, lw + 28, lh + 28); c.fill();
-        c.drawImage(logo, W / 2 - lw / 2, 94, lw, lh);
-      }
+      // logos en tarjetas blancas
+      var alturas = [104, 104, 70], pad = 14, gap = 20, cajas = logos.map(function (l, k) {
+        if (!l) return null; var h = alturas[k]; return { img: l, w: h * l.width / l.height, h: h };
+      }).filter(Boolean);
+      var total = cajas.reduce(function (s, b) { return s + b.w + pad * 2; }, 0) + gap * (cajas.length - 1), x = (W - total) / 2;
+      cajas.forEach(function (b) {
+        var bw = b.w + pad * 2, bh = 104 + pad * 2;
+        c.fillStyle = '#fff'; c.beginPath(); if (c.roundRect) c.roundRect(x, 76, bw, bh, 16); else c.rect(x, 76, bw, bh); c.fill();
+        c.drawImage(b.img, x + pad, 76 + (bh - b.h) / 2, b.w, b.h); x += bw + gap;
+      });
       c.textAlign = 'center'; c.fillStyle = '#C9D3E0';
-      c.font = '600 26px Figtree'; c.fillText('I N V I T A C I Ó N   P E R S O N A L', W / 2, 330);
-      c.fillStyle = '#fff'; c.font = '500 84px Bodoni'; c.fillText('Brindis de Fin de Año', W / 2, 430);
-      c.fillStyle = '#C9D3E0'; c.font = '700 64px Bodoni'; c.fillText('C H A S E P', W / 2, 510);
+      c.font = '600 26px Figtree'; c.fillText('I N V I T A C I Ó N   P E R S O N A L', W / 2, 286);
+      c.save(); c.shadowColor = 'rgba(127,182,255,.6)'; c.shadowBlur = 24;
+      c.fillStyle = '#fff'; c.font = '400 116px Limelight'; c.fillText('BRINDIS 2026', W / 2, 410); c.restore();
+      c.fillStyle = '#C9D3E0'; c.font = '400 52px Poiret'; c.fillText('C H A S E P   G L O B A L', W / 2, 484);
       // banda LED inferior
       c.save(); c.translate(0, H); c.scale(1, -1); c.globalAlpha = .55; c.drawImage(led, 0, 0, W, 170); c.restore();
       var g2 = c.createLinearGradient(0, H - 170, 0, H); g2.addColorStop(0, 'rgba(7,15,36,1)'); g2.addColorStop(1, 'rgba(7,15,36,0.35)');
@@ -262,7 +267,7 @@
       c.fillStyle = 'rgba(201,211,224,.45)'; c.fillRect(W / 2 - 170, y, 340, 2);
       c.fillStyle = '#fff'; c.font = '700 44px Figtree'; c.fillText(EV.fecha, W / 2, y + 70);
       c.fillStyle = '#C9D3E0'; c.font = '500 34px Figtree'; c.fillText('Acceso ' + EV.acceso + '  ·  Inicio ' + EV.inicio, W / 2, y + 122);
-      c.fillStyle = '#fff'; c.font = '500 54px Bodoni'; c.fillText(EV.lugar, W / 2, y + 200);
+      c.save(); c.shadowColor = 'rgba(127,182,255,.6)'; c.shadowBlur = 18; c.fillStyle = '#fff'; c.font = '400 60px Limelight'; c.fillText(EV.lugar.toUpperCase(), W / 2, y + 204); c.restore();
       c.fillStyle = '#C9D3E0'; c.font = '400 28px Figtree';
       envolver(c, EV.direccion, W - 220).forEach(function (l, k) { c.fillText(l, W / 2, y + 246 + k * 36); });
       c.fillStyle = '#7FB6FF'; c.font = '600 30px Figtree'; c.fillText('Vestimenta: ' + EV.vestimenta, W / 2, H - 88);
