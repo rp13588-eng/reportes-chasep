@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070F24">
+<title>Registro · Brindis de Fin de Año CHASEP</title>
+<meta property="og:title" content="Brindis de Fin de Año CHASEP · Registro">
+<meta property="og:description" content="Martes 15 de diciembre · Salón Camarena. Regístrate para recibir tu invitación.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="top">
+  <a class="brand" href="#registro"><img src="img/logo-chasep.png" alt="CHASEP"></a>
+  <div class="tabs" role="tablist">
+    <a href="#registro" data-tab="registro">Registro</a>
+    <a href="#mi-registro" data-tab="mi-registro">Mi registro</a>
+    <a href="#panel" data-tab="panel" class="lock" aria-label="Panel de aprobación"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"/></svg></a>
+  </div>
+</nav>
+
+<!-- ===== REGISTRO ===== -->
+<section id="v-registro" class="vista">
+  <header class="hero">
+    <canvas class="led" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <p class="kick">Invitación exclusiva</p>
+      <h1>Brindis de Fin de Año <span>CHASEP</span></h1>
+      <p class="sede">en <b>Salón Camarena</b></p>
+      <dl class="datos">
+        <div><dt>Fecha</dt><dd data-ev="fecha"></dd></div>
+        <div><dt>Acceso</dt><dd>Desde las <span data-ev="acceso"></span></dd></div>
+        <div><dt>Inicio</dt><dd data-ev="inicio"></dd></div>
+        <div><dt>Vestimenta</dt><dd data-ev="vestimenta"></dd></div>
+      </dl>
+      <a class="lugar" data-ev-href="mapa" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+        <span><b data-ev="lugar"></b><small data-ev="direccion"></small><em>Abrir en Google Maps</em></span>
+      </a>
+      <a class="btn grande cta" href="#f-reg" id="b-ir">Registrarme</a>
+    </div>
+  </header>
+
+  <div class="wrap cuerpo">
+    <aside class="quienes">
+      <h2>¿Quién puede asistir?</h2>
+      <ul>
+        <li><b>Distribuidores autorizados</b> y <b>Distribuidores Junior</b> de CHASEP y MEJAB.</li>
+        <li><b>Parejas</b> que trabajan oficialmente juntas. Confirma si asisten los dos.</li>
+        <li><b>Emprendedores próximos a firmar</b>: los registra su distribuidor, máximo 2.</li>
+      </ul>
+      <p class="aviso">Tu registro queda <b>pendiente de aprobación</b>. Cuando se apruebe, te llega tu invitación personalizada por WhatsApp.</p>
+    </aside>
+
+    <form id="f-reg" class="card" novalidate>
+      <div id="paso1">
+        <h2>Regístrate</h2>
+        <label for="num">Número de distribuidor</label>
+        <div class="fila">
+          <input id="num" inputmode="numeric" autocomplete="off" placeholder="Ej. 85865" required>
+          <button type="button" id="b-buscar" class="btn">Buscar</button>
+        </div>
+        <p class="err" id="e-num" role="alert"></p>
+      </div>
+
+      <div id="paso2" hidden>
+        <div class="quien">
+          <div>
+            <p class="nombre" id="d-nombre"></p>
+            <p class="meta"><span id="d-tipo"></span> · <span id="d-sub"></span> · Premier <span id="d-pre"></span></p>
+          </div>
+          <button type="button" class="link" id="b-cambiar">Cambiar</button>
+        </div>
+
+        <fieldset id="g-pareja" hidden>
+          <legend>Trabajan en pareja. ¿Quién asiste?</legend>
+          <div class="opciones" id="o-pareja"></div>
+        </fieldset>
+
+        <label for="wa">Tu WhatsApp</label>
+        <div class="tel"><span>+52</span><input id="wa" inputmode="tel" autocomplete="tel-national" placeholder="10 dígitos" maxlength="14"></div>
+        <p class="ayuda">Aquí te llega tu invitación y los recordatorios.</p>
+
+        <fieldset class="emps">
+          <legend>Emprendedores próximos a firmar <small>(opcional, máximo 2)</small></legend>
+          <div id="l-emps"></div>
+          <button type="button" class="btn sec" id="b-emp">+ Agregar emprendedor</button>
+          <label class="check" id="c-emps" hidden><input type="checkbox" id="ok-emps"> Confirmo que mis emprendedores están próximos a firmar.</label>
+        </fieldset>
+
+        <p class="err" id="e-reg" role="alert"></p>
+        <button type="submit" class="btn grande" id="b-enviar">Enviar registro</button>
+      </div>
+
+      <div id="paso3" hidden>
+        <p class="ok-ico" aria-hidden="true">✓</p>
+        <h2>Registro recibido</h2>
+        <p>Folio <b id="r-folio"></b>. Tu registro está <b>pendiente de aprobación</b>.</p>
+        <ul class="personas" id="r-personas"></ul>
+        <p class="ayuda">Cuando se apruebe, te llega tu invitación por WhatsApp. También puedes consultarlo en «Mi registro».</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ===== MI REGISTRO ===== -->
+<section id="v-mi-registro" class="vista" hidden>
+  <div class="wrap angosto">
+    <form id="f-con" class="card" novalidate>
+      <h2>Mi registro</h2>
+      <p class="ayuda">Usa el número de distribuidor y el WhatsApp con los que te registraste.</p>
+      <label for="c-num">Número de distribuidor</label>
+      <input id="c-num" inputmode="numeric" autocomplete="off">
+      <label for="c-wa">WhatsApp</label>
+      <div class="tel"><span>+52</span><input id="c-wa" inputmode="tel" placeholder="10 dígitos" maxlength="14"></div>
+      <p class="err" id="e-con" role="alert"></p>
+      <button class="btn grande" type="submit">Consultar</button>
+    </form>
+    <div id="r-con" class="card" hidden>
+      <h2>Folio <span id="rc-folio"></span></h2>
+      <ul class="personas" id="rc-personas"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INVITACION ===== -->
+<section id="v-invitacion" class="vista" hidden>
+  <div class="wrap angosto centro">
+    <p class="err" id="e-inv" role="alert"></p>
+    <div id="inv-img"></div>
+    <div class="acciones" id="inv-acc" hidden>
+      <a class="btn grande" id="inv-desc" download="invitacion-brindis-chasep.png">Descargar invitación</a>
+      <a class="btn sec" data-ev-href="mapa" target="_blank" rel="noopener">Cómo llegar</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PANEL ===== -->
+<section id="v-panel" class="vista" hidden>
+  <div class="wrap angosto" id="p-login">
+    <form id="f-login" class="card" novalidate>
+      <h2>Panel de aprobación</h2>
+      <label for="l-por">¿Quién eres?</label>
+      <select id="l-por"><option value="">Elige tu nombre</option><option>Alejandro</option><option>Joanna</option><option>Vanessa</option><option>Abdul</option></select>
+      <label for="l-clave">Contraseña</label>
+      <input id="l-clave" type="password" autocomplete="current-password">
+      <p class="err" id="e-login" role="alert"></p>
+      <button class="btn grande" type="submit">Entrar</button>
+    </form>
+  </div>
+  <div class="wrap" id="p-app" hidden>
+    <div class="p-top">
+      <div><h2>Registros</h2><p class="ayuda">Sesión: <b id="p-yo"></b> · <button class="link" id="b-salir" type="button">Salir</button></p></div>
+      <div class="p-btns"><button class="btn sec" id="b-recargar" type="button">Actualizar</button><button class="btn sec" id="b-csv" type="button">Descargar lista</button></div>
+    </div>
+    <div class="stats" id="p-stats"></div>
+    <div class="filtros">
+      <div class="chips" id="p-chips" role="tablist"></div>
+      <input id="p-buscar" type="search" placeholder="Buscar nombre o número">
+      <select id="p-premier"><option value="">Todos los Premier</option></select>
+    </div>
+    <div id="p-lista"></div>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
