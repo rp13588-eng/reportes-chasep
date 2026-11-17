@@ -1,46 +1,334 @@
 {
- "corte": "2026-11-09",
- "corte_texto": "9 nov 2026",
- "dias_restantes": 52,
- "ritmo_sub": 2951,
+ "corte": "2026-11-16",
+ "corte_texto": "16 nov 2026",
+ "dias_restantes": 45,
+ "ritmo_sub": 5246,
  "subterritorios": [
   {
    "sub": "FORZA",
    "meta": 40000,
-   "compras_nov": 2427.71,
+   "compras_nov": 4344.13,
    "compras_dic": null,
-   "ventas": 0,
+   "ventas": 11018.47,
    "calificados": 0
   },
   {
    "sub": "DAMARO",
    "meta": 40000,
-   "compras_nov": 2726.78,
+   "compras_nov": 7155.99,
    "compras_dic": null,
-   "ventas": 0,
+   "ventas": 15490.79,
    "calificados": 0
   },
   {
    "sub": "HENKEM",
    "meta": 40000,
-   "compras_nov": 5974.08,
+   "compras_nov": 9413.27,
    "compras_dic": null,
-   "ventas": 0,
+   "ventas": 26561.97,
    "calificados": 0
   },
   {
    "sub": "ARLISSA",
    "meta": 25000,
-   "compras_nov": 1826.04,
+   "compras_nov": 3566.11,
    "compras_dic": null,
-   "ventas": 0,
+   "ventas": 4939.25,
    "calificados": 0
   }
  ],
  "top": {
-  "dj": [],
-  "dist": [],
-  "sub": []
+  "dj": [
+   "92798",
+   "92817",
+   "89974"
+  ],
+  "dist": [
+   "78368",
+   "73073",
+   "87488"
+  ],
+  "sub": [
+   "HENKEM",
+   "DAMARO",
+   "FORZA"
+  ]
  },
- "participantes": []
+ "participantes": [
+  {
+   "id": "92798",
+   "nombre": "Josue Saul Palacios Lopez",
+   "sub": "HENKEM",
+   "tipo": "DJ",
+   "ventas": 17044.22,
+   "compras": 5348.3,
+   "recluta": false,
+   "estatus": "amarillo",
+   "falta": "2,956 V · 1,152 C · recluta"
+  },
+  {
+   "id": "92897",
+   "nombre": "Esteban Cruz",
+   "sub": "DAMARO",
+   "tipo": "DJ",
+   "ventas": 3124.81,
+   "compras": 819.65,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "16,875 V · 5,680 C · recluta"
+  },
+  {
+   "id": "92817",
+   "nombre": "Aldo Barragan Blasco",
+   "sub": "DAMARO",
+   "tipo": "DJ",
+   "ventas": 2669.81,
+   "compras": 1126.58,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "17,330 V · 5,373 C · recluta"
+  },
+  {
+   "id": "89974",
+   "nombre": "Maria Laura Gonzalez & Jesus Roberto",
+   "sub": "HENKEM",
+   "tipo": "DJ",
+   "ventas": 2628.11,
+   "compras": 827.29,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "33,372 V · 11,173 C · recluta"
+  },
+  {
+   "id": "92768",
+   "nombre": "Frida Reus Muñoz",
+   "sub": "DAMARO",
+   "tipo": "DJ",
+   "ventas": 1736.07,
+   "compras": 761.98,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "18,264 V · 5,738 C · recluta"
+  },
+  {
+   "id": "92954",
+   "nombre": "Karim Zavala Castro",
+   "sub": "DAMARO",
+   "tipo": "DJ",
+   "ventas": 1392.89,
+   "compras": 459.32,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "18,607 V · 6,041 C · recluta"
+  },
+  {
+   "id": "90769",
+   "nombre": "Javier Emilio Aguilar Garcia",
+   "sub": "FORZA",
+   "tipo": "DJ",
+   "ventas": 1328.74,
+   "compras": 461.95,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "18,671 V · 6,038 C · recluta"
+  },
+  {
+   "id": "92689",
+   "nombre": "Braulio Meza & Karime Moreno",
+   "sub": "FORZA",
+   "tipo": "DJ",
+   "ventas": 1171.49,
+   "compras": 278.01,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "34,829 V · 11,722 C · recluta"
+  },
+  {
+   "id": "92378",
+   "nombre": "Nicolle Velarde",
+   "sub": "ARLISSA",
+   "tipo": "DJ",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "20,000 V · 6,500 C · recluta"
+  },
+  {
+   "id": "82382",
+   "nombre": "Mariela Mayte Parra Resendiz",
+   "sub": "DAMARO",
+   "tipo": "DJ",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "20,000 V · 6,500 C · recluta"
+  },
+  {
+   "id": "91135",
+   "nombre": "Daniel Carrasquedo",
+   "sub": "DAMARO",
+   "tipo": "DJ",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "20,000 V · 6,500 C · recluta"
+  },
+  {
+   "id": "90662",
+   "nombre": "Paulina Estrada Hernandez",
+   "sub": "FORZA",
+   "tipo": "DJ",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "20,000 V · 6,500 C · recluta"
+  },
+  {
+   "id": "92832",
+   "nombre": "Deysa Muñiz & Juan Monroy",
+   "sub": "FORZA",
+   "tipo": "DJ",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "36,000 V · 12,000 C · recluta"
+  },
+  {
+   "id": "91311",
+   "nombre": "Giancarlo Coratella de Ajuria",
+   "sub": "HENKEM",
+   "tipo": "DJ",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "20,000 V · 6,500 C · recluta"
+  },
+  {
+   "id": "92583",
+   "nombre": "Regina Verastegui Morales",
+   "sub": "HENKEM",
+   "tipo": "DJ",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "20,000 V · 6,500 C · recluta"
+  },
+  {
+   "id": "87488",
+   "nombre": "Estefania Gonzalez & Alicia Santoyo",
+   "sub": "ARLISSA",
+   "tipo": "Distribuidor",
+   "ventas": 4939.25,
+   "compras": 1200.7,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "31,061 V · 10,799 C · recluta"
+  },
+  {
+   "id": "73073",
+   "nombre": "Mauro Daniel Perea Chavez",
+   "sub": "HENKEM",
+   "tipo": "Distribuidor",
+   "ventas": 3903.75,
+   "compras": 1222.42,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "16,096 V · 5,278 C · recluta"
+  },
+  {
+   "id": "78368",
+   "nombre": "Cesar Armando Maldonado",
+   "sub": "DAMARO",
+   "tipo": "Distribuidor",
+   "ventas": 3877.98,
+   "compras": 1255.03,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "16,122 V · 5,245 C · recluta"
+  },
+  {
+   "id": "87586",
+   "nombre": "Maria Teresa Larios & Mario Gonzalez",
+   "sub": "FORZA",
+   "tipo": "Distribuidor",
+   "ventas": 3526.59,
+   "compras": 706.33,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "32,473 V · 11,294 C · recluta"
+  },
+  {
+   "id": "84692",
+   "nombre": "Alejandra Rojas & Jesus Chapina",
+   "sub": "HENKEM",
+   "tipo": "Distribuidor",
+   "ventas": 2985.89,
+   "compras": 982.83,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "33,014 V · 11,017 C · recluta"
+  },
+  {
+   "id": "77948",
+   "nombre": "Andre Gutierrez Varela",
+   "sub": "DAMARO",
+   "tipo": "Distribuidor",
+   "ventas": 2689.23,
+   "compras": 892.26,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "17,311 V · 5,608 C · recluta"
+  },
+  {
+   "id": "29522",
+   "nombre": "Yerania Soto Barajas",
+   "sub": "FORZA",
+   "tipo": "Distribuidor",
+   "ventas": 2321.04,
+   "compras": 691.6,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "17,679 V · 5,808 C · recluta"
+  },
+  {
+   "id": "72772",
+   "nombre": "Emmanuel Fabela & Fernanda Cervantes",
+   "sub": "FORZA",
+   "tipo": "Distribuidor",
+   "ventas": 1845.87,
+   "compras": 670.45,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "34,154 V · 11,330 C · recluta"
+  },
+  {
+   "id": "85865",
+   "nombre": "Victor Martinez & Alejandra Mejia",
+   "sub": "FORZA",
+   "tipo": "Distribuidor",
+   "ventas": 824.74,
+   "compras": 269.05,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "35,175 V · 11,731 C · recluta"
+  },
+  {
+   "id": "81410",
+   "nombre": "Carlos Juarez & Fabiola Delgado",
+   "sub": "DAMARO",
+   "tipo": "Distribuidor",
+   "ventas": 0.0,
+   "compras": 0.0,
+   "recluta": false,
+   "estatus": "rojo",
+   "falta": "36,000 V · 12,000 C · recluta"
+  }
+ ]
 }
