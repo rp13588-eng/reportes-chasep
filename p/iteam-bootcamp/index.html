@@ -67,6 +67,10 @@ input[readonly]{background:#f1f2ee;color:#444}
 .btn.sec{background:#fff;color:var(--azul);border:1.5px solid var(--azul)}
 .err{color:var(--rojo);font-size:13px;margin-top:6px;min-height:1em}
 .done{text-align:center;padding:26px 16px}
+.estado{margin:12px 0;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:600}
+.estado.pend{background:#eef3fb;color:var(--azul)}
+.estado.ok{background:#e6f6ec;color:#1e7a3c}
+.estado.bad{background:#fdecea;color:#a12a1f}
 .done .folio{font-size:26px;font-weight:900;color:var(--azul);letter-spacing:.04em;margin:8px 0}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .kpi{background:var(--papel);border:1px solid #dde3e0;border-radius:12px;padding:10px;text-align:center}
@@ -159,10 +163,12 @@ footer{max-width:880px;margin:0 auto;padding:0 14px 30px;color:var(--plata);font
 
   <div class="card done" id="doneCard" hidden>
     <div style="font-size:40px">🏕️</div>
-    <h2>¡Registro recibido!</h2>
+    <h2 id="doneTit">Enviando tu registro…</h2>
     <div class="small">Tu folio</div>
     <div class="folio" id="folio"></div>
+    <div class="estado pend" id="estado">⏳ Confirmando que tu registro quedó guardado. No cierres esta página.</div>
     <div id="resumen" class="small"></div>
+    <button class="btn" id="reenviar" hidden>Reenviar registro</button>
     <button class="btn sec" id="otro">Registrar otro</button>
   </div>
 
@@ -196,6 +202,11 @@ var P={}, PL=[], REG=[], AV=null;
 var $=function(id){return document.getElementById(id)};
 var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
 var money=function(n){return '$'+Math.round(n).toLocaleString('es-MX')};
+var PKEY='iteam_pend_v1';
+var getPend=function(){try{return JSON.parse(localStorage.getItem(PKEY)||'[]')}catch(e){return []}};
+var setPend=function(a){try{localStorage.setItem(PKEY,JSON.stringify(a))}catch(e){}};
+var csvURL=function(){return CSV+'&_='+Date.now()};
+var send=function(qs){return fetch(FORM,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:qs,keepalive:true})};
 var usd=function(n){return n==null?'–':'$'+Math.round(n).toLocaleString('en-US')};
 
 /* ---------- tabs ---------- */
@@ -285,17 +296,64 @@ $('enviar').onclick=function(){
   body.append(F.id,id);body.append(F.nom,nom);body.append(F.sub,sub);body.append(F.bol,String(ts.length));
   body.append(F.det,det);body.append(F.por,OFICINA?'Oficina':'Distribuidor');body.append(F.folio,folio);
   var b=$('enviar'); b.disabled=true; b.textContent='Enviando…';
-  fetch(FORM,{method:'POST',mode:'no-cors',body:body}).then(function(){
+  var qs=body.toString();
+  var pend=getPend(); pend.push({folio:folio,qs:qs,t:Date.now(),tries:1}); setPend(pend);
+  send(qs).then(function(){
     $('formCard').hidden=true; $('doneCard').hidden=false;
-    $('folio').textContent=folio;
+    $('folio').textContent=folio; vigilar(folio);
     var a=ts.filter(function(x){return x.t==='Acompañante'}).length;
-    $('resumen').innerHTML=esc(nom)+' · '+esc(sub)+'<br>'+ts.length+' boleto'+(ts.length>1?'s':'')+(a?' ('+a+' acompañante'+(a>1?'s':'')+')':'')+'<br>'+ts.map(function(x){return esc(x.n)+' · talla '+esc(x.s)}).join('<br>')+'<br><br>Guarda tu folio. La lista se actualiza en unos minutos.';
+    $('resumen').innerHTML=esc(nom)+' · '+esc(sub)+'<br>'+ts.length+' boleto'+(ts.length>1?'s':'')+(a?' ('+a+' acompañante'+(a>1?'s':'')+')':'')+'<br>'+ts.map(function(x){return esc(x.n)+' · talla '+esc(x.s)}).join('<br>')+'<br><br>Toma captura de pantalla de tu folio.';
     REG.push({id:id,nombre:nom,sub:sub,boletos:ts.length,det:ts.map(function(x){return {n:x.n,t:x.t,s:x.s}}),folio:folio,estatus:'',fecha:'',pend:true});
     renderReg();
     window.scrollTo({top:0,behavior:'smooth'});
-  }).catch(function(){err.textContent='No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'}).finally(function(){b.disabled=false;b.textContent='Enviar registro'});
+  }).catch(function(){quitarPend(folio);err.textContent='No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'}).finally(function(){b.disabled=false;b.textContent='Enviar registro'});
 };
+/* ---------- confirmación contra la hoja (el envío a Google no avisa si falla) ---------- */
+var vig=null;
+function enHoja(folio,cb){
+  fetch(csvURL(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){cb(t.indexOf(folio)>=0)}).catch(function(){cb(false)});
+}
+function quitarPend(folio){setPend(getPend().filter(function(p){return p.folio!==folio}))}
+function estado(cls,txt){var e=$('estado');e.className='estado '+cls;e.innerHTML=txt}
+function vigilar(folio){
+  if(vig)clearInterval(vig);
+  var ini=Date.now(); $('reenviar').hidden=true;
+  $('doneTit').textContent='Enviando tu registro…';
+  estado('pend','⏳ Confirmando que tu registro quedó guardado (puede tardar hasta 5 minutos). No cierres esta página.');
+  var chk=function(){
+    enHoja(folio,function(ok){
+      if(ok){clearInterval(vig);vig=null;quitarPend(folio);$('doneTit').textContent='¡Registro confirmado!';estado('ok','✅ Tu registro quedó guardado. Ya apareces en la lista de registrados.');loadReg();return}
+      if(Date.now()-ini>6*60000){clearInterval(vig);vig=null;$('doneTit').textContent='Tu registro no se confirmó';
+        estado('bad','⚠️ Tu registro todavía no aparece. Toca <b>Reenviar registro</b>. Si sigue sin aparecer, manda captura de este folio a la oficina.');$('reenviar').hidden=false}
+    });
+  };
+  vig=setInterval(chk,20000); setTimeout(chk,8000);
+}
+$('reenviar').onclick=function(){
+  var folio=$('folio').textContent, p=getPend().filter(function(x){return x.folio===folio})[0];
+  if(!p)return;
+  enHoja(folio,function(ok){
+    if(ok){quitarPend(folio);vigilar(folio);return}
+    p.tries=(p.tries||1)+1; p.t=Date.now(); setPend(getPend().map(function(x){return x.folio===folio?p:x}));
+    send(p.qs).then(function(){vigilar(folio)}).catch(function(){estado('bad','⚠️ No hay conexión. Revisa tu internet y vuelve a tocar Reenviar.')});
+  });
+};
+/* registros pendientes de visitas anteriores: si a los 15 min no aparecen, se reenvían solos (1 vez) */
+(function(){
+  var pend=getPend(); if(!pend.length)return;
+  fetch(csvURL(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+    var keep=[];
+    pend.forEach(function(p){
+      if(t.indexOf(p.folio)>=0)return;
+      if(Date.now()-p.t>15*60000&&(p.tries||1)<2){p.tries=2;p.t=Date.now();send(p.qs)}
+      if(Date.now()-p.t<7*86400000)keep.push(p);
+    });
+    setPend(keep);
+  }).catch(function(){});
+})();
+
 $('otro').onclick=function(){
+  if(vig){clearInterval(vig);vig=null}
   $('doneCard').hidden=true;$('formCard').hidden=false;
   $('fid').value='';$('fnom').value='';$('fsub').value='';cur=null;n=1;$('found').className='found';
   $('fnom').readOnly=false;$('fsub').disabled=false;$('tickets').innerHTML='';drawTickets();
@@ -311,8 +369,9 @@ function parseCSV(t){
   return rows;
 }
 function loadReg(){
-  fetch(CSV,{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
-    var rows=parseCSV(t).slice(1).filter(function(r){return r[1]});
+  fetch(csvURL(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+    var seen={};
+    var rows=parseCSV(t).slice(1).filter(function(r){if(!r[1])return false;var k=(r[7]||'').trim();if(k&&seen[k])return false;if(k)seen[k]=1;return true});
     var pend=REG.filter(function(r){return r.pend});
     REG=rows.map(function(r){
       var det=(r[5]||'').split(';').filter(Boolean).map(function(x){var p=x.split('|');return {n:p[0],t:p[1],s:p[2]}});
