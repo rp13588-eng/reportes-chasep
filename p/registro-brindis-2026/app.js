@@ -25,7 +25,7 @@
   }
   function soloDigitos(v) { return String(v || '').replace(/\D/g, ''); }
   function wa10(v) { var d = soloDigitos(v); if (d.length === 12 && d.indexOf('52') === 0) d = d.slice(2); return d.length === 10 ? d : ''; }
-  function ocupado(b, on, txt) { b.disabled = on; if (txt) { if (on) { b.dataset.t = b.textContent; b.textContent = txt; } else if (b.dataset.t) b.textContent = b.dataset.t; } }
+  function ocupado(b, on, txt) { b.disabled = on; if (on && txt) { if (!b.dataset.t) b.dataset.t = b.textContent; b.textContent = txt; } else if (!on && b.dataset.t) { b.textContent = b.dataset.t; delete b.dataset.t; } }
   var ss = {
     get: function (k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
     set: function (k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} },
@@ -187,19 +187,122 @@
   }
 
   // ---------- mi registro ----------
-  $('#f-con').addEventListener('submit', function (e) {
-    e.preventDefault();
+  var consulta = null;
+  function consultarRegistro(n, wa, b) {
     var err = $('#e-con'); err.textContent = '';
-    var n = soloDigitos($('#c-num').value), wa = wa10($('#c-wa').value);
-    if (!n || !wa) { err.textContent = 'Escribe tu número de distribuidor y tu WhatsApp a 10 dígitos.'; return; }
-    var b = $('button[type=submit]', this); ocupado(b, true, 'Consultando…');
-    api('consultar', { num: n, whatsapp: wa }).then(function (r) {
-      ocupado(b, false);
-      if (!r.ok) { err.textContent = r.error; $('#r-con').hidden = true; return; }
+    if (b) ocupado(b, true, 'Consultando…');
+    return api('consultar', { num: n, whatsapp: wa }).then(function (r) {
+      if (b) ocupado(b, false);
+      if (!r.ok) { err.textContent = r.error; $('#r-con').hidden = true; consulta = null; return; }
+      consulta = { num: n, whatsapp: wa, info: r };
       $('#rc-folio').textContent = r.folio;
       var vistos = {}, ps = r.personas.map(function (p) { if (p.invitacion && vistos[p.invitacion]) { p = Object.assign({}, p, { invitacion: '' }); } else if (p.invitacion) vistos[p.invitacion] = 1; return p; });
       pintarPersonas($('#rc-personas'), ps);
+      pintarAgregar(r);
       $('#r-con').hidden = false;
+    });
+  }
+  $('#f-con').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var n = soloDigitos($('#c-num').value), wa = wa10($('#c-wa').value);
+    if (!n || !wa) { $('#e-con').textContent = 'Escribe tu número de distribuidor y tu WhatsApp a 10 dígitos.'; return; }
+    consultarRegistro(n, wa, $('button[type=submit]', this));
+  });
+
+  // ---------- agregar a alguien a un registro existente ----------
+  var agTipo = null, agDj = null;
+  function campo(lbl, id, attrs) {
+    var f = document.createDocumentFragment(), l = el('label', null, lbl); l.htmlFor = id; f.appendChild(l);
+    var i = el('input'); i.id = id; Object.keys(attrs || {}).forEach(function (k) { i[k] = attrs[k]; });
+    if (attrs && attrs.tel) { delete i.tel; var w = el('div', 'tel'); w.appendChild(el('span', null, '+52')); w.appendChild(i); f.appendChild(w); }
+    else f.appendChild(i);
+    return f;
+  }
+  function telInput(lbl, id) { return campo(lbl, id, { inputMode: 'tel', placeholder: '10 dígitos', maxLength: 14, tel: true }); }
+  function pintarAgregar(r) {
+    var box = $('#ag'); box.hidden = !r.abierto;
+    var t = $('#ag-tipos'); t.textContent = '';
+    var tipos = [];
+    if (r.parejaFaltante) tipos.push(['pareja', 'Mi pareja']);
+    if (r.empsRestantes > 0) tipos.push(['emprendedor', 'Emprendedor']);
+    tipos.push(['dj', 'DJ de mi distribución']);
+    tipos.forEach(function (x) {
+      var b = el('button', null, x[1]); b.type = 'button'; b.dataset.tipo = x[0];
+      b.addEventListener('click', function () { elegirTipo(x[0]); }); t.appendChild(b);
+    });
+    agTipo = null; agDj = null; $('#ag-form').textContent = ''; $('#e-ag').textContent = ''; $('#b-ag').hidden = true;
+  }
+  function elegirTipo(tipo) {
+    agTipo = tipo; agDj = null;
+    $$('#ag-tipos button').forEach(function (b) { b.classList.toggle('on', b.dataset.tipo === tipo); });
+    var f = $('#ag-form'); f.textContent = ''; $('#e-ag').textContent = '';
+    var btn = $('#b-ag'); btn.hidden = false; btn.textContent = 'Agregar';
+    if (tipo === 'pareja') {
+      f.appendChild(el('p', 'quien', 'Agregar a ' + consulta.info.parejaFaltante + ' a tu registro.'));
+    } else if (tipo === 'emprendedor') {
+      f.appendChild(campo('Nombre completo del emprendedor', 'ag-nom', { autocomplete: 'off' }));
+      f.appendChild(telInput('WhatsApp del emprendedor', 'ag-wa'));
+      var l = el('label', 'check'); var c = el('input'); c.type = 'checkbox'; c.id = 'ag-ok';
+      l.appendChild(c); l.appendChild(document.createTextNode('Cuenta con la autorización de mi Premier y va a firmar en diciembre.')); f.appendChild(l);
+      f.appendChild(el('p', 'ayuda', 'Te quedan ' + consulta.info.empsRestantes + ' de 2 emprendedores.'));
+    } else {
+      f.appendChild(el('p', 'ayuda', 'Para un DJ de tu distribución que no se registró con su propio número.'));
+      var fila = el('div', 'fila');
+      var i = el('input'); i.id = 'ag-num'; i.inputMode = 'numeric'; i.placeholder = 'Número del DJ'; i.setAttribute('aria-label', 'Número del DJ');
+      var b = el('button', 'btn', 'Buscar'); b.type = 'button';
+      fila.appendChild(i); fila.appendChild(b); f.appendChild(fila);
+      var det = el('div'); det.id = 'ag-dj'; f.appendChild(det);
+      btn.hidden = true;
+      b.addEventListener('click', function () {
+        var n = soloDigitos(i.value); $('#e-ag').textContent = ''; det.textContent = ''; agDj = null; btn.hidden = true;
+        if (!n) { $('#e-ag').textContent = 'Escribe el número del DJ.'; return; }
+        ocupado(b, true, 'Buscando…');
+        api('buscar', { num: n }).then(function (r) {
+          ocupado(b, false);
+          if (!r.ok) { $('#e-ag').textContent = r.error; return; }
+          if (r.tipo !== 'Distribuidor Junior') { $('#e-ag').textContent = 'Ese número no es de un DJ. Los distribuidores se registran con su propio número.'; return; }
+          if (r.registrado) { $('#e-ag').textContent = 'Ese DJ ya tiene su propio registro.'; return; }
+          agDj = r;
+          var q = el('div', 'quien'); var d = el('div'); d.appendChild(el('p', 'nombre', r.nombre));
+          d.appendChild(el('p', 'meta', r.tipo + ' · ' + r.subterritorio)); q.appendChild(d); det.appendChild(q);
+          if (r.pareja.length) {
+            var fs = el('fieldset'); fs.appendChild(el('legend', null, 'Trabajan en pareja. ¿Quién asiste?'));
+            var op = el('div', 'opciones');
+            [['ambos', 'Asisten los dos: ' + r.pareja[0] + ' y ' + r.pareja[1]], ['0', 'Solo ' + r.pareja[0]], ['1', 'Solo ' + r.pareja[1]]].forEach(function (o) {
+              var l = el('label', 'opcion'); var x = el('input'); x.type = 'radio'; x.name = 'ag-asisten'; x.value = o[0];
+              l.appendChild(x); l.appendChild(document.createTextNode(o[1])); op.appendChild(l);
+            });
+            fs.appendChild(op); det.appendChild(fs);
+          }
+          det.appendChild(telInput('WhatsApp del DJ', 'ag-wa'));
+          det.appendChild(el('p', 'ayuda', 'Ahí le llegará su invitación.'));
+          btn.hidden = false;
+        });
+      });
+    }
+  }
+  $('#b-ag').addEventListener('click', function () {
+    if (!consulta || !agTipo) return;
+    var err = $('#e-ag'); err.textContent = '';
+    var datos = { num: consulta.num, whatsapp: consulta.whatsapp, tipo: agTipo };
+    if (agTipo === 'emprendedor') {
+      datos.nombre = $('#ag-nom').value.trim(); datos.whatsappPersona = wa10($('#ag-wa').value);
+      if (datos.nombre.split(/\s+/).length < 2) { err.textContent = 'Escribe nombre y apellido del emprendedor.'; return; }
+      if (!datos.whatsappPersona) { err.textContent = 'El WhatsApp del emprendedor debe tener 10 dígitos.'; return; }
+      if (!$('#ag-ok').checked) { err.textContent = 'Confirma que cuenta con la autorización de tu Premier.'; return; }
+    }
+    if (agTipo === 'dj') {
+      if (!agDj) { err.textContent = 'Busca primero el número del DJ.'; return; }
+      datos.numDj = agDj.num; datos.whatsappPersona = wa10($('#ag-wa').value);
+      if (agDj.pareja.length) { datos.asisten = ($('input[name=ag-asisten]:checked') || {}).value; if (!datos.asisten) { err.textContent = 'Indica quién asiste.'; return; } }
+      if (!datos.whatsappPersona) { err.textContent = 'Escribe el WhatsApp del DJ a 10 dígitos.'; return; }
+    }
+    var b = this; ocupado(b, true, 'Agregando…');
+    api('agregar', datos).then(function (r) {
+      ocupado(b, false);
+      if (!r.ok) { err.textContent = r.error; return; }
+      toast('Agregado: ' + r.agregados.map(function (x) { return x.nombre; }).join(' y ') + '. Queda pendiente de aprobación.');
+      consultarRegistro(consulta.num, consulta.whatsapp);
     });
   });
 
@@ -374,6 +477,8 @@
     var h = el('div', 'folio-h');
     var izq = el('span'); izq.appendChild(el('b', null, g[0].registradoPor)); izq.appendChild(document.createTextNode(' · #' + g[0].num + ' · ' + (g[0].nivel || '')));
     h.appendChild(izq); h.appendChild(el('span', null, g[0].folio + ' · ' + g[0].fecha)); c.appendChild(h);
+    var ag = g.filter(function (d) { return d.agregadoPor; })[0];
+    if (ag) c.appendChild(el('div', 'dec', ag.agregadoPor === 'Agregado después' ? 'Incluye personas agregadas después del registro' : 'Registrado por ' + ag.agregadoPor));
     g.forEach(function (d) {
       var r = el('div', 'per');
       var n = el('div', 'n');

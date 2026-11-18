@@ -180,3 +180,11 @@ legend small{font-weight:400;color:var(--gris)}
   .dec{text-align:left}
 }
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
+/* agregar personas */
+.agregar{margin-top:18px;padding-top:16px;border-top:2px solid var(--plata2)}
+.agregar h3{margin:0;font-family:Bodoni,serif;font-weight:500;font-size:1.35rem;letter-spacing:0;text-transform:none;color:var(--navy)}
+.ag-tipos{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ag-tipos button{min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--azul);background:#fff;color:var(--azul);font:600 .95rem Figtree,sans-serif;cursor:pointer}
+.ag-tipos button.on{background:var(--azul);color:#fff}
+#ag-form .quien{margin-top:12px}
