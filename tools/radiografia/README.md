@@ -14,3 +14,7 @@ Estructura: Google Sheet "DISTRUBUCIONES CHASEP & MEJAB" (1Z0X2oGDuehvK660O_l5Y9
 `processed.json` lleva los mensajes de Gmail ya procesados (id → corte, PNL).
 Compras por equipo = suma de "COMPRAS COMPAÑÍA USD" de sus integrantes (los DJ suman en la compañía de su distribuidor).
 Metas de alertas = encabezado del reporte Hycite: morosidad 31+ <10%, morosidad total <39%, recompra <2%.
+
+Google Sheet: "Histórico Radiografía CHASEP" (1Ktd5ux1TyOiEmkCKDTWH90A8tkvhMVqK_X2Ib87m6I0). Pestañas: Equipos (fórmulas sobre Estructura),
+Estructura y Alertas (se reescriben), Histórico cortes y Mensual (se les agregan filas). `sheet_rows.py <corte> <PNL>` prepara esas filas y el aviso.
+Aviso: grupo de WhatsApp "Radiografía" (sus números MX y EUA), vía skill whatsapp-chrome.
