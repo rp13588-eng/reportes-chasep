@@ -10,35 +10,38 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
-:root{--burg:#7a1220;--burg2:#5c0c17;--gold:#b0843e;--cream:#faeee2;--ink:#4a2a26}
+:root{--burg:#7a1220;--burg2:#5c0c17;--gold:#b0843e;--ink:#4a2a26}
 *{box-sizing:border-box;margin:0}
-body{background:radial-gradient(ellipse at top,#fdf6ee,#f3e2cf);color:var(--ink);font-family:'Cormorant Garamond',Georgia,serif;min-height:100vh}
-main{max-width:520px;margin:0 auto;padding:18px 16px 40px}
-.inv{width:100%;display:block;border-radius:14px;box-shadow:0 18px 40px -18px rgba(92,12,23,.45)}
-.card{margin-top:22px;background:#fffaf4;border:1px solid #e6d3b3;border-radius:14px;padding:24px 20px;text-align:center;box-shadow:0 10px 30px -20px rgba(92,12,23,.4)}
-.kick{font-family:Cinzel,serif;letter-spacing:.22em;font-size:12px;color:var(--burg)}
-.name{font-family:'Great Vibes',cursive;font-size:44px;color:var(--burg);line-height:1.1;margin:6px 0 2px}
+body{background:radial-gradient(ellipse at top,#fdf6ee,#f1dfca);color:var(--ink);font-family:'Cormorant Garamond',Georgia,serif;min-height:100vh;min-height:100dvh;display:flex;align-items:center}
+main{width:100%;max-width:600px;margin:0 auto;padding:22px 14px 30px}
+.card{background:#fffaf4;border:1px solid #e6d3b3;border-radius:18px;padding:34px 22px 28px;text-align:center;box-shadow:0 22px 50px -26px rgba(92,12,23,.5);position:relative}
+.card:before{content:"";position:absolute;inset:8px;border:1px solid #ecdcc1;border-radius:12px;pointer-events:none}
+.ev{font-family:Cinzel,serif;letter-spacing:.26em;font-size:15px;color:var(--gold)}
+.ev b{display:block;font-weight:500;font-size:30px;letter-spacing:.12em;color:var(--burg);margin-top:4px}
+.kick{font-family:Cinzel,serif;letter-spacing:.22em;font-size:14px;color:var(--burg);margin-top:22px}
+.name{font-family:'Great Vibes',cursive;font-size:60px;color:var(--burg);line-height:1.1;margin:8px 0 2px;word-spacing:.15em}
 .hide{display:none}
-.rule{display:flex;align-items:center;gap:10px;margin:14px auto;max-width:260px;color:var(--gold)}
+.note{display:inline-block;margin-top:6px;font-family:Cinzel,serif;font-size:12px;letter-spacing:.16em;color:var(--burg2);border-top:1px solid #e3cfae;border-bottom:1px solid #e3cfae;padding:7px 10px}
+.rule{display:flex;align-items:center;gap:10px;margin:18px auto;max-width:280px;color:var(--gold);font-size:18px}
 .rule:before,.rule:after{content:"";flex:1;height:1px;background:var(--gold)}
-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;text-align:left;font-size:18px;margin:6px auto 4px;max-width:340px}
-dt{font-family:Cinzel,serif;font-size:11px;letter-spacing:.14em;color:var(--gold);padding-top:5px}
-dd{color:var(--ink)}
-.q{font-size:20px;font-style:italic;margin:18px 0 12px;color:var(--burg2)}
-.btn{display:block;text-decoration:none;font-family:Cinzel,serif;letter-spacing:.08em;font-size:15px;padding:15px 12px;border-radius:999px;margin:10px 0;transition:transform .1s}
+dl{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;text-align:left;font-size:22px;margin:6px auto 4px;max-width:380px;line-height:1.25}
+dt{font-family:Cinzel,serif;font-size:12px;letter-spacing:.14em;color:var(--gold);padding-top:7px}
+.q{font-size:23px;font-style:italic;margin:24px 0 14px;color:var(--burg2)}
+.btn{display:block;text-decoration:none;font-family:Cinzel,serif;letter-spacing:.08em;font-size:17px;padding:19px 12px;border-radius:999px;margin:12px 0;transition:transform .1s}
 .btn:active{transform:scale(.98)}
-.ok{background:var(--burg);color:#fff;box-shadow:0 8px 18px -10px var(--burg)}
+.ok{background:var(--burg);color:#fff;box-shadow:0 10px 20px -10px var(--burg)}
 .ok2{background:#fff;color:var(--burg);border:1.5px solid var(--burg)}
 .no{background:transparent;color:#8a6a5a;border:1px solid #d9c3a6}
-.links{display:flex;gap:10px;margin-top:16px}
-.links a{flex:1;text-decoration:none;font-size:15px;color:var(--burg);border:1px solid #e6d3b3;border-radius:10px;padding:10px 6px;background:#fff}
-.foot{text-align:center;font-size:14px;color:#9a7b66;margin-top:18px;font-style:italic}
+.links{display:flex;gap:10px;margin-top:18px}
+.links a{flex:1;text-decoration:none;font-size:18px;color:var(--burg);border:1px solid #e6d3b3;border-radius:12px;padding:12px 6px;background:#fff}
+.foot{text-align:center;font-size:16px;color:#9a7b66;margin-top:18px;font-style:italic}
 </style></head>
 <body><main>
-<img class="inv" src="invitacion.jpg" alt="Invitación Cena CHASEP VIP 2026">
 <section class="card">
+  <div class="ev">CENA CHASEP<b>VIP 2026</b></div>
   <div class="kick ">INVITACIÓN ESPECIAL PARA</div>
   <div class="name ">Emiliano Olivera</div>
+  <div class="note">Invitación exclusivamente personal</div>
   <div class="rule">✦</div>
   <dl>
     <dt>FECHA</dt><dd>Jueves 17 de diciembre</dd>
