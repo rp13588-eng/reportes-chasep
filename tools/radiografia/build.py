@@ -79,7 +79,7 @@ def main():
         if k not in best or m['corte'] > best[k][0]:
             best[k] = (m['corte'], float(m['valor']))
     meses = sorted({k[2] for k in best})
-    meses = [x for x in meses if x >= '2025-01']
+    meses = [x for x in meses if x >= '2024-01']
     # histórico de indicadores por corte
     hist = defaultdict(dict)
     for s in snaps:
