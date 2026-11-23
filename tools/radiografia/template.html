@@ -76,7 +76,7 @@ input[type=search],.fsel{width:100%;padding:10px 12px;border-radius:10px;border:
   </div>
   <div class="hs" style="margin-top:6px">
    <select class="mini" id="met" aria-label="Métrica"><option value="cc">Compras compañía (USD)</option><option value="ord">Órdenes</option><option value="rec">Reclutamiento</option><option value="tk">Ticket promedio (MXN)</option></select>
-   <button class="btn" id="fbtn">⚙︎ Filtros <span id="fn"></span></button>
+   <button class="btn" id="fbtn">⚙︎ Filtros <span id="fn"></span></button><button class="btn pri" id="pdfbtn">📄 PDF · enviar</button>
   </div>
   <div class="af" id="af"></div>
   <div class="hs" id="tabs" style="margin-top:8px"></div>
@@ -290,7 +290,7 @@ function openGroup(kind,name){
  const L=DS(kind).filter(d=>kind=='sub'?d.sub==name:kind=='comp'?d.comp==name:d.suc==name);const m=S.met;const comps=groupBy(L,'comp');
  const lbl=kind=='sub'?'Subterritorio':kind=='comp'?'Compañía · '+esc(L[0]?L[0].sub:''):'Sucursal';
  $('#panel').innerHTML=`<div class="top"><div><h2>${esc(name)}</h2><div class="muted">${lbl} · ${L[0]?L[0].red:''} · ${perLbl()} ${CMP[S.cmp]}</div></div><button class="x" aria-label="Cerrar">✕</button></div>
- <div class="acts" style="margin:0 0 10px">${dlBtn(()=>csv(kind+'_'+name,distHead(),distRows(L)),'Integrantes CSV')}${dlBtn(()=>csv(kind+'_'+name+'_meses',monthHead(),monthRows(L)),'Meses CSV')}<button class="btn" onclick="print()">🖨︎ PDF</button><button class="btn pri" data-apply="${kind}|${esc(name)}">Filtrar todo el tablero por ${kind=='sub'?'este equipo':kind=='comp'?'esta compañía':'esta sucursal'}</button></div>
+ <div class="acts" style="margin:0 0 10px">${dlBtn(()=>csv(kind+'_'+name,distHead(),distRows(L)),'Integrantes CSV')}${dlBtn(()=>csv(kind+'_'+name+'_meses',monthHead(),monthRows(L)),'Meses CSV')}<button class="btn" data-pdf="${kind}|${esc(name)}">📄 PDF · enviar</button><button class="btn pri" data-apply="${kind}|${esc(name)}">Filtrar todo el tablero por ${kind=='sub'?'este equipo':kind=='comp'?'esta compañía':'esta sucursal'}</button></div>
  ${noData(L)}${tiles(L,false)}
  <div class="card"><h3><span>${MET[m].n} por mes</span></h3><div id="chg"></div></div>
  <div class="card"><h3><span>Mes a mes · ${MET[m].n}</span></h3>${monthTable(L)}</div>
@@ -301,7 +301,7 @@ function openGroup(kind,name){
 function openDist(id){const d=D.dists.find(x=>x.id==id);if(!d)return;const L=[d];const cs=Object.keys(d.h.mortot).sort();const s=d.m.compras_territorio;
  const terr=S.cmp=='ytd'?(()=>{const a=ytdIdx(S.mes);return a.some(i=>s[i]!=null)?a.reduce((t,i)=>t+(s[i]||0),0):null})():s[S.mes];
  $('#panel').innerHTML=`<div class="top"><div><h2>${esc(d.nombre)}</h2><div class="muted">${d.id} · ${d.red} · ${esc(d.sub)} · ${esc(d.comp)}<br>${d.es_dj?'DJ':'Nivel '+esc(d.nivel||'–')}${d.sponsor?' · sponsor '+d.sponsor:''} · ${esc(d.suc)}${d.fecha_dist?' · distribuidor desde '+d.fecha_dist:''}${d.baja?' · <b>BAJA</b>':''}${d.clasif!='archivo'?' · <b>'+esc(d.clasif)+'</b>':''}</div></div><button class="x" aria-label="Cerrar">✕</button></div>
- <div class="acts" style="margin:0 0 10px">${dlBtn(()=>csv('distribuidor_'+d.id+'_meses',monthHead(),monthRows(L)),'Meses CSV')}<button class="btn" onclick="print()">🖨︎ PDF</button></div>
+ <div class="acts" style="margin:0 0 10px">${dlBtn(()=>csv('distribuidor_'+d.id+'_meses',monthHead(),monthRows(L)),'Meses CSV')}<button class="btn" data-pdf="dist|${d.id}">📄 PDF · enviar</button></div>
  ${d.al.map(a=>`<div class="al" style="padding:8px 0"><span class="sev s${a.sev}">${esc(a.tipo)}</span><span>${esc(a.detalle)}</span></div>`).join('')}
  ${noData(L)}${tiles(L,false,true)}
  <div class="grid" style="margin-top:10px"><div class="tile"><div class="l">Morosidad total</div><div class="v ${d.mortot>=D.meta.mortot?'dn':''}">${fm.p(d.mortot)}</div><div class="s">31+: ${fm.p(d.mor31,2)} · corte ${cTxt(d.corte)}</div></div><div class="tile"><div class="l">Reserva</div><div class="v">${fm.p(d.reserva)}</div><div class="s">Recompra ${fm.p(d.recompra)}</div></div><div class="tile"><div class="l">Compras territorio · USD</div><div class="v">${fm.k(terr)}</div><div class="s">${perLbl()} · incluye su descendencia</div></div></div>
@@ -315,6 +315,7 @@ function alertList(ids){const set=new Set(ids);const A=D.alertas.filter(a=>set.h
 // ---------- eventos ----------
 document.addEventListener('click',e=>{const t=e.target;
  const dl=t.closest('[data-dl]');if(dl){DL[dl.dataset.dl]();return}
+ const pf=t.closest('[data-pdf]');if(pf){const[k,n]=pf.dataset.pdf.split('|');openPDF(k=='dist'?{kind:'dist',id:n}:{kind:k,name:n});return}
  const ab=t.closest('[data-alid]');if(ab){alertList([ab.dataset.alid]);return}
  const al=t.closest('[data-alist]');if(al){alertList(JSON.parse(al.dataset.alist));return}
  if(t.id=='sheet'||t.closest('.x')){closeSheet();return}
@@ -330,7 +331,7 @@ document.addEventListener('click',e=>{const t=e.target;
  const co=t.closest('[data-comp]');if(co){openGroup('comp',co.dataset.comp);return}
  const su=t.closest('[data-sucf]');if(su){openGroup('suc',su.dataset.sucf);return}
  const p=t.closest('[data-id]');if(p){openDist(p.dataset.id);return}});
-$('#mes').onchange=e=>{S.mes=+e.target.value;render()};$('#met').onchange=e=>{S.met=e.target.value;render()};$('#fbtn').onclick=openFilters;
+$('#mes').onchange=e=>{S.mes=+e.target.value;render()};$('#met').onchange=e=>{S.met=e.target.value;render()};$('#fbtn').onclick=openFilters;$('#pdfbtn').onclick=()=>openPDF({kind:'all'});
 const GUIA=`<div class="card guide" style="margin-top:0"><h3>Qué medimos y cómo</h3>
 <h4>Fuente</h4><p>Radiografía mensual de Hycite (PNL 13588 y la de Abdul, PNL 29365) + tu archivo DISTRUBUCIONES CHASEP & MEJAB (subterritorio, compañía, nivel, sponsor, sucursal y bajas). Corte actual: ${cTxt(D.corte)}.</p>
 <h4>Métricas mensuales (se comparan)</h4><ul><li><b>Compras compañía (USD)</b>: compras de la compañía de cada distribuidor. En equipos y compañías se suman sus integrantes; los DJ compran a través de la compañía de su distribuidor.</li><li><b>Órdenes</b> y <b>Reclutamiento</b>: conteos del mes.</li><li><b>Ticket promedio (MXN)</b>: promedio ponderado por órdenes.</li><li><b>Compras territorio (USD)</b>: incluye toda la descendencia; se muestra por persona y para el PNL (sumarla entre integrantes duplicaría).</li></ul>
@@ -338,7 +339,82 @@ const GUIA=`<div class="card guide" style="margin-top:0"><h3>Qué medimos y cóm
 <h4>Comparativos</h4><ul><li><b>vs mes anterior</b>: el mes elegido contra el mes previo.</li><li><b>vs mismo mes año anterior</b>: el mes elegido contra el mismo mes del año pasado.</li><li><b>Acumulado año vs año anterior</b>: enero al mes elegido contra el mismo periodo del año pasado.</li></ul>
 <h4>Comparación justa</h4><p>Las variaciones comparan solo a los integrantes que tienen dato en el periodo actual (por ejemplo, si MEJAB aún no trae un mes, se excluye también del periodo base).</p><h4>Filtros de control</h4><ul><li>Red, Subterritorio, Compañía, Sucursal, Nivel (PNL, Royal, Blue, N1–N4, DJ) y Tipo (distribuidor o DJ).</li><li>Estatus: activos, bajas (hoja BAJAS) o todos.</li><li>Alertas: con o sin alerta, o por tipo.</li><li>Actividad del mes: con compras, sin compras o sin compras 2 meses seguidos (detecta inactivos).</li><li>Antigüedad como distribuidor: menos de 1 año, 1 a 3, más de 3 (seguimiento a nuevos).</li></ul>
 <h4>Alertas</h4><ul><li>Morosidad total ≥39%, morosidad 31+ ≥10%, recompra ≥2% (metas del reporte Hycite).</li><li>Caída mayor a 20% de compras de compañía YTD vs año anterior, 3 meses sin reclutar, 2 meses sin órdenes.</li></ul>
-<h4>Descargas</h4><p>Cada tabla tiene botón CSV (abre en Excel o Google Sheets) con lo que estés viendo según filtros, mes, comparación y métrica. En el detalle de equipo, compañía o persona hay botón PDF.</p></div>`;
+<h4>Descargas y PDF</h4><p>Cada tabla tiene botón CSV (abre en Excel o Google Sheets) con lo que estés viendo según filtros, mes, comparación y métrica. El botón <b>📄 PDF · enviar</b> (arriba y en el detalle de cada equipo, compañía o persona) arma un PDF con los filtros que elijas y las secciones que marques; en el celular abre el menú de compartir para mandarlo por WhatsApp o correo.</p></div>`;
+// ---------- PDF ----------
+let PDFLIB=null,JSPDF=null,PSCOPE={kind:'all'};
+function loadPDF(){if(PDFLIB)return PDFLIB;PDFLIB=new Promise((res,rej)=>{const a=document.createElement('script');a.src='lib/jspdf.umd.min.js';a.onload=()=>{const b=document.createElement('script');b.src='lib/jspdf.plugin.autotable.min.js';b.onload=()=>{JSPDF=window.jspdf.jsPDF;res(JSPDF)};b.onerror=rej;document.head.appendChild(b)};a.onerror=rej;document.head.appendChild(a)});return PDFLIB}
+const SECS=[['kpi','Indicadores con comparativo'],['graf','Gráfica mensual (año vs año anterior)'],['mes','Tabla mes a mes'],['sub','Subterritorios'],['comp','Compañías'],['dist','Distribuidores'],['al','Alertas'],['mat','Matriz por mes (hoja horizontal)']];
+let PSEL=new Set(['kpi','graf','mes','sub','comp','al']);
+function scopeL(){const k=PSCOPE.kind;if(k=='dist')return D.dists.filter(d=>d.id==PSCOPE.id);if(k=='all')return DS();return DS(k).filter(d=>k=='sub'?d.sub==PSCOPE.name:k=='comp'?d.comp==PSCOPE.name:d.suc==PSCOPE.name)}
+function scopeTitle(){const k=PSCOPE.kind;if(k=='dist'){const d=D.dists.find(x=>x.id==PSCOPE.id);return d?d.nombre:''}if(k!='all')return PSCOPE.name;return [S.red=='Todas'?'Toda la red':S.red,S.sub,S.comp].filter(Boolean).join(' · ')}
+function filtTxt(){const act=FDEF.filter(([k])=>k=='est'?S.est!='act':S[k]);return act.length?act.map(([k,l])=>l+': '+fLabel(k)).join(' · '):'Sin filtros adicionales (activos)'}
+function openPDF(scope){if(scope)PSCOPE=scope;loadPDF().catch(()=>{});const L=scopeL();
+ $('#panel').innerHTML=`<div class="top"><div><h2>PDF para descargar o enviar</h2><div class="muted">${esc(scopeTitle())} · ${L.length} integrantes</div></div><button class="x" aria-label="Cerrar">✕</button></div>
+ <div class="card" style="margin-top:0"><h3>Qué periodo y comparación</h3><div class="fgrid">
+ <label>Mes<select class="fsel" data-pf="mes">${D.meses.map((m,i)=>`<option value="${i}"${i==S.mes?' selected':''}>${ml(m)}</option>`).reverse().join('')}</select></label>
+ <label>Comparar contra<select class="fsel" data-pf="cmp">${Object.entries({mom:'Mes anterior',yoy:'Mismo mes del año anterior',ytd:'Acumulado del año vs año anterior'}).map(([v,t])=>`<option value="${v}"${S.cmp==v?' selected':''}>${t}</option>`).join('')}</select></label>
+ <label>Métrica principal<select class="fsel" data-pf="met">${Object.entries(MET).map(([v,o])=>`<option value="${v}"${S.met==v?' selected':''}>${o.n}${o.u?' ('+o.u+')':''}</option>`).join('')}</select></label>
+ ${PSCOPE.kind=='all'?`<label>Subterritorio<select class="fsel" data-pf="sub">${fOpts('sub').map(([v,t])=>`<option value="${esc(v)}"${S.sub==v?' selected':''}>${esc(t)}</option>`).join('')}</select></label>
+ <label>Compañía<select class="fsel" data-pf="comp">${fOpts('comp').map(([v,t])=>`<option value="${esc(v)}"${S.comp==v?' selected':''}>${esc(t)}</option>`).join('')}</select></label>
+ <label>Red<select class="fsel" data-pf="red">${['Todas','CHASEP','MEJAB'].map(r=>`<option value="${r}"${S.red==r?' selected':''}>${r=='Todas'?'Toda la red':r}</option>`).join('')}</select></label>`:''}
+ </div>${PSCOPE.kind=='all'?`<div class="muted" style="margin-top:8px">Otros filtros: ${esc(filtTxt())} <button class="btn" id="pfmore" style="margin-left:4px">⚙︎ Más filtros</button></div>`:''}</div>
+ <div class="card"><h3>Qué incluir</h3>${SECS.filter(([k])=>PSCOPE.kind!='dist'||['kpi','graf','mes','al'].includes(k)).map(([k,t])=>`<label style="display:flex;gap:10px;align-items:center;padding:7px 0;font-size:.88rem;border-top:1px solid var(--line)"><input type="checkbox" data-ps="${k}"${PSEL.has(k)?' checked':''} style="width:20px;height:20px">${t}</label>`).join('')}</div>
+ <div class="acts" style="margin-top:12px"><button class="btn pri" id="pfsend">📤 Enviar PDF (WhatsApp, correo…)</button><button class="btn" id="pfdl">⬇︎ Descargar PDF</button></div><div class="muted" id="pfmsg" style="margin-top:8px"></div>`;
+ openSheet();$('#panel').scrollTop=0;
+ document.querySelectorAll('[data-pf]').forEach(s=>s.onchange=()=>{const k=s.dataset.pf;S[k]=['mes'].includes(k)?+s.value:s.value;if(k=='red'){S.sub='';S.comp=''}if(k=='sub')S.comp='';render();openPDF()});
+ document.querySelectorAll('[data-ps]').forEach(c=>c.onchange=()=>{c.checked?PSEL.add(c.dataset.ps):PSEL.delete(c.dataset.ps)});
+ if($('#pfmore'))$('#pfmore').onclick=openFilters;
+ $('#pfdl').onclick=()=>sendPDF(false);$('#pfsend').onclick=()=>sendPDF(true)}
+const T=s=>String(s??'').replace(/[–—]/g,'-').replace(/[▲▼✕▸⛔⚠️•]/g,'').replace(/ /g,' ');
+const pv=v=>v==null?'-':(v>=0?'+':'')+(v*100).toFixed(1)+'%';
+const pm=(m,v)=>v==null?'-':m=='cc'||m=='tk'?'$'+Math.round(v).toLocaleString('en-US'):Math.round(v).toLocaleString('en-US');
+function buildPDF(){const L=scopeL();const doc=new JSPDF({orientation:'p',unit:'pt',format:'letter'});
+ const NAVY=[10,42,94],BLUE=[29,95,208],SIL=[180,186,210],GRN=[14,138,79],RED=[197,48,48],INK2=[71,85,105];
+ let W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();const M=34;let y;const m=S.met;
+ const title=scopeTitle();
+ doc.setFillColor(...NAVY);doc.rect(0,0,W,70,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text(T('Radiografía · '+title),M,28,{maxWidth:W-2*M});
+ doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text(T(`${perLbl()} ${CMP[S.cmp]} (${baseLbl()}) · Métrica: ${MET[m].n}`),M,44);
+ doc.text(T(`Corte Hycite ${cTxt(D.corte)} · ${L.length} integrantes · generado ${new Date().toLocaleString('es-MX')}`),M,57);
+ doc.setTextColor(...INK2);doc.setFontSize(8);y=84;if(PSCOPE.kind=='all'){const ft=doc.splitTextToSize(T('Filtros: '+filtTxt()),W-2*M);doc.text(ft,M,y);y+=ft.length*10+4}
+ const nd=noData(L).replace(/<[^>]+>/g,'').trim();if(nd){const t=doc.splitTextToSize(T('Nota: '+nd.replace(/Ir a .*$/,'')),W-2*M);doc.setTextColor(122,78,0);doc.text(t,M,y);y+=t.length*10+4}
+ const sec=(t,need=80)=>{if(y>H-need){doc.addPage('letter','p');W=doc.internal.pageSize.getWidth();H=doc.internal.pageSize.getHeight();y=M}doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(T(t),M,y+4);doc.setFont('helvetica','normal');y+=12};
+ const varCols=new Set();const tbl=(head,body,vc=[],opt={})=>{doc.autoTable({startY:y,head:[head.map(T)],body:body.map(r=>r.map(T)),margin:{left:M,right:M},theme:'grid',styles:{fontSize:opt.fs||7.5,cellPadding:3,lineColor:[226,232,240],lineWidth:.5,textColor:[15,23,42],overflow:'linebreak'},headStyles:{fillColor:NAVY,textColor:255,fontStyle:'bold'},alternateRowStyles:{fillColor:[245,247,251]},
+  columnStyles:Object.fromEntries(head.map((_,i)=>[i,{halign:i==0||(opt.left||[]).includes(i)?'left':'right'}])),
+  didParseCell:c=>{if(c.section=='head')c.cell.styles.halign=c.column.index==0||(opt.left||[]).includes(c.column.index)?'left':'right';if(c.section=='body'&&vc.includes(c.column.index)){const s=String(c.cell.raw);if(/^\+/.test(s))c.cell.styles.textColor=GRN;else if(/^-\d/.test(s))c.cell.styles.textColor=RED}if(opt.bold&&c.section=='body'&&opt.bold(c.row.index))c.cell.styles.fontStyle='bold'}});y=doc.lastAutoTable.finalY+16};
+ if(PSEL.has('kpi')){sec('Indicadores');const rows=['cc','ord','rec','tk'].map(k=>{const p=period(L,k);return[MET[k].n+(MET[k].u?' ('+MET[k].u+')':''),pm(k,p.cur),pm(k,p.base),pv(vr(p.base,p.cur))]});
+  if(PSCOPE.kind=='all'&&S.red=='Todas'&&!FDEF.some(([k])=>k=='est'?S.est!='act':S[k])){const pn=D.dists.find(d=>d.id=='13588');if(pn){const s=pn.m.compras_territorio;const tt=ids=>ids.reduce((a,i)=>a+(s[i]||0),0);let c,b;if(S.cmp=='ytd'){const a=ytdIdx(S.mes);c=tt(a);b=tt(a.map(j=>j-12))}else{c=s[S.mes];b=s[S.mes-(S.cmp=='mom'?1:12)]}rows.unshift(['Compras territorio PNL 13588 (USD, incluye MEJAB)',pm('cc',c),pm('cc',b),pv(vr(b,c))])}}
+  const nA=L.filter(d=>d.al.length).length;rows.push(['Integrantes / con alertas',`${L.length} (${L.filter(d=>d.es_dj).length} DJ)`,'',`${nA} con alerta`]);
+  tbl(['Indicador',perLbl(),baseLbl(),'Var'],rows,[3])}
+ if(PSEL.has('graf')){sec(`${MET[m].n} por mes · ${+D.meses[S.mes].slice(0,4)} vs ${+D.meses[S.mes].slice(0,4)-1}`,220);const yy=+D.meses[S.mes].slice(0,4);
+  const ser=yr=>Array.from({length:12},(_,k)=>{const i=D.meses.indexOf(yr+'-'+String(k+1).padStart(2,'0'));if(i<0)return null;if(yr==yy)return agg(L,m,i);const ic=D.meses.indexOf(yy+'-'+String(k+1).padStart(2,'0'));return agg(ic>=0?lk(L,ic):L,m,i)});
+  const A=ser(yy-1),B=ser(yy);const all=[...A,...B].filter(v=>v!=null);const mx=(Math.max(0,...all)*1.1)||1;const x0=M+44,w=W-2*M-50,h=150,y0=y+6;
+  const X=i=>x0+i*w/11,Y=v=>y0+h-(v/mx)*h;doc.setFontSize(7);doc.setTextColor(...INK2);
+  for(let k=0;k<=4;k++){const v=mx*k/4;doc.setDrawColor(233,237,245);doc.setLineWidth(.5);doc.line(x0,Y(v),x0+w,Y(v));doc.text(T(MET[m].f(v)),x0-4,Y(v)+2,{align:'right'})}
+  MES.forEach((mn,i)=>doc.text(mn,X(i),y0+h+11,{align:'center'}));const mk=+D.meses[S.mes].slice(5)-1;doc.setFillColor(234,241,255);doc.rect(X(mk)-6,y0,12,h,'F');
+  [[A,SIL],[B,BLUE]].forEach(([s,c])=>{doc.setDrawColor(...c);doc.setLineWidth(1.6);for(let i=1;i<12;i++)if(s[i]!=null&&s[i-1]!=null)doc.line(X(i-1),Y(s[i-1]),X(i),Y(s[i]));s.forEach((v,i)=>{if(v!=null){doc.setFillColor(...c);doc.circle(X(i),Y(v),1.8,'F')}})});
+  doc.setFillColor(...SIL);doc.rect(x0,y0+h+18,10,3,'F');doc.text(String(yy-1),x0+14,y0+h+21);doc.setFillColor(...BLUE);doc.rect(x0+50,y0+h+18,10,3,'F');doc.text(String(yy),x0+64,y0+h+21);y=y0+h+36}
+ if(PSEL.has('mes')){sec('Mes a mes · '+MET[m].n);const yy=+D.meses[S.mes].slice(0,4);const rows=MES.map((mn,k)=>{const i=D.meses.indexOf(yy+'-'+String(k+1).padStart(2,'0')),j=D.meses.indexOf((yy-1)+'-'+String(k+1).padStart(2,'0'));const Y_=i>=0?lk(L,i):L;const a=i>=0?agg(L,m,i):null,b=j>=0?agg(Y_,m,j):null,p=i>0?agg(Y_,m,i-1):null;return[mn,pm(m,a),pm(m,b),pv(vr(b,a)),pv(vr(p,a))]});
+  tbl(['Mes',String(yy),String(yy-1),'vs año ant.','vs mes ant.'],rows,[3,4],{bold:r=>r==+D.meses[S.mes].slice(5)-1})}
+ const grp=(k)=>Object.entries(groupBy(L,k)).map(([n,G])=>{const p=period(G,m);return{n,G,p}}).sort((a,b)=>(b.p.cur||0)-(a.p.cur||0));
+ if(PSEL.has('sub')&&PSCOPE.kind!='dist'){sec('Subterritorios');tbl(['Subterritorio',`${MET[m].n} ${perLbl()}`,baseLbl(),'Var','Compras cía USD','Órdenes','Reclut.','Integr.','Alertas'],grp('sub').map(r=>[r.n,pm(m,r.p.cur),pm(m,r.p.base),pv(vr(r.p.base,r.p.cur)),pm('cc',period(r.G,'cc').cur),pm('ord',period(r.G,'ord').cur),pm('rec',period(r.G,'rec').cur),r.G.length,r.G.reduce((s,d)=>s+d.al.length,0)]),[3])}
+ if(PSEL.has('comp')&&PSCOPE.kind!='dist'){sec('Compañías');tbl(['Compañía','Subterritorio',`${MET[m].n} ${perLbl()}`,baseLbl(),'Var','Integr.','Alertas'],grp('comp').map(r=>[r.n,r.G[0].sub,pm(m,r.p.cur),pm(m,r.p.base),pv(vr(r.p.base,r.p.cur)),r.G.length,r.G.reduce((s,d)=>s+d.al.length,0)]),[4],{left:[1]})}
+ if(PSEL.has('dist')&&PSCOPE.kind!='dist'){sec('Distribuidores');tbl(['Distribuidor','Subterritorio','Nivel',`${MET[m].n} ${perLbl()}`,baseLbl(),'Var','Mor. total','Alertas'],L.map(d=>({d,p:period([d],m)})).sort((a,b)=>(b.p.cur||0)-(a.p.cur||0)).map(({d,p})=>[d.nombre,d.sub,d.grp,pm(m,p.cur),pm(m,p.base),pv(vr(p.base,p.cur)),d.mortot==null?'-':(d.mortot*100).toFixed(1)+'%',d.al.length]),[5],{left:[1,2],fs:7})}
+ if(PSEL.has('al')){const A=L.flatMap(d=>d.al).sort((a,b)=>b.sev-a.sev);if(A.length){sec(`Alertas (${A.length}) · corte ${cTxt(D.corte)}`);tbl(['Nombre','Subterritorio','Alerta','Detalle'],A.map(a=>[a.nombre,a.sub,a.tipo,a.detalle]),[],{left:[1,2,3],fs:7})}}
+ if(PSEL.has('mat')&&PSCOPE.kind!='dist'){doc.addPage('letter','l');W=doc.internal.pageSize.getWidth();H=doc.internal.pageSize.getHeight();y=M;const yy=+D.meses[S.mes].slice(0,4);sec(`${MET[m].n} por mes y subterritorio · ${yy}`);
+  const idx=MES.map((_,k)=>D.meses.indexOf(yy+'-'+String(k+1).padStart(2,'0')));const up=idx.filter(i=>i>=0&&i<=S.mes);
+  const row=(n,G)=>{const X=G.filter(d=>up.some(j=>has(d,j)));const Yy=X.length?X:G;const a=aggR(Yy,m,up),b=aggR(Yy,m,up.map(i=>i-12).filter(i=>i>=0));return[n,...idx.map(i=>i<0?'-':pm(m,agg(G,m,i))),pm(m,a),pm(m,b),pv(vr(b,a))]};
+  const G=Object.entries(groupBy(L,'sub'));tbl(['Subterritorio',...MES,'YTD '+yy,'YTD '+(yy-1),'Var'],[...G.map(([n,g])=>row(n,g)),row('Total',L)],[15],{fs:6.5,bold:r=>r==G.length})}
+ const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);const pw=doc.internal.pageSize.getWidth(),ph=doc.internal.pageSize.getHeight();doc.setFontSize(7);doc.setTextColor(148,163,184);doc.text(T(`Radiografía CHASEP · ${title} · página ${i} de ${n}`),M,ph-16);doc.text('rp13588-eng.github.io/reportes-chasep/p/radiografia',pw-M,ph-16,{align:'right'})}
+ const fn=('Radiografia_'+title+'_'+D.meses[S.mes]+'_'+S.cmp).replace(/[^\wÁÉÍÓÚÑáéíóúñ-]+/g,'-').replace(/-+/g,'-')+'.pdf';
+ return{blob:doc.output('blob'),fn}}
+async function sendPDF(share){const msg=$('#pfmsg');if(!PSEL.size){msg.textContent='Elige al menos una sección.';return}
+ if(!JSPDF){msg.textContent='Preparando…';try{await loadPDF()}catch(e){msg.textContent='No se pudo cargar el generador de PDF. Revisa tu conexión.';return}}
+ let r;try{r=buildPDF()}catch(e){msg.textContent='Error al generar el PDF: '+e.message;return}
+ const f=new File([r.blob],r.fn,{type:'application/pdf'});
+ if(share&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:r.fn});msg.textContent='Listo.'}catch(e){if(e.name!='AbortError'){msg.textContent='No se pudo abrir el menú de enviar; se descargó el PDF.';dlBlob(r.blob,r.fn)}}return}
+ dlBlob(r.blob,r.fn);msg.textContent=share?'Este navegador no permite enviar directo: se descargó el PDF, adjúntalo en WhatsApp o correo.':'PDF descargado: '+r.fn}
+function dlBlob(b,fn){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800)}
+
 render();
 </script>
 </body>
