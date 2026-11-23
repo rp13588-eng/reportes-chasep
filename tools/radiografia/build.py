@@ -90,7 +90,7 @@ def main():
     # clasificación
     by_name = [(i, nname(v['nombre']) | nname(v['comp'])) for i, v in st.items()]
 
-    def clasif(i, nombre):
+    def clasif(i, nombre, fuente='13588'):
         if i in st:
             return dict(st[i], clasif='archivo', baja=False)
         if i in bajas:
@@ -100,13 +100,13 @@ def main():
         if cand and len(cand[1] & toks) >= 3:
             v = st[cand[0]]
             return dict(v, nombre=nombre, clasif=f'inferido (nombre ≈ {cand[0]})', baja=False)
-        return dict(nombre=nombre, comp='', sub='SIN CLASIFICAR', red='CHASEP', nivel='', sponsor='', suc='', clasif='sin clasificar', baja=False)
+        return dict(nombre=nombre, comp='', sub='SIN CLASIFICAR', red='MEJAB' if fuente == '29365' else 'CHASEP', nivel='', sponsor='', suc='', clasif='sin clasificar', baja=False)
 
     dists = []
     for f, c in last.items():
         for s in (x for x in snaps if x['fuente'] == f and x['corte'] == c):
             i = s['dist']
-            info = clasif(i, s['distribuidor'])
+            info = clasif(i, s['distribuidor'], f)
             d = dict(id=i, nombre=info['nombre'] or s['distribuidor'], nombre_rx=s['distribuidor'], razon=s['distribucion'],
                      red=info['red'], sub=info['sub'] or 'SIN CLASIFICAR', comp=info['comp'], nivel=info['nivel'],
                      sponsor=info['sponsor'], suc=info.get('suc', ''), clasif=info['clasif'], baja=info['baja'],
@@ -222,7 +222,7 @@ def main():
     idx = {d['id']: d for d in dists}
     hrows = []
     for s in snaps:
-        info = idx.get(s['dist']) or clasif(s['dist'], s['distribuidor'])
+        info = idx.get(s['dist']) or clasif(s['dist'], s['distribuidor'], s['fuente'])
         hrows.append([s['corte'], s['fuente'], s['fecha_reporte'], s['dist'], s['distribuidor'], info.get('red', ''), info.get('sub', ''),
                       s['dj'], s['reserva'], s['mor31'], s['mortot'], s['recompra'],
                       s['compras_compania_ytd_ant'], s['compras_compania_ytd_act'], s['compras_territorio_ytd_ant'], s['compras_territorio_ytd_act'],

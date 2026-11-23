@@ -71,6 +71,18 @@
  "inferidos": [],
  "bajas_en_rx": [
   [
+   "88095",
+   "AXEL IVAN MONTERO LEON"
+  ],
+  [
+   "87250",
+   "PABLO EMILIANO SOLIS ORONA"
+  ],
+  [
+   "81783",
+   "ROBERTO ZAMUDIO CAMPA"
+  ],
+  [
    "88454",
    "EUGENIO AVILA RODRIGUEZ"
   ],
@@ -85,18 +97,6 @@
   [
    "88905",
    "IKER LAGUNA PEREZ"
-  ],
-  [
-   "88095",
-   "AXEL IVAN MONTERO LEON"
-  ],
-  [
-   "87250",
-   "PABLO EMILIANO SOLIS ORONA"
-  ],
-  [
-   "81783",
-   "ROBERTO ZAMUDIO CAMPA"
   ]
  ],
  "pendientes": 18
