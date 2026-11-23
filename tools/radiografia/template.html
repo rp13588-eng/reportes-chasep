@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Radiografía CHASEP · Histórico y equipos</title>
+<style>
+:root{--navy:#0A2A5E;--blue:#1D5FD0;--blue2:#5B95F2;--silver:#B4BAD2;--silver2:#EEF0F8;--ink:#0f172a;--ink2:#475569;--ink3:#94a3b8;--bg:#f5f7fb;--card:#fff;--line:#e2e8f0;--good:#0E8A4F;--warn:#B7791F;--bad:#C53030;--grid:#e9edf5}
+@media (prefers-color-scheme:dark){:root{--ink:#f1f5f9;--ink2:#cbd5e1;--ink3:#7c8aa5;--bg:#0b1220;--card:#121b2e;--line:#22304a;--silver2:#1a2540;--blue:#5B95F2;--blue2:#8DB6F7;--grid:#1f2a40;--good:#3ccf8e;--warn:#F2B84B;--bad:#F37B7B}}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
+header{background:linear-gradient(135deg,var(--navy),#123f8a);color:#fff;padding:18px 16px 14px;padding-top:max(18px,env(safe-area-inset-top))}
+header h1{margin:0;font-size:1.25rem;letter-spacing:.2px}header p{margin:4px 0 0;color:#c9d3ea;font-size:.8rem}
+.wrap{max-width:1100px;margin:0 auto;padding:0 12px 60px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 6px;border-bottom:1px solid var(--line)}
+.chips,.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.chips::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+.chip,.tab{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:7px 12px;font-size:.82rem;white-space:nowrap;cursor:pointer;font-weight:600}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tabs{margin-top:8px}.tab{border-radius:8px}.tab.on{background:var(--blue);border-color:var(--blue);color:#fff}
+section{display:none;padding-top:14px}section.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tile .l{font-size:.72rem;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px}.tile .v{font-size:1.45rem;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}.tile .s{font-size:.78rem;color:var(--ink2);margin-top:2px}
+.up{color:var(--good)}.dn{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
+.card h3{margin:0 0 8px;font-size:.95rem}.muted{color:var(--ink2);font-size:.8rem}
+.legend{display:flex;gap:14px;font-size:.78rem;color:var(--ink2);margin:4px 0}.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.chart{position:relative}.chart svg{width:100%;height:auto;display:block}
+.tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:.75rem;box-shadow:0 4px 14px rgba(0,0,0,.12);display:none;white-space:nowrap;color:var(--ink)}
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:12px}
+.team{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.team .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.team .nm{font-weight:700}.tag{font-size:.68rem;padding:2px 7px;border-radius:999px;background:var(--silver2);color:var(--ink2);font-weight:600}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:.8rem;margin-top:8px}.kv b{font-variant-numeric:tabular-nums}
+.rank{margin-top:12px}.rk{display:grid;grid-template-columns:26px 1fr 70px;align-items:center;gap:8px;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--line)}
+.rk .b{height:8px;border-radius:4px;background:var(--blue);min-width:2px}.rk .bb{background:var(--silver2);border-radius:4px}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:8px}details>summary{padding:10px 12px;cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:8px}
+details>summary::-webkit-details-marker{display:none}details details{margin:6px 10px;border-color:var(--line)}details details>summary{font-weight:600;font-size:.88rem}
+.pp{display:flex;justify-content:space-between;gap:8px;padding:7px 12px;border-top:1px solid var(--line);font-size:.82rem;cursor:pointer}.pp .who{min-width:0}.pp .who div{overflow:hidden;text-overflow:ellipsis}
+.pp small{color:var(--ink2)}.lvl{display:inline-block;min-width:34px;text-align:center;font-size:.66rem;font-weight:700;border-radius:5px;padding:1px 4px;margin-right:6px;background:var(--silver2);color:var(--navy)}
+@media (prefers-color-scheme:dark){.lvl{color:var(--blue2)}}
+.lvl.dj{background:transparent;border:1px solid var(--silver);color:var(--ink2)}
+.al{display:flex;gap:10px;padding:9px 12px;border-top:1px solid var(--line);font-size:.83rem;cursor:pointer}.al:first-child{border-top:0}
+.sev{flex:none;font-size:.68rem;font-weight:700;border-radius:6px;padding:2px 6px;height:fit-content}.s3{background:#fde8e8;color:#9b1c1c}.s2{background:#fdf3dc;color:#8a5a0a}.s1{background:var(--silver2);color:var(--ink2)}
+@media (prefers-color-scheme:dark){.s3{background:#3b1717;color:#F8A5A5}.s2{background:#3a2c10;color:#F5CD7A}}
+table{width:100%;border-collapse:collapse;font-size:.8rem}th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{color:var(--ink2);font-weight:600;cursor:pointer;position:sticky;top:0;background:var(--card)}
+td:first-child,th:first-child,td.t,th.t{text-align:left}.scroll{overflow:auto;max-height:70vh;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+input[type=search],select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px}
+.row{display:flex;gap:8px;margin-top:10px}.row>*{flex:1}
+.sheet{position:fixed;inset:0;background:rgba(5,10,25,.5);display:none;z-index:20;align-items:flex-end;justify-content:center}.sheet.on{display:flex}
+.panel{background:var(--card);width:100%;max-width:720px;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px 14px 28px}
+.panel h2{margin:0;font-size:1.05rem}.x{float:right;border:0;background:var(--silver2);color:var(--ink);border-radius:999px;width:30px;height:30px;font-size:1rem;cursor:pointer}
+.note{font-size:.75rem;color:var(--ink2);margin-top:10px;line-height:1.4}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="padding-bottom:0"><h1>Radiografía · CHASEP Global</h1><p id="sub"></p></div></header>
+<div class="wrap">
+ <div class="bar">
+  <div class="chips" id="reds"></div>
+  <div class="tabs" id="tabs"></div>
+ </div>
+ <section id="s-res"></section>
+ <section id="s-eq"></section>
+ <section id="s-org"></section>
+ <section id="s-al"></section>
+ <section id="s-di"></section>
+ <section id="s-hi"></section>
+</div>
+<div class="sheet" id="sheet"><div class="panel" id="panel"></div></div>
+<script>
+const D=/*__DATA__*/null;
+const $=s=>document.querySelector(s);
+const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const ml=m=>MES[+m.slice(5)-1]+' '+m.slice(2,4);
+const usd=v=>v==null?'–':'$'+Math.round(v).toLocaleString('es-MX');
+const usdk=v=>v==null?'–':(Math.abs(v)>=1e6?'$'+(v/1e6).toFixed(2)+'M':Math.abs(v)>=1e3?'$'+(v/1e3).toFixed(1)+'k':'$'+Math.round(v));
+const pct=(v,d=1)=>v==null?'–':(v*100).toFixed(d)+'%';
+const num=v=>v==null?'–':Math.round(v).toLocaleString('es-MX');
+const varp=(a,b)=>a?(b-a)/a:null;
+const sg=v=>v==null?'':`<span class="${v>=0?'up':'dn'}">${v>=0?'▲':'▼'} ${Math.abs(v*100).toFixed(1)}%</span>`;
+const corteTxt=c=>{const m=c.slice(0,4)+'-'+c.slice(4);return ml(m)};
+let RED='Todas';
+const reds=['Todas','CHASEP','MEJAB'];
+$('#sub').textContent=`Corte ${corteTxt(D.corte)} · reporte Hycite del ${D.fecha_reporte} · ${D.cortes.length} cortes en histórico · actualizado ${D.generado}`;
+$('#reds').innerHTML=reds.map(r=>`<button class="chip${r==RED?' on':''}" data-r="${r}">${r=='Todas'?'Toda la red':r}</button>`).join('');
+const TABS=[['res','Resumen'],['eq','Equipos'],['org','Organigrama'],['al','Alertas'],['di','Distribuidores'],['hi','Histórico']];
+$('#tabs').innerHTML=TABS.map((t,i)=>`<button class="tab${i?'':' on'}" data-t="${t[0]}">${t[1]}</button>`).join('');
+$('#s-res').classList.add('on');
+document.addEventListener('click',e=>{
+ const r=e.target.closest('[data-r]');if(r){RED=r.dataset.r;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.r==RED));render();}
+ const t=e.target.closest('[data-t]');if(t){document.querySelectorAll('.tab').forEach(c=>c.classList.toggle('on',c==t));document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id=='s-'+t.dataset.t));render();scrollTo(0,0);}
+ const p=e.target.closest('[data-id]');if(p)openDist(p.dataset.id);
+ if(e.target.id=='sheet'||e.target.classList.contains('x'))$('#sheet').classList.remove('on');
+});
+const inRed=x=>RED=='Todas'||x.red==RED;
+const DS=()=>D.dists.filter(d=>inRed(d)&&!d.baja);
+
+/* ---------- charts ---------- */
+function lineChart(el,labels,series,opt={}){
+ const W=Math.max(300,Math.round(el.clientWidth||700)),H=opt.h||240,P={l:54,r:12,t:10,b:28};
+ const all=series.flatMap(s=>s.v).filter(v=>v!=null);const max=(Math.max(0,...all)*1.08)||1;
+ const x=i=>P.l+(labels.length<2?0:i*(W-P.l-P.r)/(labels.length-1)),y=v=>H-P.b-(v/max)*(H-P.t-P.b);
+ let g='';for(let k=0;k<=4;k++){const v=max*k/4,yy=y(v);g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${yy}" y2="${yy}" stroke="var(--grid)"/><text x="${P.l-6}" y="${yy+4}" font-size="11" text-anchor="end" fill="var(--ink3)">${(opt.yfmt||usdk)(v)}</text>`}
+ const step=Math.ceil(labels.length/8);labels.forEach((l,i)=>{if(i%step==0)g+=`<text x="${x(i)}" y="${H-8}" font-size="11" text-anchor="middle" fill="var(--ink3)">${l}</text>`});
+ series.forEach(s=>{let d='',pen=false;s.v.forEach((v,i)=>{if(v==null){pen=false;return}d+=(pen?'L':'M')+x(i)+','+y(v);pen=true});g+=`<path d="${d}" fill="none" stroke="${s.c}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" ${s.dash?'stroke-dasharray="5 4"':''}/>`;
+  s.v.forEach((v,i)=>{if(v!=null&&(i==s.v.length-1||s.v[i+1]==null))g+=`<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="${s.c}" stroke="var(--card)" stroke-width="2"/>`})});
+ g+=`<line class="xh" y1="${P.t}" y2="${H-P.b}" stroke="var(--ink3)" stroke-dasharray="3 3" style="display:none"/><rect x="${P.l}" y="${P.t}" width="${W-P.l-P.r}" height="${H-P.t-P.b}" fill="transparent" class="hit"/>`;
+ el.innerHTML=`<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opt.label||''}">${g}</svg><div class="tip"></div></div>`;
+ const svg=el.querySelector('svg'),tip=el.querySelector('.tip'),xh=el.querySelector('.xh');
+ const move=ev=>{const r=svg.getBoundingClientRect(),px=(ev.touches?ev.touches[0].clientX:ev.clientX)-r.left,sx=px*W/r.width;let i=Math.round((sx-P.l)/((W-P.l-P.r)/(labels.length-1||1)));i=Math.max(0,Math.min(labels.length-1,i));
+  xh.setAttribute('x1',x(i));xh.setAttribute('x2',x(i));xh.style.display='';
+  tip.innerHTML=`<b>${opt.tipLabel?opt.tipLabel(i):labels[i]}</b>`+series.map(s=>`<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${s.c};margin-right:5px"></i>${s.n}: <b>${(opt.fmt||usd)(s.v[i])}</b></div>`).join('');
+  tip.style.display='block';const tx=x(i)*r.width/W;tip.style.left=Math.min(r.width-tip.offsetWidth,Math.max(0,tx-tip.offsetWidth/2))+'px';tip.style.top='0px'};
+ svg.addEventListener('mousemove',move);svg.addEventListener('touchstart',move,{passive:true});svg.addEventListener('touchmove',move,{passive:true});
+ svg.addEventListener('mouseleave',()=>{tip.style.display='none';xh.style.display='none'});
+}
+function spark(v,c='var(--blue)'){const W=120,H=30,vs=v.filter(x=>x!=null);if(vs.length<2)return'';const mx=Math.max(...vs,1);let d='',pen=false;v.forEach((a,i)=>{if(a==null){pen=false;return}d+=(pen?'L':'M')+(i*W/(v.length-1)).toFixed(1)+','+(H-2-(a/mx)*(H-4)).toFixed(1);pen=true});return`<svg viewBox="0 0 ${W} ${H}" width="120" height="30" aria-hidden="true"><path d="${d}" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"/></svg>`}
+
+/* ---------- year split ---------- */
+function yearSplit(arr){const y=[...new Set(D.meses.map(m=>m.slice(0,4)))].sort();const last=y[y.length-1],prev=y[y.length-2];const by=yy=>Array.from({length:12},(_,k)=>{const i=D.meses.indexOf(yy+'-'+String(k+1).padStart(2,'0'));return i<0?null:arr[i]});return{last,prev,a:by(prev),b:by(last)}}
+
+function render(){
+ const ds=DS(),eqs=D.equipos.filter(inRed),als=D.alertas.filter(inRed);
+ /* RESUMEN */
+ let tot=null;const mejOnly=RED=='MEJAB';
+ const sumM=k=>D.meses.map((_,j)=>{let s=0,h=false;ds.forEach(d=>{const v=d.m[k][j];if(v!=null){s+=v;h=true}});return h?s:null});
+ let serie,ytdA,ytdB,lbl;
+ if(RED=='Todas'){serie=D.territorio.m;[ytdA,ytdB]=D.territorio.ytd;lbl='Compras de territorio PNL 13588 (incluye MEJAB)'}
+ else{serie=sumM('compras_compania');ytdA=ds.reduce((s,d)=>s+(d.ytd.compras_compania[0]||0),0);ytdB=ds.reduce((s,d)=>s+(d.ytd.compras_compania[1]||0),0);lbl='Suma de compras de compañía de la red '+RED}
+ const ys=yearSplit(serie);const lastI=serie.map((v,i)=>v!=null?i:-1).filter(i=>i>=0).pop();
+ const ordB=ds.reduce((s,d)=>s+(d.ytd.ordenes[1]||0),0),ordA=ds.reduce((s,d)=>s+(d.ytd.ordenes[0]||0),0);
+ const recB=ds.reduce((s,d)=>s+(d.ytd.reclutamiento[1]||0),0),recA=ds.reduce((s,d)=>s+(d.ytd.reclutamiento[0]||0),0);
+ const nDJ=ds.filter(d=>d.es_dj).length;
+ const corteRed=mejOnly?D.ultimos['29365']:D.corte;
+ $('#s-res').innerHTML=`<div class="grid">
+  <div class="tile"><div class="l">Compras YTD ${ys.last}</div><div class="v">${usdk(ytdB)}</div><div class="s">${sg(varp(ytdA,ytdB))} vs ${usdk(ytdA)} en ${ys.prev}</div></div>
+  <div class="tile"><div class="l">Último mes · ${lastI!=null?ml(D.meses[lastI]):''}</div><div class="v">${usdk(serie[lastI])}</div><div class="s">${sg(varp(lastI>=12?serie[lastI-12]:null,serie[lastI]))} vs mismo mes ${ys.prev}</div></div>
+  <div class="tile"><div class="l">Órdenes YTD</div><div class="v">${num(ordB)}</div><div class="s">${sg(varp(ordA,ordB))} vs ${num(ordA)}</div></div>
+  <div class="tile"><div class="l">Reclutamiento YTD</div><div class="v">${num(recB)}</div><div class="s">${sg(varp(recA,recB))} vs ${num(recA)}</div></div>
+  <div class="tile"><div class="l">Red activa</div><div class="v">${ds.length}</div><div class="s">${ds.length-nDJ} distribuidores · ${nDJ} DJ</div></div>
+  <div class="tile"><div class="l">Alertas</div><div class="v ${als.length?'dn':''}">${als.length}</div><div class="s">${als.filter(a=>a.sev==3).length} críticas (morosidad)</div></div>
+ </div>
+ <div class="card"><h3>Compras mensuales USD · ${ys.prev} vs ${ys.last}</h3><div class="muted">${lbl}${mejOnly?` · corte MEJAB ${corteTxt(corteRed)}`:''}</div>
+  <div class="legend"><span><i style="background:var(--silver)"></i>${ys.prev}</span><span><i style="background:var(--blue)"></i>${ys.last}</span></div><div id="ch1"></div></div>
+ <div class="card"><h3>Equipos por crecimiento YTD</h3><div class="muted">Compras de compañía YTD vs mismo periodo del año anterior</div><div id="rk"></div></div>
+ ${mejOnly?`<p class="note">MEJAB usa la Radiografía de Abdul (PNL 29365) corte ${corteTxt(D.ultimos['29365'])}; se actualiza cuando él la reenvíe.</p>`:''}`;
+ lineChart($('#ch1'),MES.map(m=>m),[{n:ys.prev,v:ys.a,c:'var(--silver)'},{n:ys.last,v:ys.b,c:'var(--blue)'}],{label:'Compras mensuales',tipLabel:i=>MES[i]});
+ const rkE=eqs.filter(e=>e.var!=null&&!e.sub.startsWith('PNL')).sort((a,b)=>b.var-a.var);const mx=Math.max(...rkE.map(e=>Math.abs(e.var)),.01);
+ $('#rk').innerHTML=rkE.map((e,i)=>`<div class="rk"><span class="muted">${i+1}</span><div><div style="display:flex;justify-content:space-between"><b>${e.sub}${e.red=='MEJAB'&&RED=='Todas'?' <span class="tag">MEJAB · '+corteTxt(D.ultimos['29365'])+'</span>':''}</b><span class="muted">${usdk(e.ytd_act)}</span></div><div class="bb"><div class="b" style="width:${Math.abs(e.var)/mx*100}%;${e.var<0?'background:var(--bad)':''}"></div></div></div><span style="text-align:right">${sg(e.var)}</span></div>`).join('');
+
+ /* EQUIPOS */
+ $('#s-eq').innerHTML=`<p class="muted">Compras = suma de compras de compañía (USD) de los integrantes, según DISTRUBUCIONES CHASEP & MEJAB. Morosidad = promedio simple de sus integrantes.</p><div class="teams">${eqs.map(e=>`
+  <div class="team"><div class="hd"><span class="nm">${e.sub}</span><span class="tag">${e.red}</span></div>
+  <div style="display:flex;justify-content:space-between;align-items:end;margin-top:6px"><div><div style="font-size:1.3rem;font-weight:700">${usdk(e.ytd_act)}</div><div class="muted">YTD ${sg(e.var)} vs ${usdk(e.ytd_ant)}</div></div>${spark(e.m)}</div>
+  <div class="kv"><span>Integrantes</span><b>${e.n} (${e.dj} DJ)</b><span>Órdenes YTD</span><b>${num(e.ordenes)}</b><span>Reclutamiento YTD</span><b>${num(e.reclutamiento)}</b><span>Morosidad total</span><b class="${e.mortot>=D.meta.mortot?'dn':''}">${pct(e.mortot)}</b><span>Alertas</span><b class="${e.alertas?'dn':''}">${e.alertas}</b></div></div>`).join('')}</div>`;
+
+ /* ORGANIGRAMA */
+ const bySub={};ds.forEach(d=>{(bySub[d.red+'|'+d.sub]=bySub[d.red+'|'+d.sub]||[]).push(d)});
+ const names={};D.dists.forEach(d=>names[d.id]=d.nombre);D.pendientes.forEach(p=>names[p.id]=names[p.id]||p.nombre);
+ const person=d=>`<div class="pp" data-id="${d.id}"><div class="who"><div><span class="lvl ${d.es_dj?'dj':''}">${d.es_dj?'DJ':(d.nivel||'·')}</span>${d.nombre}</div><small>${d.id}${d.sponsor?' · sponsor '+(names[d.sponsor]||d.sponsor):''}${d.suc?' · '+d.suc:''}</small></div><div style="text-align:right"><b>${usdk(d.ytd.compras_compania[1])}</b><br><small>${sg(varp(d.ytd.compras_compania[0],d.ytd.compras_compania[1]))}</small></div></div>`;
+ const pend=D.pendientes.filter(p=>inRed(p));
+ $('#s-org').innerHTML=`<p class="muted">Red → Subterritorio → Compañía → integrantes. Monto = compras de compañía YTD (USD). Toca a alguien para ver su detalle.</p>`+
+  ['CHASEP','MEJAB'].filter(r=>RED=='Todas'||RED==r).map(r=>{
+   const subs=Object.keys(bySub).filter(k=>k.startsWith(r+'|')).sort((a,b)=>a.startsWith(r+'|PNL')?-1:b.startsWith(r+'|PNL')?1:a.localeCompare(b));
+   return `<h3 style="margin:16px 2px 4px">${r}</h3>`+subs.map(k=>{const L=bySub[k];const comps={};L.forEach(d=>{(comps[d.comp||'—']=comps[d.comp||'—']||[]).push(d)});
+    const tot=L.reduce((s,d)=>s+(d.ytd.compras_compania[1]||0),0);
+    return `<details><summary><span>${k.split('|')[1]} <span class="tag">${L.length}</span></span><span>${usdk(tot)}</span></summary>${Object.entries(comps).sort((a,b)=>b[1].reduce((s,d)=>s+(d.ytd.compras_compania[1]||0),0)-a[1].reduce((s,d)=>s+(d.ytd.compras_compania[1]||0),0)).map(([c,M])=>{
+      M.sort((a,b)=>(a.es_dj-b.es_dj)||((b.ytd.compras_compania[1]||0)-(a.ytd.compras_compania[1]||0)));
+      return `<details><summary><span>${c}</span><span class="muted">${M.length}</span></summary>${M.map(person).join('')}</details>`}).join('')}</details>`}).join('')}).join('')+
+  (pend.length?`<div class="card"><h3>En el archivo pero aún sin Radiografía (${pend.length})</h3><div class="muted">Normalmente DJs nuevos; aparecerán en el próximo corte.</div>${pend.map(p=>`<div class="pp"><div class="who"><div><span class="lvl dj">${p.nivel||'·'}</span>${p.nombre}</div><small>${p.id} · ${p.sub} · ${p.comp}</small></div></div>`).join('')}</div>`:'');
+
+ /* ALERTAS */
+ const tipos=[...new Set(als.map(a=>a.tipo))];
+ $('#s-al').innerHTML=`<p class="muted">Metas del reporte Hycite: morosidad 31+ &lt;10%, morosidad total &lt;39%, recompra &lt;2%. Además: caída &gt;20% en compras YTD, 3 meses sin reclutar, 2 meses sin órdenes.</p>`+
+  (als.length?tipos.map(t=>{const L=als.filter(a=>a.tipo==t);return `<div class="card" style="padding:0"><h3 style="padding:12px 12px 4px">${t} · ${L.length}</h3>${L.map(a=>`<div class="al" data-id="${a.id}"><span class="sev s${a.sev}">${a.sev==3?'⛔ Alta':a.sev==2?'⚠️ Media':'• Baja'}</span><div><b>${a.nombre}</b><div class="muted">${a.sub} · ${a.detalle}</div></div></div>`).join('')}</div>`}).join(''):'<div class="card">Sin alertas 🎉</div>');
+
+ /* DISTRIBUIDORES */
+ if(!$('#q')){$('#s-di').innerHTML=`<div class="row"><input type="search" id="q" placeholder="Buscar nombre o ID"><select id="fs"></select></div><div class="scroll" style="margin-top:10px"><table id="tb"></table></div>`;$('#q').oninput=tabla;$('#fs').onchange=tabla}
+ const subs=[...new Set(ds.map(d=>d.sub))].sort();$('#fs').innerHTML='<option value="">Todos los subterritorios</option>'+subs.map(s=>`<option>${s}</option>`).join('');
+ tabla();
+
+ /* HISTÓRICO */
+ const pnl=D.dists.find(d=>d.id=='13588');
+ const cortes=D.cortes;
+ const avgC=(k,c)=>{const L=D.dists.filter(d=>inRed(d)&&d.h[k][c]!=null);return L.length?L.reduce((s,d)=>s+d.h[k][c],0)/L.length:null};
+ $('#s-hi').innerHTML=`<div class="card"><h3>Morosidad y reserva por corte</h3><div class="muted">Valor del renglón PNL 13588 (total) y promedio de la red actual con dato en ese corte.</div>
+  <div class="legend"><span><i style="background:var(--blue)"></i>Morosidad total PNL</span><span><i style="background:var(--silver)"></i>Reserva PNL</span></div><div id="ch2"></div>
+  <div class="scroll" style="max-height:none;margin-top:8px"><table><tr><th class="t">Corte</th><th>Reserva PNL</th><th>Mor. 31+ PNL</th><th>Mor. total PNL</th><th>Recompra PNL</th><th>Mor. total prom. red</th></tr>
+  ${cortes.slice().reverse().map(c=>`<tr><td>${corteTxt(c)}</td><td>${pct(pnl&&pnl.h.reserva[c])}</td><td>${pct(pnl&&pnl.h.mor31[c],2)}</td><td>${pct(pnl&&pnl.h.mortot[c])}</td><td>${pct(pnl&&pnl.h.recompra[c])}</td><td>${pct(avgC('mortot',c))}</td></tr>`).join('')}</table></div></div>
+  <div class="card"><h3>Compras de territorio por mes (USD)</h3><div class="scroll" style="max-height:none"><table><tr><th class="t">Mes</th><th>${ys.prev}</th><th>${ys.last}</th><th>Var</th></tr>
+  ${MES.map((m,i)=>`<tr><td>${m}</td><td>${usd(ys.a[i])}</td><td>${usd(ys.b[i])}</td><td>${sg(ys.a[i]&&ys.b[i]!=null?varp(ys.a[i],ys.b[i]):null)}</td></tr>`).join('')}</table></div></div>
+  <p class="note">Cortes cargados: ${cortes.map(corteTxt).join(', ')}. Cada Radiografía nueva de Hycite (y la de Abdul cuando la reenvía) se agrega sola; si un mes se re-emite, gana el dato más reciente.</p>`;
+ if(pnl)lineChart($('#ch2'),cortes.map(corteTxt),[{n:'Morosidad total',v:cortes.map(c=>pnl.h.mortot[c]??null),c:'var(--blue)'},{n:'Reserva',v:cortes.map(c=>pnl.h.reserva[c]??null),c:'var(--silver)'}],{fmt:v=>pct(v),yfmt:v=>(v*100).toFixed(0)+'%',h:220,label:'Morosidad por corte'});
+}
+let SORT={k:'act',d:-1};
+function tabla(){
+ const q=($('#q').value||'').toUpperCase(),fs=$('#fs').value;
+ let L=DS().filter(d=>(!fs||d.sub==fs)&&(!q||d.nombre.toUpperCase().includes(q)||d.id.includes(q)));
+ const get={nom:d=>d.nombre,sub:d=>d.sub,act:d=>d.ytd.compras_compania[1]||0,var:d=>varp(d.ytd.compras_compania[0],d.ytd.compras_compania[1])??-9,ord:d=>d.ytd.ordenes[1]||0,rec:d=>d.ytd.reclutamiento[1]||0,mor:d=>d.mortot??-1,res:d=>d.reserva??-1};
+ L.sort((a,b)=>{const x=get[SORT.k](a),y=get[SORT.k](b);return (x>y?1:x<y?-1:0)*SORT.d});
+ const h=(k,t,c='')=>`<th class="${c}" data-s="${k}">${t}${SORT.k==k?(SORT.d>0?' ↑':' ↓'):''}</th>`;
+ $('#tb').innerHTML=`<tr>${h('nom','Distribuidor','t')}${h('sub','Subterritorio','t')}${h('act','Compras YTD')}${h('var','Var')}${h('ord','Órdenes')}${h('rec','Reclut.')}${h('mor','Mor. total')}${h('res','Reserva')}</tr>`+
+  L.map(d=>`<tr data-id="${d.id}"><td class="t">${d.es_dj?'<span class="lvl dj">DJ</span>':''}${d.nombre}</td><td class="t">${d.sub}</td><td>${usd(d.ytd.compras_compania[1])}</td><td>${sg(varp(d.ytd.compras_compania[0],d.ytd.compras_compania[1]))}</td><td>${num(d.ytd.ordenes[1])}</td><td>${num(d.ytd.reclutamiento[1])}</td><td class="${d.mortot>=D.meta.mortot?'dn':''}">${pct(d.mortot)}</td><td>${pct(d.reserva)}</td></tr>`).join('');
+ $('#tb').querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.s;SORT=SORT.k==k?{k,d:-SORT.d}:{k,d:-1};tabla()});
+}
+function openDist(id){
+ const d=D.dists.find(x=>x.id==id);if(!d)return;
+ const al=D.alertas.filter(a=>a.id==id);const ys=yearSplit(d.m.compras_compania);const yo=yearSplit(d.m.ordenes);
+ const cs=Object.keys(d.h.mortot).sort();
+ $('#panel').innerHTML=`<button class="x" aria-label="Cerrar">✕</button><h2>${d.nombre}</h2><div class="muted">${d.id} · ${d.red} · ${d.sub} · ${d.comp||''}<br>${d.es_dj?'DJ':'Nivel '+(d.nivel||'–')}${d.sponsor?' · sponsor '+d.sponsor:''}${d.suc?' · '+d.suc:''} · corte ${corteTxt(d.corte)}${d.clasif!='archivo'?' · <b>'+d.clasif+'</b>':''}</div>
+ ${al.map(a=>`<div class="al" style="padding:8px 0"><span class="sev s${a.sev}">${a.tipo}</span><span>${a.detalle}</span></div>`).join('')}
+ <div class="grid" style="margin-top:10px"><div class="tile"><div class="l">Compras YTD</div><div class="v">${usdk(d.ytd.compras_compania[1])}</div><div class="s">${sg(varp(...d.ytd.compras_compania))}</div></div>
+ <div class="tile"><div class="l">Órdenes YTD</div><div class="v">${num(d.ytd.ordenes[1])}</div><div class="s">vs ${num(d.ytd.ordenes[0])}</div></div>
+ <div class="tile"><div class="l">Reclutamiento YTD</div><div class="v">${num(d.ytd.reclutamiento[1])}</div><div class="s">vs ${num(d.ytd.reclutamiento[0])}</div></div>
+ <div class="tile"><div class="l">Ticket prom. MXN</div><div class="v">${usdk(d.ytd.ticket_mxn[1])}</div><div class="s">vs ${usdk(d.ytd.ticket_mxn[0])}</div></div>
+ <div class="tile"><div class="l">Morosidad total</div><div class="v ${d.mortot>=D.meta.mortot?'dn':''}">${pct(d.mortot)}</div><div class="s">31+: ${pct(d.mor31,2)}</div></div>
+ <div class="tile"><div class="l">Reserva · Recompra</div><div class="v">${pct(d.reserva)}</div><div class="s">Recompra ${pct(d.recompra)}</div></div></div>
+ <div class="card"><h3>Compras de compañía por mes (USD)</h3><div class="legend"><span><i style="background:var(--silver)"></i>${ys.prev}</span><span><i style="background:var(--blue)"></i>${ys.last}</span></div><div id="ch3"></div></div>
+ <div class="card"><h3>Morosidad total por corte</h3><div class="muted">${cs.map(c=>corteTxt(c)+': '+pct(d.h.mortot[c])).join(' · ')||'Sin datos'}</div></div>`;
+ $('#sheet').classList.add('on');
+ lineChart($('#ch3'),MES,[{n:ys.prev,v:ys.a,c:'var(--silver)'},{n:ys.last,v:ys.b,c:'var(--blue)'}],{h:200,tipLabel:i=>MES[i]});
+}
+render();
+</script>
+</body>
+</html>

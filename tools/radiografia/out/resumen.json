@@ -1,0 +1,103 @@
+{
+ "corte": "202609",
+ "fecha_reporte": "2026-10-29",
+ "distribuidores": 105,
+ "territorio_ytd": [
+  3063034.1500000004,
+  2887852.31
+ ],
+ "ordenes_ytd": [
+  2769.0,
+  3106.0
+ ],
+ "recl_ytd": [
+  217.0,
+  403.0
+ ],
+ "ultimo_mes": "2026-09",
+ "ultimo_mes_territorio": 317780.75,
+ "alertas": 46,
+ "alertas_por_tipo": {
+  "Caída compras YTD": 12,
+  "Morosidad total": 6,
+  "Recompra": 16,
+  "Sin reclutamiento": 9,
+  "Sin órdenes": 3
+ },
+ "top": [
+  [
+   "HL VENTURE",
+   1.6869669739766446
+  ],
+  [
+   "HL IMPACT",
+   0.749203822025055
+  ],
+  [
+   "HL AVANTRA",
+   0.4866933391318175
+  ],
+  [
+   "HEALTHY",
+   0.2275771919316689
+  ],
+  [
+   "HENKEM",
+   0.20779096148073026
+  ],
+  [
+   "DAMARO",
+   0.17547616908577468
+  ],
+  [
+   "FORZA",
+   0.1108888003909422
+  ],
+  [
+   "ARLISSA",
+   -0.14881199166265124
+  ],
+  [
+   "HLC",
+   -0.5968193828746728
+  ]
+ ],
+ "sin_clasificar": [
+  [
+   "90340",
+   "LUZ DEL CARMEN CORTES PONCE"
+  ]
+ ],
+ "inferidos": [],
+ "bajas_en_rx": [
+  [
+   "88454",
+   "EUGENIO AVILA RODRIGUEZ"
+  ],
+  [
+   "91559",
+   "JOSE MARIA GARRIDO GUDIÑO"
+  ],
+  [
+   "91029",
+   "MICHELLE VILLASEÑOR SALDAÑA"
+  ],
+  [
+   "88905",
+   "IKER LAGUNA PEREZ"
+  ],
+  [
+   "88095",
+   "AXEL IVAN MONTERO LEON"
+  ],
+  [
+   "87250",
+   "PABLO EMILIANO SOLIS ORONA"
+  ],
+  [
+   "81783",
+   "ROBERTO ZAMUDIO CAMPA"
+  ]
+ ],
+ "pendientes": 18
+}
