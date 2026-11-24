@@ -195,6 +195,7 @@ footer{max-width:880px;margin:0 auto;padding:0 14px 30px;color:var(--plata);font
 var FORM='https://docs.google.com/forms/d/e/1FAIpQLSeS7SaRbIC2PT04nn5A5RGmxzIUG9g0E3U1zwxLxCo8z_1nZQ/formResponse';
 var F={id:'entry.513435289',nom:'entry.224472429',sub:'entry.2131347231',bol:'entry.362294660',det:'entry.442358397',por:'entry.1134189497',folio:'entry.1786864295'};
 var CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vRpa9qLXxYuoOgDxRfbOM9XLiGEi1H-mFJmyMSP66nHWaUTl_RisfyTfqlV24wxvBXHaNHi8yWKvbFL/pub?gid=875669034&single=true&output=csv';
+var API='https://script.google.com/macros/s/AKfycbwhtp-AzsMEfsZQr9qMAmEmwfJDAjXNzLGc2mGjIkiZcX66y6yMAxeX__gmzWPu9xi-/exec';
 var BOLETO=7500, MAXB=10;
 var qs=new URLSearchParams(location.search);
 var OFICINA=qs.has('oficina');
@@ -296,61 +297,95 @@ $('enviar').onclick=function(){
   body.append(F.id,id);body.append(F.nom,nom);body.append(F.sub,sub);body.append(F.bol,String(ts.length));
   body.append(F.det,det);body.append(F.por,OFICINA?'Oficina':'Distribuidor');body.append(F.folio,folio);
   var b=$('enviar'); b.disabled=true; b.textContent='Enviando…';
-  var qs=body.toString();
-  var pend=getPend(); pend.push({folio:folio,qs:qs,t:Date.now(),tries:1}); setPend(pend);
-  send(qs).then(function(){
+  var ap=new URLSearchParams({id:id,nombre:nom,sub:sub,boletos:String(ts.length),det:det,por:OFICINA?'Oficina':'Distribuidor',folio:folio}).toString();
+  var item={folio:folio,qs:body.toString(),ap:ap,t:Date.now(),tries:1};
+  var pend=getPend(); pend.push(item); setPend(pend);
+  enviar(item).then(function(modo){
     $('formCard').hidden=true; $('doneCard').hidden=false;
-    $('folio').textContent=folio; vigilar(folio);
+    $('folio').textContent=folio;
     var a=ts.filter(function(x){return x.t==='Acompañante'}).length;
     $('resumen').innerHTML=esc(nom)+' · '+esc(sub)+'<br>'+ts.length+' boleto'+(ts.length>1?'s':'')+(a?' ('+a+' acompañante'+(a>1?'s':'')+')':'')+'<br>'+ts.map(function(x){return esc(x.n)+' · talla '+esc(x.s)}).join('<br>')+'<br><br>Toma captura de pantalla de tu folio.';
-    REG.push({id:id,nombre:nom,sub:sub,boletos:ts.length,det:ts.map(function(x){return {n:x.n,t:x.t,s:x.s}}),folio:folio,estatus:'',fecha:'',pend:true});
+    REG.push({id:id,nombre:nom,sub:sub,boletos:ts.length,det:ts.map(function(x){return {n:x.n,t:x.t,s:x.s}}),folio:folio,estatus:'',fecha:'',pend:modo!=='ok'});
     renderReg();
+    if(modo==='ok') confirmado(folio); else vigilar(folio);
     window.scrollTo({top:0,behavior:'smooth'});
-  }).catch(function(){quitarPend(folio);err.textContent='No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'}).finally(function(){b.disabled=false;b.textContent='Enviar registro'});
+  }).catch(function(e){quitarPend(folio);err.textContent=(e&&e.usuario)?e.message:'No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'}).finally(function(){b.disabled=false;b.textContent='Enviar registro'});
 };
-/* ---------- confirmación contra la hoja (el envío a Google no avisa si falla) ---------- */
+/* ---------- envío con confirmación real (Apps Script) y respaldo por el formulario ---------- */
+function sendApi(ap){
+  var ctl=window.AbortController?new AbortController():null, tm=setTimeout(function(){if(ctl)ctl.abort()},30000);
+  return fetch(API,{method:'POST',body:ap,signal:ctl?ctl.signal:undefined,redirect:'follow'})
+    .then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.json()})
+    .then(function(j){clearTimeout(tm);return j},function(e){clearTimeout(tm);throw e});
+}
+function enviar(p){
+  if(!API) return send(p.qs).then(function(){return 'respaldo'});
+  return sendApi(p.ap).then(function(j){
+    if(j&&j.ok) return 'ok';
+    if(j&&j.error&&/inv[aá]lido|falta/i.test(j.error)){var e=new Error(j.error);e.usuario=true;throw e}
+    throw new Error((j&&j.error)||'api');
+  }).catch(function(e){
+    if(e&&e.usuario) throw e;
+    return send(p.qs).then(function(){return 'respaldo'});
+  });
+}
 var vig=null;
 function enHoja(folio,cb){
-  fetch(csvURL(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){cb(t.indexOf(folio)>=0)}).catch(function(){cb(false)});
+  var csv=function(){fetch(csvURL(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){cb(t.indexOf(folio)>=0)}).catch(function(){cb(false)})};
+  if(!API) return csv();
+  fetch(API+'?folio='+encodeURIComponent(folio),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(j&&j.existe)cb(true);else csv()}).catch(csv);
 }
 function quitarPend(folio){setPend(getPend().filter(function(p){return p.folio!==folio}))}
 function estado(cls,txt){var e=$('estado');e.className='estado '+cls;e.innerHTML=txt}
+function confirmado(folio){
+  if(vig){clearInterval(vig);vig=null}
+  quitarPend(folio); $('reenviar').hidden=true;
+  REG.forEach(function(r){if(r.folio===folio)r.pend=false}); renderReg();
+  $('doneTit').textContent='¡Registro confirmado!';
+  estado('ok','✅ Tu registro quedó guardado. Ya apareces en la lista de registrados.');
+}
 function vigilar(folio){
   if(vig)clearInterval(vig);
   var ini=Date.now(); $('reenviar').hidden=true;
   $('doneTit').textContent='Enviando tu registro…';
-  estado('pend','⏳ Confirmando que tu registro quedó guardado (puede tardar hasta 5 minutos). No cierres esta página.');
+  estado('pend','⏳ Confirmando que tu registro quedó guardado (puede tardar unos minutos). No cierres esta página.');
   var chk=function(){
     enHoja(folio,function(ok){
-      if(ok){clearInterval(vig);vig=null;quitarPend(folio);$('doneTit').textContent='¡Registro confirmado!';estado('ok','✅ Tu registro quedó guardado. Ya apareces en la lista de registrados.');loadReg();return}
-      if(Date.now()-ini>6*60000){clearInterval(vig);vig=null;$('doneTit').textContent='Tu registro no se confirmó';
+      if(ok){confirmado(folio);loadReg();return}
+      if(Date.now()-ini>(API?90000:6*60000)){clearInterval(vig);vig=null;$('doneTit').textContent='Tu registro no se confirmó';
         estado('bad','⚠️ Tu registro todavía no aparece. Toca <b>Reenviar registro</b>. Si sigue sin aparecer, manda captura de este folio a la oficina.');$('reenviar').hidden=false}
     });
   };
-  vig=setInterval(chk,20000); setTimeout(chk,8000);
+  vig=setInterval(chk,15000); setTimeout(chk,5000);
 }
 $('reenviar').onclick=function(){
   var folio=$('folio').textContent, p=getPend().filter(function(x){return x.folio===folio})[0];
   if(!p)return;
-  enHoja(folio,function(ok){
-    if(ok){quitarPend(folio);vigilar(folio);return}
-    p.tries=(p.tries||1)+1; p.t=Date.now(); setPend(getPend().map(function(x){return x.folio===folio?p:x}));
-    send(p.qs).then(function(){vigilar(folio)}).catch(function(){estado('bad','⚠️ No hay conexión. Revisa tu internet y vuelve a tocar Reenviar.')});
-  });
+  var b=$('reenviar'); b.disabled=true; b.textContent='Reenviando…';
+  p.tries=(p.tries||1)+1; p.t=Date.now(); setPend(getPend().map(function(x){return x.folio===folio?p:x}));
+  enviar(p).then(function(modo){if(modo==='ok')confirmado(folio);else vigilar(folio)})
+    .catch(function(){estado('bad','⚠️ No hay conexión. Revisa tu internet y vuelve a tocar Reenviar.')})
+    .finally(function(){b.disabled=false;b.textContent='Reenviar registro'});
 };
-/* registros pendientes de visitas anteriores: si a los 15 min no aparecen, se reenvían solos (1 vez) */
+/* registros pendientes de visitas anteriores: si no aparecen, se reenvían solos (hasta 3 intentos) */
 (function(){
-  var pend=getPend(); if(!pend.length)return;
-  fetch(csvURL(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
-    var keep=[];
-    pend.forEach(function(p){
-      if(t.indexOf(p.folio)>=0)return;
-      if(Date.now()-p.t>15*60000&&(p.tries||1)<2){p.tries=2;p.t=Date.now();send(p.qs)}
-      if(Date.now()-p.t<7*86400000)keep.push(p);
+  getPend().forEach(function(p){
+    if(Date.now()-p.t>14*86400000){quitarPend(p.folio);return}
+    enHoja(p.folio,function(ok){
+      if(ok){quitarPend(p.folio);return}
+      if(Date.now()-p.t>2*60000&&(p.tries||1)<3){
+        p.tries=(p.tries||1)+1;p.t=Date.now();setPend(getPend().map(function(x){return x.folio===p.folio?p:x}));
+        if(!p.ap)p.ap=apDesdeQs(p.qs);
+        enviar(p).then(function(m){if(m==='ok'){quitarPend(p.folio);loadReg()}}).catch(function(){});
+      }
     });
-    setPend(keep);
-  }).catch(function(){});
+  });
 })();
+function apDesdeQs(qs){
+  var q=new URLSearchParams(qs), o={};
+  Object.keys(F).forEach(function(k){var map={id:'id',nom:'nombre',sub:'sub',bol:'boletos',det:'det',por:'por',folio:'folio'};o[map[k]]=q.get(F[k])||''});
+  return new URLSearchParams(o).toString();
+}
 
 $('otro').onclick=function(){
   if(vig){clearInterval(vig);vig=null}
