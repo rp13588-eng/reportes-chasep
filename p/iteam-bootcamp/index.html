@@ -313,7 +313,7 @@ $('enviar').onclick=function(){
 };
 /* ---------- envío con confirmación real (Apps Script) y respaldo por el formulario ---------- */
 function sendApi(ap){
-  var ctl=window.AbortController?new AbortController():null, tm=setTimeout(function(){if(ctl)ctl.abort()},30000);
+  var ctl=window.AbortController?new AbortController():null, tm=setTimeout(function(){if(ctl)ctl.abort()},40000);
   return fetch(API,{method:'POST',body:new URLSearchParams(ap),signal:ctl?ctl.signal:undefined,redirect:'follow'})
     .then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.json()})
     .then(function(j){clearTimeout(tm);return j},function(e){clearTimeout(tm);throw e});
@@ -326,7 +326,10 @@ function enviar(p){
     throw new Error((j&&j.error)||'api');
   }).catch(function(e){
     if(e&&e.usuario) throw e;
-    return send(p.qs).then(function(){return 'respaldo'});
+    /* antes de usar el respaldo, revisa si el script sí alcanzó a guardarlo (evita duplicados) */
+    return fetch(API+'?folio='+encodeURIComponent(p.folio),{cache:'no-store'}).then(function(r){return r.json()})
+      .then(function(j){if(j&&j.existe)return 'ok';throw 0})
+      .catch(function(){return send(p.qs).then(function(){return 'respaldo'})});
   });
 }
 var vig=null;
