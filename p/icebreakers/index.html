@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Icebreakers CHASEP + MEJAB</title>
+<style>
+:root{--navy:#0A2A5E;--blue:#1D5FD0;--blue2:#7FA8EE;--silver:#B4BAD2;--silver2:#EEF0F8;--ink:#0f172a;--ink2:#475569;--ink3:#5b6b82;--bg:#f5f7fb;--card:#fff;--line:#e2e8f0;--good:#0E8A4F;--bad:#C53030;--hl:#eaf1ff}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
+header{background:linear-gradient(135deg,var(--navy),#123f8a);color:#fff;padding:16px 0 12px;padding-top:max(16px,env(safe-area-inset-top))}
+header h1{margin:0;font-size:1.25rem}header p{margin:4px 0 0;color:#c9d3ea;font-size:.8rem}
+.wrap{max-width:1150px;margin:0 auto;padding:0 12px}
+main.wrap{padding-bottom:60px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+select,input[type=search]{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 8px;font-size:.8rem;font-weight:600;max-width:210px}
+input[type=search]{min-width:170px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;padding:7px 12px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+label.tg{font-size:.78rem;color:var(--ink2);display:inline-flex;gap:4px;align-items:center;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tile .l{font-size:.7rem;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px}
+.tile .v{font-size:1.5rem;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums;color:var(--navy)}
+.tile .s{font-size:.75rem;color:var(--ink2);margin-top:2px}
+.up{color:var(--good)!important}.dn{color:var(--bad)!important}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
+.card h2{font-size:.95rem;margin:0 0 8px;color:var(--navy)}
+.card .note{font-size:.8rem;color:var(--ink3);margin:6px 0 0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cols>*,.card{min-width:0}@media(max-width:820px){.cols{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:.8rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{background:var(--silver2);color:var(--navy);font-size:.76rem;cursor:pointer;position:sticky;top:0}
+td:first-child,th:first-child,td.t,th.t{text-align:left}
+.scroll{overflow:auto;max-height:520px}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;border-radius:999px;padding:1px 7px;margin-left:4px}
+.b-baja{background:#fde2e2;color:var(--bad)}.b-sc{background:#fff3cd;color:#8a6100}
+.legend{display:flex;gap:14px;font-size:.75rem;color:var(--ink2);margin-bottom:4px}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+svg text{font-family:inherit}
+.hbar{display:grid;grid-template-columns:130px 1fr 44px;gap:6px;align-items:center;font-size:.78rem;margin:4px 0;cursor:pointer}
+.hbar .tr{background:var(--silver2);border-radius:6px;height:16px;overflow:hidden}.hbar .fl{background:var(--blue);height:100%}
+.hbar .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+footer{font-size:.8rem;color:var(--ink3);margin-top:16px;line-height:1.5}
+.pdfmode .bar,.pdfmode .noprint{display:none!important}.pdfmode .scroll{max-height:none;overflow:visible}
+@media print{.bar,.noprint{display:none!important}.scroll{max-height:none;overflow:visible}body{background:#fff}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>🧊 Icebreakers · CHASEP + MEJAB</h1><p id="sub">Cargando…</p></div></header>
+<div class="bar"><div class="wrap filters">
+ <select id="fAnio" title="Año"></select>
+ <select id="fMes" title="Mes"></select>
+ <select id="fPrem" title="Premier"><option value="">Premier: todos</option><option>CHASEP</option><option>MEJAB</option></select>
+ <select id="fSub" title="Subterritorio"></select>
+ <select id="fCia" title="Compañía"></select>
+ <select id="fSuc" title="Sucursal"></select>
+ <select id="fNiv" title="Nivel"></select>
+ <input id="fDist" type="search" list="dl" placeholder="Distribuidor (nombre o ID)">
+ <datalist id="dl"></datalist>
+ <label class="tg"><input type="checkbox" id="fBajas" checked>Incluir bajas</label>
+ <label class="tg"><input type="checkbox" id="fSC" checked>Incluir sin clasificar</label>
+ <button class="btn" id="clr">Limpiar filtros</button>
+ <button class="btn pri" id="pdf">⬇ Descargar PDF</button>
+</div></div>
+<main class="wrap" id="main">
+ <div class="grid" id="kpis"></div>
+ <div class="card"><h2 id="tMes">Icebreakers por mes</h2>
+  <div class="legend"><span><i style="background:var(--blue)"></i><b id="lgA"></b></span><span><i style="background:var(--silver)"></i><b id="lgB"></b></span><span><i style="background:var(--good)"></i>Con venta (PDF Ivan, solo Premier)</span></div>
+  <div id="chart"></div><p class="note" id="nMes"></p></div>
+ <div class="cols">
+  <div class="card"><h2>Por subterritorio</h2><div id="subs"></div><p class="note">Toca una barra para filtrar.</p></div>
+  <div class="card"><h2>Con venta por Premier (PDF de Ivan)</h2><div class="scroll" style="max-height:300px"><table id="tVenta"></table></div>
+   <p class="note">"Con venta" solo existe por Premier. Es la foto del último PDF de Ivan de cada mes; no se suma a los icebreakers del correo.</p></div>
+ </div>
+ <div class="card"><h2>Compañías</h2><div class="scroll" style="max-height:380px"><table id="tCia"></table></div></div>
+ <div class="card"><h2>Distribuidores (quién acreditó el icebreaker)</h2><div class="scroll"><table id="tDist"></table></div>
+  <p class="note">Sin clasificar = ID que no está en "DISTRUBUCIONES CHASEP &amp; MEJAB". Baja = está en la pestaña BAJAS.</p></div>
+ <footer id="foot"></footer>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<script>
+const MES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const $=s=>document.querySelector(s);
+const fmt=n=>n==null?'—':n.toLocaleString('es-MX');
+let D,S={anio:'',mes:'',prem:'',sub:'',cia:'',suc:'',niv:'',dist:'',bajas:true,sc:true},sortD={k:'tot',d:-1},sortC={k:'tot',d:-1};
+function ym2(y,m){return y+'-'+String(m).padStart(2,'0')}
+function idx(ym){return D.meses.indexOf(ym)}
+function pct(a,b){if(!b)return a?'nuevo':'—';const p=(a-b)/b*100;return (p>=0?'+':'')+p.toFixed(0)+'%'}
+function cls(a,b){return a>b?'up':(a<b?'dn':'')}
+function uniq(f){return [...new Set(D.dist.map(f).filter(Boolean))].sort()}
+function fill(id,label,vals){const el=$(id);el.innerHTML=`<option value="">${label}: todos</option>`+vals.map(v=>`<option>${v}</option>`).join('')}
+function filtered(){const q=S.dist.trim().toUpperCase();return D.dist.filter(d=>(!S.prem||d.premier===S.prem)&&(!S.sub||d.sub===S.sub)&&(!S.cia||d.compania===S.cia)&&(!S.suc||d.sucursal===S.suc)&&(!S.niv||d.nivel===S.niv)&&(S.bajas||!d.baja)&&(S.sc||d.clas)&&(!q||d.id===q||d.nombre.toUpperCase().includes(q)||(q.match(/^(\d+)/)&&d.id===q.match(/^(\d+)/)[1])))}
+function months(){const y=+S.anio;return S.mes?[+S.mes]:[...Array(12)].map((_,i)=>i+1).filter(m=>idx(ym2(y,m))>=0)}
+function val(d,y,m){const j=idx(ym2(y,m));return j<0?null:d.m[j]}
+function prevVal(d,y,m){ // mismo periodo año anterior
+ if(ym2(y,m)===D.mes_actual&&!D.mes_cerrado)return D.prev_same[d.id]||0;
+ const v=val(d,y-1,m);return v}
+function sum(list,y,ms,fn){let t=0,any=false;for(const d of list)for(const m of ms){const v=fn(d,y,m);if(v!=null){t+=v;any=true}}return any?t:null}
+function render(){
+ const y=+S.anio,ms=months(),L=filtered(),hasPrev=D.meses.some(k=>k.startsWith(String(y-1)));
+ const tot=sum(L,y,ms,val),prev=hasPrev?sum(L,y,ms,prevVal):null;
+ const act=L.filter(d=>ms.some(m=>(val(d,y,m)||0)>0)).length;
+ const per=S.mes?`${MES[S.mes-1]} ${y}`:`${y}${ms.length?` (${MES[ms[0]-1]}–${MES[ms[ms.length-1]-1]})`:''}`;
+ // con venta
+ const onlyPrem=!S.sub&&!S.cia&&!S.suc&&!S.niv&&!S.dist&&S.bajas&&S.sc;
+ let cv=0,cr=0,cm=0;for(const m of ms){const iv=D.ivan[ym2(y,m)];if(!iv)continue;cm++;for(const p of (S.prem?[S.prem]:['CHASEP','MEJAB'])){cr+=iv[p][0];cv+=iv[p][1]}}
+ const ventaTile=!onlyPrem?`<div class="tile"><div class="l">Con venta</div><div class="v" style="font-size:1rem;color:var(--ink3)">Solo por Premier</div><div class="s">Quita filtros de subterritorio, compañía, etc.</div></div>`
+  :(cm?`<div class="tile"><div class="l">Con venta (PDF Ivan)</div><div class="v">${fmt(cv)}</div><div class="s">de ${fmt(cr)} reclutas · ${(cv/cr*100).toFixed(0)}% · ${cm} mes(es)</div></div>`
+  :`<div class="tile"><div class="l">Con venta (PDF Ivan)</div><div class="v" style="font-size:1rem;color:var(--ink3)">Sin dato</div><div class="s">Hay PDFs desde ago-2026</div></div>`);
+ $('#kpis').innerHTML=`<div class="tile"><div class="l">Icebreakers · ${per}</div><div class="v">${fmt(tot)}</div><div class="s">Fuente: correo Hycite</div></div>`+
+ (prev!=null?`<div class="tile"><div class="l">Mismo periodo ${y-1}</div><div class="v">${fmt(prev)}</div><div class="s ${cls(tot,prev)}">${pct(tot,prev)} vs ${y-1}</div></div>`:'')+
+ ventaTile+`<div class="tile"><div class="l">Distribuidores que acreditaron</div><div class="v">${fmt(act)}</div><div class="s">con al menos 1 icebreaker</div></div>`+
+ `<div class="tile"><div class="l">Promedio mensual</div><div class="v">${ms.length?fmt(Math.round((tot||0)/ms.length*10)/10):'—'}</div><div class="s">${ms.length} mes(es)</div></div>`;
+ chart(L,y,hasPrev);subs(L,y,ms);venta(y);cias(L,y,ms,hasPrev);dists(L,y,ms);
+ $('#sub').textContent=`Corte al ${fechaTxt(D.corte)} · ${per}${S.prem?' · '+S.prem:''}`;
+}
+function fechaTxt(s){const [a,b,c]=s.split('-');return `${+c} ${MES[+b-1].toLowerCase()} ${a}`}
+function chart(L,y,hasPrev){
+ const W=Math.min(1100,$('#chart').clientWidth||700),H=230,pad=28,bw=(W-pad*2)/12;
+ const A=[],B=[],V=[];for(let m=1;m<=12;m++){A.push(sum(L,y,[m],val));B.push(hasPrev?sum(L,y,[m],prevVal):null);const iv=D.ivan[ym2(y,m)];const ok=!S.sub&&!S.cia&&!S.suc&&!S.niv&&!S.dist;V.push(iv&&ok?(S.prem?iv[S.prem][1]:iv.CHASEP[1]+iv.MEJAB[1]):null)}
+ const mx=Math.max(1,...A.map(x=>x||0),...B.map(x=>x||0));const sc=v=>(H-40)*(v/mx);
+ let g='';for(let i=0;i<12;i++){const x=pad+i*bw;const sel=S.mes&&+S.mes===i+1;
+  if(B[i]!=null)g+=`<rect x="${x+bw*.12}" y="${H-22-sc(B[i])}" width="${bw*.36}" height="${sc(B[i])}" fill="var(--silver)" rx="2"/>`;
+  if(A[i]!=null){g+=`<rect x="${x+bw*.5}" y="${H-22-sc(A[i])}" width="${bw*.36}" height="${sc(A[i])}" fill="var(--blue)" rx="2" opacity="${S.mes&&!sel?.35:1}"/><text x="${x+bw*.68}" y="${H-26-sc(A[i])}" font-size="10" text-anchor="middle" fill="var(--navy)" font-weight="700">${A[i]}</text>`}
+  if(V[i]!=null)g+=`<circle cx="${x+bw*.68}" cy="${H-22-sc(V[i])}" r="4.5" fill="var(--good)"/><text x="${x+bw*.68+7}" y="${H-19-sc(V[i])}" font-size="9" fill="var(--good)" font-weight="700">${V[i]}</text>`;
+  g+=`<text x="${x+bw/2}" y="${H-6}" font-size="10" text-anchor="middle" fill="var(--ink2)">${MES[i]}</text><rect x="${x}" y="0" width="${bw}" height="${H}" fill="transparent" style="cursor:pointer" onclick="pickMes(${i+1})"/>`}
+ $('#chart').innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${H}">${g}</svg>`;
+ $('#lgA').textContent=y;$('#lgB').textContent=hasPrev?(y-1)+' (mismo periodo)':'';
+ $('#tMes').textContent=`Icebreakers por mes · ${y}`;
+}
+function pickMes(m){S.mes=String(S.mes==m?'':m);$('#fMes').value=S.mes;render()}
+function subs(L,y,ms){const t={};for(const d of L){const v=ms.reduce((a,m)=>a+(val(d,y,m)||0),0);t[d.sub]=(t[d.sub]||0)+v}
+ const r=Object.entries(t).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1]);const mx=Math.max(1,...r.map(e=>e[1]));
+ $('#subs').innerHTML=r.length?r.map(([k,v])=>`<div class="hbar" onclick="setF('sub','${k}')"><div class="nm">${k}</div><div class="tr"><div class="fl" style="width:${v/mx*100}%"></div></div><b style="text-align:right">${v}</b></div>`).join(''):'<p class="note">Sin icebreakers en el periodo.</p>'}
+function setF(k,v){S[k]=S[k]===v?'':v;const map={sub:'#fSub',cia:'#fCia'};if(map[k])$(map[k]).value=S[k];render()}
+function venta(y){const rows=Object.keys(D.ivan).filter(k=>k.startsWith(String(y))).sort();
+ const ps=S.prem?[S.prem]:['CHASEP','MEJAB'];
+ if(!rows.length){$('#tVenta').innerHTML='<tr><td>Sin PDFs de Ivan para este año (WhatsApp Web solo trae desde ago-2026)</td></tr>';return}
+ let h='<tr><th class="t">Mes</th><th class="t">Premier</th><th>Reclutamiento (Ivan)</th><th>Con venta</th><th>%</th><th>Icebreakers correo</th></tr>';
+ for(const k of rows){const iv=D.ivan[k],m=+k.slice(5);for(const p of ps){const ic=sum(D.dist.filter(d=>d.premier===p),y,[m],val);
+  h+=`<tr><td class="t">${MES[m-1]} <span style="color:var(--ink3);font-size:.7rem">PDF ${+iv.fecha.slice(8)}-${MES[+iv.fecha.slice(5,7)-1].toLowerCase()}</span></td><td class="t">${p}</td><td>${iv[p][0]}</td><td><b>${iv[p][1]}</b></td><td>${iv[p][0]?(iv[p][1]/iv[p][0]*100).toFixed(0)+'%':'—'}</td><td>${fmt(ic)}</td></tr>`}}
+ $('#tVenta').innerHTML=h}
+function th(lbl,k,s,cl){return `<th class="${cl||''}" onclick="${s}('${k}')">${lbl}${(s==='sD'?sortD:sortC).k===k?((s==='sD'?sortD:sortC).d<0?' ▾':' ▴'):''}</th>`}
+function sD(k){sortD.d=sortD.k===k?-sortD.d:-1;sortD.k=k;render()}
+function sC(k){sortC.d=sortC.k===k?-sortC.d:-1;sortC.k=k;render()}
+function cias(L,y,ms,hasPrev){const t={};for(const d of L){const c=t[d.compania]||(t[d.compania]={n:d.compania,sub:d.sub,prem:d.premier,tot:0,prev:0,act:0});const v=ms.reduce((a,m)=>a+(val(d,y,m)||0),0);c.tot+=v;if(v>0)c.act++;if(hasPrev)c.prev+=ms.reduce((a,m)=>a+(prevVal(d,y,m)||0),0)}
+ let r=Object.values(t).filter(c=>c.tot||c.prev);r.sort((a,b)=>{const k=sortC.k;return (typeof a[k]==='string'?a[k].localeCompare(b[k]):a[k]-b[k])*sortC.d});
+ let h='<tr>'+th('Compañía','n','sC','t')+th('Subterritorio','sub','sC','t')+th('Premier','prem','sC','t')+th('Icebreakers','tot','sC')+(hasPrev?th(String(y-1),'prev','sC')+'<th>Var.</th>':'')+th('Distribuidores','act','sC')+'</tr>';
+ h+=r.map(c=>`<tr style="cursor:pointer" onclick="setF('cia','${c.n.replace(/'/g,"\\'")}')"><td class="t">${c.n}</td><td class="t">${c.sub}</td><td class="t">${c.prem}</td><td><b>${c.tot}</b></td>${hasPrev?`<td>${c.prev}</td><td class="${cls(c.tot,c.prev)}">${pct(c.tot,c.prev)}</td>`:''}<td>${c.act}</td></tr>`).join('');
+ $('#tCia').innerHTML=h}
+function dists(L,y,ms){const cols=[...Array(12)].map((_,i)=>i+1).filter(m=>idx(ym2(y,m))>=0&&(!S.mes||+S.mes===m));
+ let r=L.map(d=>({d,tot:cols.reduce((a,m)=>a+(val(d,y,m)||0),0)})).filter(x=>x.tot>0||S.dist);
+ r.sort((a,b)=>{const k=sortD.k;if(k==='tot')return (a.tot-b.tot)*sortD.d;if(k.startsWith('m'))return ((val(a.d,y,+k.slice(1))||0)-(val(b.d,y,+k.slice(1))||0))*sortD.d;return String(a.d[k]).localeCompare(String(b.d[k]))*sortD.d});
+ let h='<tr>'+th('Distribuidor','nombre','sD','t')+th('ID','id','sD','t')+th('Compañía','compania','sD','t')+th('Subterritorio','sub','sD','t')+th('Nivel','nivel','sD','t')+th('Sucursal','sucursal','sD','t')+cols.map(m=>th(MES[m-1],'m'+m,'sD')).join('')+th('Total','tot','sD')+'</tr>';
+ h+=r.map(({d,tot})=>`<tr><td class="t">${d.nombre}${d.baja?'<span class="badge b-baja">Baja</span>':''}${!d.clas?'<span class="badge b-sc">Sin clasificar</span>':''}</td><td class="t">${d.id}</td><td class="t">${d.compania}</td><td class="t">${d.sub}</td><td class="t">${d.nivel||''}</td><td class="t">${d.sucursal||''}</td>${cols.map(m=>{const v=val(d,y,m);return `<td>${v?v:'<span style="color:var(--ink3)">·</span>'}</td>`}).join('')}<td><b>${tot}</b></td></tr>`).join('');
+ if(!r.length)h+='<tr><td class="t" colspan="9">Sin icebreakers con estos filtros.</td></tr>';
+ $('#tDist').innerHTML=h}
+function cascade(){const base=D.dist.filter(d=>(!S.prem||d.premier===S.prem));
+ const keep=(id,lab,vals,k)=>{fill(id,lab,vals);if(vals.includes(S[k]))$(id).value=S[k];else S[k]=''};
+ keep('#fSub','Subterritorio',[...new Set(base.map(d=>d.sub))].sort(),'sub');
+ const b2=base.filter(d=>!S.sub||d.sub===S.sub);
+ keep('#fCia','Compañía',[...new Set(b2.map(d=>d.compania))].sort(),'cia');
+ keep('#fSuc','Sucursal',[...new Set(b2.map(d=>d.sucursal).filter(Boolean))].sort(),'suc');
+ keep('#fNiv','Nivel',[...new Set(b2.map(d=>d.nivel).filter(Boolean))].sort(),'niv');
+ $('#dl').innerHTML=b2.map(d=>`<option value="${d.id} · ${d.nombre}">`).join('')}
+async function init(){
+ D=await (await fetch('data.json?v='+Date.now())).json();
+ const years=[...new Set(D.meses.map(k=>k.slice(0,4)))].sort().reverse();
+ $('#fAnio').innerHTML=years.map(y=>`<option>${y}</option>`).join('');S.anio=years[0];
+ const setMes=()=>{const y=+S.anio;$('#fMes').innerHTML='<option value="">Mes: todos</option>'+[...Array(12)].map((_,i)=>i+1).filter(m=>idx(ym2(y,m))>=0).map(m=>`<option value="${m}">${MES[m-1]}</option>`).join('');$('#fMes').value=S.mes};
+ setMes();cascade();
+ const on=(id,k,ev='change')=>$(id).addEventListener(ev,e=>{S[k]=e.target.type==='checkbox'?e.target.checked:e.target.value;if(k==='anio'){S.mes='';setMes()}if(['prem','sub'].includes(k))cascade();render()});
+ on('#fAnio','anio');on('#fMes','mes');on('#fPrem','prem');on('#fSub','sub');on('#fCia','cia');on('#fSuc','suc');on('#fNiv','niv');on('#fDist','dist','input');on('#fBajas','bajas');on('#fSC','sc');
+ $('#clr').onclick=()=>{Object.assign(S,{mes:'',prem:'',sub:'',cia:'',suc:'',niv:'',dist:'',bajas:true,sc:true});['#fMes','#fPrem','#fDist'].forEach(i=>$(i).value='');$('#fBajas').checked=$('#fSC').checked=true;cascade();render()};
+ $('#pdf').onclick=descargar;
+ const dic=Object.entries(D.dic_corte||{}).map(([k,v])=>`Dic-${k.slice(2,4)} llega hasta el ${fechaTxt(v)} (último reporte de Hycite del año)`).join(' · ');
+ $('#foot').innerHTML=`<b>Cómo se calcula.</b> Icebreakers por mes = diferencia de los acumulados (año a la fecha) de los reportes semanales "IcebreakerCounts" de Hycite, así que no se suman semanas dos veces. El mes en curso es "a la fecha" del último reporte; el comparativo del mes en curso usa el mismo periodo del año anterior. "Con venta" sale del PDF "Reclutamiento México" que Ivan Sasito sube al grupo Premiers México; solo viene por Premier y no se suma a los icebreakers. ${dic}. Clasificación: hoja "DISTRUBUCIONES CHASEP &amp; MEJAB" en Drive.<br>Actualizado ${D.generado}.`;
+ render();window.addEventListener('resize',()=>render());
+}
+function descargar(){const el=$('#main');const name=`Icebreakers_${S.anio}${S.mes?'-'+String(S.mes).padStart(2,'0'):''}${S.prem?'_'+S.prem:''}${S.sub?'_'+S.sub:''}.pdf`.replace(/\s+/g,'_');
+ if(!window.html2pdf){window.print();return}
+ document.body.classList.add('pdfmode');
+ const hdr=document.querySelector('header').cloneNode(true);hdr.id='pdfhdr';el.prepend(hdr);
+ html2pdf().set({margin:[6,6,8,6],filename:name,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#f5f7fb'},jsPDF:{unit:'mm',format:'letter',orientation:'landscape'},pagebreak:{mode:['css','legacy'],avoid:['tr','.tile','.hbar']}}).from(el).save().then(()=>{hdr.remove();document.body.classList.remove('pdfmode')}).catch(()=>{hdr.remove();document.body.classList.remove('pdfmode');window.print()})}
+init();
+</script>
+</body>
+</html>
