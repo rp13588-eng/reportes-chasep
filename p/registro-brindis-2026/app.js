@@ -72,7 +72,7 @@
   function ruta() {
     var h = location.hash.replace(/^#/, '') || 'registro';
     var inv = /^invitacion=([A-Za-z0-9]+)/.exec(h);
-    var v = inv ? 'invitacion' : (['registro', 'mi-registro', 'panel'].indexOf(h) >= 0 ? h : 'registro');
+    var v = inv ? 'invitacion' : (['registro', 'mi-registro', 'panel', 'administradoras'].indexOf(h) >= 0 ? h : 'registro');
     $$('.vista').forEach(function (s) { s.hidden = s.id !== 'v-' + v; });
     $$('.tabs a').forEach(function (a) { a.classList.toggle('on', a.dataset.tab === v); });
     if (inv) mostrarInvitacion(inv[1]);
@@ -306,6 +306,23 @@
     });
   });
 
+  // ---------- registro de administradoras ----------
+  $('#f-adm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var err = $('#e-adm'); err.textContent = '';
+    var cod = $('#a-cod').value.trim(), nom = $('#a-nom').value.trim(), suc = $('#a-suc').value, w = wa10($('#a-wa').value);
+    if (!cod) { err.textContent = 'Escribe el código de acceso.'; return; }
+    if (nom.split(/\s+/).length < 2) { err.textContent = 'Escribe tu nombre y apellido.'; return; }
+    if (!suc) { err.textContent = 'Elige tu sucursal.'; return; }
+    if (!w) { err.textContent = 'Escribe tu WhatsApp a 10 dígitos.'; return; }
+    var b = $('#b-adm'); ocupado(b, true, 'Enviando…');
+    api('registrar_admin', { codigo: cod, nombre: nom, sucursal: suc, whatsapp: w }).then(function (r) {
+      ocupado(b, false);
+      if (!r.ok) { err.textContent = r.error; return; }
+      $('#ra-folio').textContent = r.folio; $('#f-adm').hidden = true; $('#r-adm').hidden = false; window.scrollTo(0, 0);
+    });
+  });
+
   // ---------- invitacion (flyer) ----------
   function cargarImg(src) { return new Promise(function (ok) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = function () { ok(null); }; i.src = src; }); }
   function fuentes() {
@@ -339,7 +356,7 @@
       var tw = ls.reduce(function (s, b) { return s + b.w; }, 0) + gap * (ls.length - 1), lx = (W - tw) / 2;
       c.globalAlpha = .92; ls.forEach(function (b) { c.drawImage(b.img, lx, 82 + (62 - b.h) / 2, b.w, b.h); lx += b.w + gap; }); c.globalAlpha = 1;
       c.textAlign = 'center'; c.fillStyle = '#E6EBF2';
-      c.font = '600 26px Figtree'; c.fillText('I N V I T A C I Ó N   P E R S O N A L', W / 2, 300);
+      c.font = '600 26px Figtree'; c.fillText((datos.encabezado || 'INVITACIÓN PERSONAL').split('').join(' '), W / 2, 300);
       c.save(); c.shadowColor = 'rgba(127,182,255,.65)'; c.shadowBlur = 26;
       c.fillStyle = '#fff'; c.font = '400 150px Limelight'; c.fillText('BRINDIS', W / 2, 440); c.restore();
       c.fillStyle = '#E6EBF2'; c.font = '400 44px Poiret'; c.fillText('C H A S E P   G L O B A L', W / 2 - 70, 512);
@@ -358,6 +375,7 @@
         var t = ajustar(c, n, W - 180, datos.nombres.length > 1 ? 72 : 88, 500, 'Bodoni');
         bloques.push({ t: n, f: '500 ' + t + 'px Bodoni', col: '#fff', h: t + 16 });
       });
+      (datos.extra || []).forEach(function (x) { bloques.push(x); });
       if (datos.invitadoPor) bloques.push({ t: 'Invitado por ' + datos.invitadoPor, f: '400 30px Figtree', col: '#C9D3E0', h: 56 });
       var alto = bloques.reduce(function (s, b) { return s + b.h; }, 0);
       var y = arriba + (abajo - arriba - alto) / 2;

@@ -188,3 +188,6 @@ legend small{font-weight:400;color:var(--gris)}
 .ag-tipos button{min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--azul);background:#fff;color:var(--azul);font:600 .95rem Figtree,sans-serif;cursor:pointer}
 .ag-tipos button.on{background:var(--azul);color:#fff}
 #ag-form .quien{margin-top:12px}
+
+.kick-adm{margin:0 0 4px;font:600 12px/1.4 Figtree,system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--acento)}
+#f-adm select{width:100%}

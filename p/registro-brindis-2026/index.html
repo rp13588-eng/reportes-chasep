@@ -141,6 +141,34 @@
   </div>
 </section>
 
+<!-- ===== ADMINISTRADORAS ===== -->
+<section id="v-administradoras" class="vista" hidden>
+  <div class="wrap angosto">
+    <form id="f-adm" class="card" novalidate>
+      <p class="kick-adm">Brindis CHASEP Global 2026</p>
+      <h2>Registro · Equipo administrativo</h2>
+      <p class="ayuda">Exclusivo para administradoras de sucursal. Martes 15 de diciembre · Salón Camarena · Acceso 6:30 pm, inicio 7:00 pm. Invitación personal, sin acompañantes.</p>
+      <label for="a-cod">Código de acceso</label>
+      <input id="a-cod" autocomplete="off" autocapitalize="characters" placeholder="Viene en tu invitación">
+      <label for="a-nom">Nombre completo</label>
+      <input id="a-nom" autocomplete="name" placeholder="Nombre y apellido">
+      <label for="a-suc">Sucursal</label>
+      <select id="a-suc"><option value="">Elige tu sucursal</option><option>Santa Fe</option><option>Echegaray</option><option>Boulevares</option><option>Bosques</option><option>San Ángel / Pedregal</option><option>Coacalco</option><option>Gustavo Baz</option><option>Oficina / Administración central</option></select>
+      <label for="a-wa">Tu WhatsApp</label>
+      <div class="tel"><span>+52</span><input id="a-wa" inputmode="tel" autocomplete="tel-national" placeholder="10 dígitos" maxlength="14"></div>
+      <p class="ayuda">Aquí te llega tu invitación personalizada cuando se apruebe tu registro.</p>
+      <p class="err" id="e-adm" role="alert"></p>
+      <button class="btn grande" type="submit" id="b-adm">Registrarme</button>
+    </form>
+    <div id="r-adm" class="card" hidden>
+      <p class="ok-ico" aria-hidden="true">✓</p>
+      <h2>Registro recibido</h2>
+      <p>Folio <b id="ra-folio"></b>. Tu registro está <b>pendiente de aprobación</b>.</p>
+      <p class="ayuda">Cuando se apruebe, te llega tu invitación personalizada por WhatsApp.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ===== INVITACION ===== -->
 <section id="v-invitacion" class="vista" hidden>
   <div class="wrap angosto centro">
